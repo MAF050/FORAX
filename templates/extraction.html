@@ -1,0 +1,945 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>FORAX — Live Evidence Extraction</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@300;400;500&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#f8fafc;--bg2:#f1f5f9;--surface:#fff;--border:#e2e8f0;--border2:#cbd5e1;
+  --t0:#0f172a;--t1:#334155;--t2:#64748b;
+  --blue:#2563eb;--blue2:#1d4ed8;--blue-light:#dbeafe;--blue-bd:#bfdbfe;
+  --green:#059669;--green-bg:#d1fae5;--green-bd:#a7f3d0;
+  --red:#dc2626;--red-bg:#fee2e2;--red-bd:#fecaca;
+  --amber:#d97706;--amber-bg:#fef3c7;--amber-bd:#fde68a;
+  --indigo:#4f46e5;--purple:#4f46e5;--pur-bg:#e0e7ff;--pur-bd:#c7d2fe;
+  --cyan:#0891b2;--cyan-bg:#cffafe;--cyan-bd:#a5f3fc;
+  --mono:'DM Mono',monospace;--sans:'DM Sans',sans-serif;--r:12px;--rl:20px;
+  --sh:0 4px 6px -1px rgba(0,0,0,0.05), 0 10px 15px -3px rgba(0,0,0,0.02);
+  --sh2:0 10px 25px -5px rgba(0,0,0,0.1), 0 8px 10px -6px rgba(0,0,0,0.1);
+}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+body{background:var(--bg2);color:var(--t0);font-family:var(--sans);font-size:14px;min-height:100vh;}
+.mesh-bg{position:fixed;inset:0;background:radial-gradient(at 0% 0%,#dbeafe 0%,transparent 50%),radial-gradient(at 100% 0%,#e0e7ff 0%,transparent 50%),radial-gradient(at 100% 100%,#fef3c7 0%,transparent 50%),radial-gradient(at 0% 100%,#d1fae5 0%,transparent 50%);z-index:-1;opacity:0.6;}
+/* TOPBAR */
+.topbar{
+  height:58px;background:rgba(255,255,255,.88);
+  border-bottom:1.5px solid var(--border);
+  display:flex;align-items:center;justify-content:space-between;padding:0 24px;
+  position:sticky;top:0;z-index:50;
+  box-shadow:0 2px 16px rgba(79,70,229,.1);
+  backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);
+}
+.logo-row{display:flex;align-items:center;gap:10px;}
+.logo-box{
+  width:36px;height:36px;
+  background:linear-gradient(135deg,var(--blue),var(--purple));
+  border-radius:10px;display:flex;align-items:center;justify-content:center;
+  box-shadow:0 3px 12px rgba(79,70,229,.35);
+  animation:logoPulse 6s ease-in-out infinite;
+}
+@keyframes logoPulse{0%,100%{box-shadow:0 3px 12px rgba(79,70,229,.35);}50%{box-shadow:0 6px 20px rgba(79,70,229,.5);}}
+.logo-box svg{width:17px;height:17px;stroke:#fff;fill:none;stroke-width:2;}
+.logo-name{font-family:var(--mono);font-size:15px;font-weight:500;}
+.logo-sub{font-family:var(--mono);font-size:10px;color:var(--t2);letter-spacing:1px;}
+.tr{display:flex;align-items:center;gap:8px;}
+.clk{font-family:var(--mono);font-size:12px;color:var(--t2);letter-spacing:.5px;}
+.bdg{display:inline-flex;align-items:center;gap:4px;padding:4px 10px;border-radius:20px;font-family:var(--mono);font-size:11px;}
+.bdg-blue{background:var(--blue-bg);color:var(--blue);border:1px solid var(--blue-bd);}
+.bdg-green{background:var(--green-bg);color:var(--green);border:1px solid var(--green-bd);}
+.bdg-amber{background:var(--amber-bg);color:var(--amber);border:1px solid var(--amber-bd);}
+.bdg-red{background:var(--red-bg);color:var(--red);border:1px solid var(--red-bd);}
+.live-dot{width:7px;height:7px;border-radius:50%;background:var(--green);animation:lp 1.4s ease-in-out infinite;}
+@keyframes lp{0%,100%{opacity:1;transform:scale(1);}50%{opacity:.4;transform:scale(1.35);}}
+.btn-nav{
+  padding:7px 13px;border-radius:var(--r);border:1.5px solid var(--blue-bd);
+  background:var(--blue-bg);color:var(--blue);font-family:var(--mono);font-size:11px;
+  cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;gap:5px;transition:all .2s;
+}
+.btn-nav:hover{background:var(--blue);color:#fff;transform:translateY(-1px);box-shadow:0 4px 12px rgba(79,70,229,.25);}
+.btn-nav svg{width:12px;height:12px;stroke:currentColor;fill:none;stroke-width:2;}
+/* CONTENT */
+.content{padding:18px 22px;max-width:1540px;margin:0 auto;}
+/* CASE BANNER */
+.case-banner{
+  background:linear-gradient(135deg,var(--blue-bg),var(--pur-bg));
+  border:1.5px solid var(--blue-bd);border-radius:var(--rl);
+  padding:12px 16px;margin-bottom:16px;
+  display:flex;align-items:center;justify-content:space-between;
+}
+.cb-l{display:flex;align-items:center;gap:8px;}
+.cb-l svg{width:15px;height:15px;stroke:var(--blue);fill:none;stroke-width:1.5;}
+.cb-title{font-family:var(--mono);font-size:12px;color:var(--blue);font-weight:500;}
+.cb-sub{font-family:var(--mono);font-size:11px;color:var(--t2);}
+/* SECURITY STRIP */
+.sec-strip{
+  background:linear-gradient(135deg,var(--pur-bg),var(--cyan-bg));
+  border:1.5px solid var(--pur-bd);border-radius:var(--rl);
+  padding:10px 16px;margin-bottom:16px;
+  display:flex;gap:14px;flex-wrap:wrap;align-items:center;
+}
+.si{display:flex;align-items:center;gap:5px;font-family:var(--mono);font-size:11px;color:var(--purple);}
+.si svg{width:12px;height:12px;stroke:var(--purple);fill:none;stroke-width:2;flex-shrink:0;}
+/* STATS */
+.sg{display:grid;grid-template-columns:repeat(8,1fr);gap:10px;margin-bottom:16px;}
+.sc{
+  background:rgba(255,255,255,.9);border:1.5px solid var(--border);
+  border-radius:var(--rl);padding:12px 14px;box-shadow:var(--sh);
+  position:relative;overflow:hidden;transition:all .25s;
+  animation:scIn .45s cubic-bezier(.22,1,.36,1) both;
+}
+.sc:hover{transform:translateY(-3px);box-shadow:var(--sh2);border-color:var(--blue-bd);}
+@keyframes scIn{from{opacity:0;transform:translateY(10px) scale(.97);}to{opacity:1;transform:translateY(0) scale(1);}}
+.sc:nth-child(1){animation-delay:.04s;}.sc:nth-child(2){animation-delay:.08s;}
+.sc:nth-child(3){animation-delay:.12s;}.sc:nth-child(4){animation-delay:.16s;}
+.sc:nth-child(5){animation-delay:.20s;}.sc:nth-child(6){animation-delay:.24s;}
+.sc:nth-child(7){animation-delay:.28s;}.sc:nth-child(8){animation-delay:.32s;}
+.sc-bar{position:absolute;top:0;left:0;right:0;height:3px;border-radius:0 0 2px 2px;}
+.sc-label{font-family:var(--mono);font-size:9px;color:var(--t2);letter-spacing:1.2px;text-transform:uppercase;margin-bottom:5px;}
+.sc-value{font-family:var(--mono);font-size:19px;font-weight:600;line-height:1;margin-bottom:2px;transition:all .3s;}
+.sc-sub{font-size:10px;color:var(--t2);}
+/* PROGRESS SECTION */
+.prog-section{
+  background:rgba(255,255,255,.9);border:1.5px solid var(--border);
+  border-radius:var(--rl);padding:18px;margin-bottom:16px;
+  box-shadow:var(--sh);transition:box-shadow .2s;
+}
+.prog-section:hover{box-shadow:var(--sh2);}
+.ps-hd{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;}
+.ps-title{font-family:var(--mono);font-size:12px;font-weight:500;}
+.ps-overall{font-family:var(--mono);font-size:11px;color:var(--t1);}
+.dev-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+.dp{background:linear-gradient(135deg,#fafafe,var(--bg2));border:2px dashed var(--border2);border-radius:var(--rl);padding:14px;transition:all .3s;}
+.dp.running{border-style:solid;border-color:var(--amber);background:linear-gradient(135deg,#fffbeb,#fef3c7);}
+.dp.complete{border-style:solid;border-color:var(--green);background:linear-gradient(135deg,#ecfdf5,#d1fae5);}
+.dp.error{border-style:solid;border-color:var(--red);background:linear-gradient(135deg,#fef2f2,#fee2e2);}
+.dp-hd{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;}
+.dp-name{font-size:13px;font-weight:600;}
+.dp-status{font-family:var(--mono);font-size:10px;font-weight:500;padding:3px 9px;border-radius:6px;letter-spacing:1px;}
+.ds-idle{background:var(--bg2);color:var(--t2);border:1.5px solid var(--border);}
+.ds-run{background:var(--amber-bg);color:var(--amber);border:1.5px solid var(--amber-bd);}
+.ds-done{background:var(--green-bg);color:var(--green);border:1.5px solid var(--green-bd);}
+.ds-err{background:var(--red-bg);color:var(--red);border:1.5px solid var(--red-bd);}
+.dp-model{font-family:var(--mono);font-size:11px;color:var(--t1);margin-bottom:10px;}
+/* progress bar */
+.pg-wrap{margin-bottom:8px;}
+.pg-hd{display:flex;justify-content:space-between;margin-bottom:4px;font-family:var(--mono);font-size:11px;}
+.pg-step{color:var(--t1);}
+.pg-pct{color:var(--blue);font-weight:600;}
+.pg-track{height:8px;background:var(--border);border-radius:4px;overflow:hidden;position:relative;}
+.pg-track::after{content:'';position:absolute;inset:0;background:linear-gradient(90deg,transparent,rgba(255,255,255,.35),transparent);animation:shimmer 2s infinite;}
+@keyframes shimmer{from{transform:translateX(-100%);}to{transform:translateX(100%);}}
+.pg-fill{height:100%;border-radius:4px;background:linear-gradient(90deg,var(--blue),#818cf8);transition:width .5s ease;width:0%;}
+.pg-fill.g{background:linear-gradient(90deg,var(--green),#34d399);}
+.pg-detail{font-family:var(--mono);font-size:10px;color:var(--t2);margin-top:3px;}
+/* data meter */
+.dm{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:8px;}
+.dm-item{background:rgba(255,255,255,.9);border:1.5px solid var(--border);border-radius:8px;padding:7px;text-align:center;transition:all .2s;}
+.dm-item:hover{border-color:var(--blue-bd);box-shadow:var(--sh);}
+.dm-v{font-family:var(--mono);font-size:13px;font-weight:600;color:var(--t0);}
+.dm-l{font-family:var(--mono);font-size:9px;color:var(--t2);letter-spacing:1px;margin-top:1px;}
+/* type mini bars */
+.tb-row{display:flex;align-items:center;gap:6px;margin-bottom:3px;}
+.tb-lbl{font-family:var(--mono);font-size:10px;color:var(--t1);min-width:58px;}
+.tb-track{flex:1;height:5px;background:var(--border);border-radius:3px;overflow:hidden;}
+.tb-fill{height:100%;border-radius:3px;transition:width .6s ease;}
+.tb-cnt{font-family:var(--mono);font-size:10px;color:var(--t2);min-width:22px;text-align:right;}
+/* CHAIN OF CUSTODY */
+.custody{background:linear-gradient(135deg,#ecfdf5,#d1fae5);border:1.5px solid var(--green-bd);border-radius:var(--rl);margin-bottom:16px;overflow:hidden;box-shadow:var(--sh);}
+.cust-hd{padding:11px 16px;border-bottom:1.5px solid var(--green-bd);display:flex;align-items:center;justify-content:space-between;background:linear-gradient(135deg,#d1fae5,#a7f3d0);}
+.cust-title{font-family:var(--mono);font-size:12px;font-weight:500;color:var(--green);display:flex;align-items:center;gap:6px;}
+.cust-title svg{width:13px;height:13px;stroke:var(--green);fill:none;}
+.cust-grid{display:grid;grid-template-columns:repeat(6,1fr);}
+.ci{padding:12px 14px;border-right:1px solid var(--green-bd);}
+.ci:last-child{border-right:none;}
+.ci-label{font-family:var(--mono);font-size:9px;color:var(--green);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:4px;}
+.ci-value{font-family:var(--mono);font-size:11px;color:var(--t0);font-weight:500;word-break:break-all;line-height:1.4;}
+.ci-value.blue{color:var(--blue);}
+.ci-value.green{color:var(--green);}
+/* CONTROLS */
+.ctrl-bar{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px;}
+.btn{display:inline-flex;align-items:center;gap:6px;padding:9px 16px;border-radius:var(--r);font-family:var(--sans);font-size:13px;font-weight:500;cursor:pointer;border:none;transition:all .2s;}
+.btn svg{width:13px;height:13px;stroke:currentColor;fill:none;stroke-width:2;}
+.btn-blue{background:linear-gradient(135deg,var(--blue),var(--purple));color:#fff;box-shadow:0 3px 12px rgba(79,70,229,.3);}
+.btn-blue:hover{transform:translateY(-2px);box-shadow:0 6px 18px rgba(79,70,229,.38);}
+.btn-blue:disabled{background:linear-gradient(135deg,#a5b4fc,#c4b5fd);color:rgba(255,255,255,.7);cursor:not-allowed;transform:none;box-shadow:none;}
+.btn-green{background:linear-gradient(135deg,#059669,#0891b2);color:#fff;box-shadow:0 3px 12px rgba(5,150,105,.25);}
+.btn-green:hover{transform:translateY(-2px);box-shadow:0 6px 16px rgba(5,150,105,.32);}
+.btn-green:disabled{background:linear-gradient(135deg,#86efac,#a7f3d0);color:rgba(255,255,255,.7);cursor:not-allowed;transform:none;box-shadow:none;}
+.btn-out{background:rgba(255,255,255,.9);color:var(--t1);border:1.5px solid var(--border2);box-shadow:var(--sh);}
+.btn-out:hover{background:var(--blue-bg);color:var(--blue);border-color:var(--blue-bd);transform:translateY(-1px);}
+.btn-red{background:var(--red-bg);color:var(--red);border:1.5px solid var(--red-bd);}
+.btn-red:hover{background:#fee2e2;}
+.btn-amber{background:var(--amber-bg);color:var(--amber);border:1.5px solid var(--amber-bd);}
+.btn-amber:hover{background:#fde68a;}
+.btn-stop{background:linear-gradient(135deg,#dc2626,#b91c1c);color:#fff;box-shadow:0 3px 12px rgba(220,38,38,.3);}
+.btn-stop:hover{transform:translateY(-2px);box-shadow:0 6px 16px rgba(220,38,38,.38);}
+.btn-stop:disabled{background:linear-gradient(135deg,#fca5a5,#fecaca);color:rgba(255,255,255,.7);cursor:not-allowed;transform:none;box-shadow:none;}
+.btn:disabled{opacity:.5;cursor:not-allowed;transform:none;}
+.spin{display:inline-block;width:13px;height:13px;border:2px solid rgba(255,255,255,.35);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg)}}
+/* MAIN GRID */
+.main-grid{display:grid;grid-template-columns:1fr 360px;gap:16px;margin-bottom:16px;}
+/* PANEL */
+.panel{background:rgba(255,255,255,.9);border:1.5px solid var(--border);border-radius:var(--rl);overflow:hidden;box-shadow:var(--sh);transition:box-shadow .2s;}
+.panel:hover{box-shadow:var(--sh2);}
+.ph{padding:13px 16px;border-bottom:1.5px solid var(--border);background:linear-gradient(135deg,#fafafe,var(--bg2));display:flex;align-items:center;justify-content:space-between;}
+.ph-title{font-family:var(--mono);font-size:12px;font-weight:500;color:var(--t0);}
+/* LIVE FEED */
+.live-feed{max-height:380px;overflow-y:auto;display:flex;flex-direction:column;gap:5px;padding:10px;}
+.live-feed::-webkit-scrollbar{width:4px;}
+.live-feed::-webkit-scrollbar-thumb{background:var(--blue-bd);border-radius:2px;}
+.fc{display:flex;align-items:center;gap:9px;padding:9px 11px;background:rgba(255,255,255,.85);border:1.5px solid var(--border);border-radius:10px;animation:slideIn .25s cubic-bezier(.22,1,.36,1);transition:all .15s;}
+.fc:hover{box-shadow:var(--sh);border-color:var(--blue-bd);transform:translateX(2px);}
+.fc.fc-H{border-color:var(--red-bd);background:linear-gradient(135deg,#fef2f2,#fee2e2);}
+.fc.fc-M{border-color:var(--amber-bd);background:linear-gradient(135deg,#fffbeb,#fef3c7);}
+@keyframes slideIn{from{opacity:0;transform:translateX(-6px)}to{opacity:1;transform:translateX(0)}}
+.fi{width:30px;height:30px;border-radius:7px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.fi svg{width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:1.5;}
+.fi-img{background:var(--blue-bg);color:var(--blue);}.fi-vid{background:var(--pur-bg);color:var(--purple);}
+.fi-chat{background:var(--green-bg);color:var(--green);}.fi-call{background:var(--amber-bg);color:var(--amber);}
+.fi-sms{background:#fdf4ff;color:#9333ea;}.fi-con{background:var(--cyan-bg);color:var(--cyan);}
+.fi-brow{background:#fff7ed;color:#ea580c;}.fi-dl{background:#f0fdf4;color:#16a34a;}
+.fi-app{background:var(--bg2);color:var(--t1);}.fi-rec{background:var(--red-bg);color:var(--red);}
+.f-info{flex:1;min-width:0;}
+.f-name{font-size:12px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.f-meta{font-family:var(--mono);font-size:10px;color:var(--t2);margin-top:1px;}
+.f-hash{font-family:var(--mono);font-size:9px;color:var(--t2);margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:150px;}
+.rp{font-family:var(--mono);font-size:10px;font-weight:500;padding:3px 9px;border-radius:6px;flex-shrink:0;}
+.rp-H{background:var(--red-bg);color:var(--red);border:1.5px solid var(--red-bd);}
+.rp-M{background:var(--amber-bg);color:var(--amber);border:1.5px solid var(--amber-bd);}
+.rp-L{background:var(--green-bg);color:var(--green);border:1.5px solid var(--green-bd);}
+/* LOG */
+.log-list{max-height:230px;overflow-y:auto;display:flex;flex-direction:column;gap:3px;padding:8px;}
+.log-list::-webkit-scrollbar{width:3px;}
+.log-list::-webkit-scrollbar-thumb{background:var(--border2);}
+.le{display:flex;gap:7px;padding:5px 8px;border-radius:8px;background:rgba(255,255,255,.85);border:1.5px solid var(--border);font-family:var(--mono);font-size:11px;transition:all .15s;}
+.le:hover{border-color:var(--blue-bd);}
+.lt{color:var(--t2);min-width:50px;flex-shrink:0;}
+.lm{color:var(--t1);flex:1;}
+.le.success .lm{color:var(--green);}
+.le.danger .lm{color:var(--red);}
+.le.warn .lm{color:var(--amber);}
+.le.info .lm{color:var(--blue);}
+/* BREAKDOWN */
+.bd-item{margin-bottom:8px;}
+.bd-hd{display:flex;justify-content:space-between;margin-bottom:3px;font-family:var(--mono);font-size:11px;}
+.bd-lbl{color:var(--t1);}
+.bd-val{color:var(--blue);font-weight:500;}
+.bd-track{height:5px;background:var(--border);border-radius:3px;overflow:hidden;}
+.bd-fill{height:100%;border-radius:3px;transition:width .7s ease;}
+/* TABLE */
+table{width:100%;border-collapse:collapse;}
+th{font-family:var(--mono);font-size:10px;color:var(--t2);letter-spacing:1px;text-align:left;padding:9px 12px;border-bottom:1.5px solid var(--border);font-weight:500;text-transform:uppercase;background:linear-gradient(135deg,#fafafe,var(--bg2));position:sticky;top:0;z-index:2;}
+td{padding:8px 12px;border-bottom:1px solid var(--border);font-size:12px;color:var(--t1);}
+tr:last-child td{border-bottom:none;}
+tr:hover td{background:var(--blue-bg);transition:background .15s;}
+.td-bold{color:var(--t0);font-weight:500;}
+.td-mono{font-family:var(--mono);}
+.td-hash{font-family:var(--mono);font-size:10px;color:var(--t2);max-width:110px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;display:inline-block;}
+.tw{overflow-x:auto;max-height:440px;overflow-y:auto;}
+.tw::-webkit-scrollbar{width:4px;height:4px;}
+.tw::-webkit-scrollbar-thumb{background:var(--blue-bd);border-radius:2px;}
+.empty{text-align:center;padding:30px;font-family:var(--mono);font-size:12px;color:var(--t2);}
+#toast{
+  position:fixed;bottom:24px;right:24px;
+  background:linear-gradient(135deg,var(--blue),var(--purple));
+  color:#fff;border-radius:14px;padding:13px 20px;
+  font-family:var(--mono);font-size:12px;z-index:999;
+  transform:translateY(60px);opacity:0;
+  transition:all .35s cubic-bezier(.22,1,.36,1);
+  box-shadow:0 8px 28px rgba(79,70,229,.35);
+  border:1px solid rgba(255,255,255,.15);
+}
+#toast.show{transform:translateY(0);opacity:1;}
+.clickable-ai {
+  cursor: pointer;
+  text-decoration: underline dotted;
+  transition: color 0.15s;
+}
+.clickable-ai:hover {
+  color: var(--blue);
+}
+.reasoning-box {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 12px;
+  margin-top: 10px;
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--t1);
+  line-height: 1.5;
+  white-space: pre-wrap;
+}
+/* Modal Overlay Base */
+.overlay {
+  position: fixed; inset: 0; background: rgba(15,23,42,0.45); z-index: 200;
+  display: flex; align-items: center; justify-content: center; backdrop-filter: blur(8px);
+  opacity: 0; pointer-events: none; transition: all 0.3s ease;
+}
+.overlay.show { opacity: 1; pointer-events: all; }
+.modal {
+  background: #fff; border: 1px solid var(--border); border-radius: 16px;
+  padding: 24px; width: 100%; max-width: 500px; box-shadow: 0 24px 64px rgba(0,0,0,0.12);
+  animation: mIn 0.25s ease;
+}
+@keyframes mIn { from { opacity: 0; transform: scale(0.96) translateY(8px); } to { opacity: 1; transform: scale(1); } }
+.m-title { font-size: 16px; font-weight: 600; margin-bottom: 4px; }
+.m-sub { font-size: 12px; color: var(--t1); margin-bottom: 12px; }
+.m-footer { display: flex; gap: 8px; justify-content: flex-end; margin-top: 16px; }
+@media(max-width:1100px){.sg{grid-template-columns:repeat(4,1fr);}.main-grid{grid-template-columns:1fr;}.cust-grid{grid-template-columns:repeat(3,1fr);}}
+@media(max-width:700px){.sg{grid-template-columns:repeat(2,1fr);}.dev-grid{grid-template-columns:1fr;}}
+</style>
+</head>
+<body>
+<div class="mesh-bg"></div>
+<header class="topbar">
+  <div class="logo-row">
+    <div class="logo-box"><svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg></div>
+    <div><div class="logo-name">FORAX</div><div class="logo-sub">LIVE EVIDENCE EXTRACTION</div></div>
+  </div>
+  <div class="tr">
+    <span class="clk" id="clock">--:--:--</span>
+    <span class="bdg bdg-blue" id="caseLabel">NO CASE</span>
+    <span class="bdg bdg-green" id="liveBadge" style="display:none;"><div class="live-dot"></div>LIVE</span>
+    <a href="/dashboard" class="btn-nav"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>Dashboard</a>
+  </div>
+</header>
+
+<div class="content">
+
+<!-- CASE BANNER -->
+<div class="case-banner" id="caseBanner">
+  <div class="cb-l">
+    <svg viewBox="0 0 24 24"><path d="M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 3h9a2 2 0 012 2z"/></svg>
+    <span class="cb-title" id="cbTitle">No case selected</span>
+  </div>
+  <span class="cb-sub" id="cbSub">--</span>
+</div>
+
+<!-- SECURITY STRIP -->
+<div class="sec-strip">
+  <div class="si"><svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>SHA-256 Chain of Custody</div>
+  <div class="si"><svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>ADB Secure Channel</div>
+  <div class="si"><svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>Real-Time SSE Stream</div>
+  <div class="si"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>Timestamped Evidence</div>
+  <div class="si"><svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>Integrity Lock</div>
+  <div class="si"><svg viewBox="0 0 24 24"><rect x="5" y="2" width="14" height="20" rx="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg>Dual Device</div>
+</div>
+
+<!-- LIVE STATS -->
+<div class="sg">
+  <div class="sc"><div class="sc-bar" style="background:var(--blue)"></div><div class="sc-label">Total Files</div><div class="sc-value" id="s-total" style="color:var(--blue)">0</div><div class="sc-sub">extracted</div></div>
+  <div class="sc"><div class="sc-bar" style="background:#2563eb"></div><div class="sc-label">Images</div><div class="sc-value" id="s-images" style="color:#2563eb">0</div><div class="sc-sub">photos</div></div>
+  <div class="sc"><div class="sc-bar" style="background:var(--green)"></div><div class="sc-label">WhatsApp</div><div class="sc-value" id="s-chats" style="color:var(--green)">0</div><div class="sc-sub">databases</div></div>
+  <div class="sc"><div class="sc-bar" style="background:var(--amber)"></div><div class="sc-label">Calls/SMS</div><div class="sc-value" id="s-calls" style="color:var(--amber)">0</div><div class="sc-sub">records</div></div>
+  <div class="sc"><div class="sc-bar" style="background:var(--red)"></div><div class="sc-label">High Risk</div><div class="sc-value" id="s-high" style="color:var(--red)">0</div><div class="sc-sub">flagged</div></div>
+  <div class="sc"><div class="sc-bar" style="background:var(--purple)"></div><div class="sc-label">Data Size</div><div class="sc-value" id="s-size" style="color:var(--purple)">0 MB</div><div class="sc-sub">extracted</div></div>
+  <div class="sc"><div class="sc-bar" style="background:var(--cyan)"></div><div class="sc-label">SHA-256</div><div class="sc-value" id="s-hashed" style="color:var(--cyan)">0</div><div class="sc-sub">hashed</div></div>
+  <div class="sc"><div class="sc-bar" style="background:var(--green)"></div><div class="sc-label">Rate</div><div class="sc-value" id="s-rate" style="color:var(--green)">0 KB/s</div><div class="sc-sub">transfer</div></div>
+</div>
+
+<!-- DEVICE PROGRESS -->
+<div class="prog-section">
+  <div class="ps-hd">
+    <span class="ps-title">Live Extraction Progress</span>
+    <span class="ps-overall" id="overallPct">Overall: 0% complete</span>
+  </div>
+  <div class="dev-grid">
+    <!-- D1 -->
+    <div class="dp" id="dp1">
+      <div class="dp-hd">
+        <div><div class="dp-name" id="dpname1">Device 1 — Not Connected</div>
+          <div class="dp-model" id="dpmodel1">Connect via USB · Enable USB Debugging</div></div>
+        <span class="dp-status ds-idle" id="dps1">IDLE</span>
+      </div>
+      <div class="pg-wrap">
+        <div class="pg-hd"><span class="pg-step" id="pstep1">Waiting...</span><span class="pg-pct" id="ppct1">0%</span></div>
+        <div class="pg-track"><div class="pg-fill" id="pfill1" style="width:0%"></div></div>
+        <div class="pg-detail" id="pdetail1">—</div>
+      </div>
+      <div class="dm">
+        <div class="dm-item"><div class="dm-v" id="d1-files">0</div><div class="dm-l">FILES</div></div>
+        <div class="dm-item"><div class="dm-v" id="d1-size">0 MB</div><div class="dm-l">SIZE</div></div>
+        <div class="dm-item"><div class="dm-v" id="d1-high" style="color:var(--red)">0</div><div class="dm-l">HIGH RISK</div></div>
+        <div class="dm-item"><div class="dm-v" id="d1-hash" style="color:var(--green)">0</div><div class="dm-l">HASHED</div></div>
+      </div>
+      <div>
+        <div class="tb-row"><span class="tb-lbl">Images</span><div class="tb-track"><div class="tb-fill" id="t1-img" style="width:0%;background:#2563eb"></div></div><span class="tb-cnt" id="c1-img">0</span></div>
+        <div class="tb-row"><span class="tb-lbl">WhatsApp</span><div class="tb-track"><div class="tb-fill" id="t1-wa" style="width:0%;background:#059669"></div></div><span class="tb-cnt" id="c1-wa">0</span></div>
+        <div class="tb-row"><span class="tb-lbl">Calls</span><div class="tb-track"><div class="tb-fill" id="t1-call" style="width:0%;background:#d97706"></div></div><span class="tb-cnt" id="c1-call">0</span></div>
+        <div class="tb-row"><span class="tb-lbl">SMS</span><div class="tb-track"><div class="tb-fill" id="t1-sms" style="width:0%;background:#9333ea"></div></div><span class="tb-cnt" id="c1-sms">0</span></div>
+        <div class="tb-row"><span class="tb-lbl">Downloads</span><div class="tb-track"><div class="tb-fill" id="t1-dl" style="width:0%;background:#16a34a"></div></div><span class="tb-cnt" id="c1-dl">0</span></div>
+      </div>
+    </div>
+    <!-- D2 -->
+    <div class="dp" id="dp2">
+      <div class="dp-hd">
+        <div><div class="dp-name" id="dpname2">Device 2 — Not Connected</div>
+          <div class="dp-model" id="dpmodel2">Optional — second phone for dual extraction</div></div>
+        <span class="dp-status ds-idle" id="dps2">IDLE</span>
+      </div>
+      <div class="pg-wrap">
+        <div class="pg-hd"><span class="pg-step" id="pstep2">Waiting...</span><span class="pg-pct" id="ppct2">0%</span></div>
+        <div class="pg-track"><div class="pg-fill g" id="pfill2" style="width:0%"></div></div>
+        <div class="pg-detail" id="pdetail2">—</div>
+      </div>
+      <div class="dm">
+        <div class="dm-item"><div class="dm-v" id="d2-files">0</div><div class="dm-l">FILES</div></div>
+        <div class="dm-item"><div class="dm-v" id="d2-size">0 MB</div><div class="dm-l">SIZE</div></div>
+        <div class="dm-item"><div class="dm-v" id="d2-high" style="color:var(--red)">0</div><div class="dm-l">HIGH RISK</div></div>
+        <div class="dm-item"><div class="dm-v" id="d2-hash" style="color:var(--green)">0</div><div class="dm-l">HASHED</div></div>
+      </div>
+      <div>
+        <div class="tb-row"><span class="tb-lbl">Images</span><div class="tb-track"><div class="tb-fill" id="t2-img" style="width:0%;background:#2563eb"></div></div><span class="tb-cnt" id="c2-img">0</span></div>
+        <div class="tb-row"><span class="tb-lbl">WhatsApp</span><div class="tb-track"><div class="tb-fill" id="t2-wa" style="width:0%;background:#059669"></div></div><span class="tb-cnt" id="c2-wa">0</span></div>
+        <div class="tb-row"><span class="tb-lbl">Calls</span><div class="tb-track"><div class="tb-fill" id="t2-call" style="width:0%;background:#d97706"></div></div><span class="tb-cnt" id="c2-call">0</span></div>
+        <div class="tb-row"><span class="tb-lbl">SMS</span><div class="tb-track"><div class="tb-fill" id="t2-sms" style="width:0%;background:#9333ea"></div></div><span class="tb-cnt" id="c2-sms">0</span></div>
+        <div class="tb-row"><span class="tb-lbl">Downloads</span><div class="tb-track"><div class="tb-fill" id="t2-dl" style="width:0%;background:#16a34a"></div></div><span class="tb-cnt" id="c2-dl">0</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- CONTROLS -->
+<div class="ctrl-bar">
+  <button class="btn btn-blue" id="btnScan" onclick="scanDevices()">
+    <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>Scan Devices
+  </button>
+  <button class="btn btn-green" id="btnExtract" onclick="startExtraction()" disabled>
+    <svg viewBox="0 0 24 24"><polyline points="8 17 12 21 16 17"/><line x1="12" y1="12" x2="12" y2="21"/><path d="M20.88 18.09A5 5 0 0018 9h-1.26A8 8 0 103 16.29"/></svg>Extract Evidence
+  </button>
+  <button class="btn btn-amber" id="btnPause" onclick="togglePause()" disabled
+          title="Pause / Resume extraction between steps">
+    <svg viewBox="0 0 24 24"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>Pause
+  </button>
+  <button class="btn btn-stop" id="btnStop" onclick="stopExtraction()" disabled
+          title="Stop extraction permanently (files already extracted are kept)">
+    <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/></svg>Stop
+  </button>
+  <button class="btn btn-out" onclick="demoMode()">
+    <svg viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg>Demo Mode
+  </button>
+  <button class="btn btn-out" id="btnSave" onclick="saveEvidence()" disabled>
+    <svg viewBox="0 0 24 24"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/></svg>Save to Case
+  </button>
+  <button class="btn btn-out" onclick="exportCSV()">
+    <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>Export CSV
+  </button>
+  <button class="btn btn-red" onclick="resetAll()">
+    <svg viewBox="0 0 24 24"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 102.13-9.36L1 10"/></svg>Reset
+  </button>
+</div>
+
+<!-- CHAIN OF CUSTODY -->
+<div class="custody">
+  <div class="cust-hd">
+    <span class="cust-title"><svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>Chain of Custody — Evidence Integrity</span>
+    <span class="bdg bdg-amber" id="custStatus">STANDBY</span>
+  </div>
+  <div class="cust-grid">
+    <div class="ci"><div class="ci-label">Case ID</div><div class="ci-value blue" id="ci-case">—</div></div>
+    <div class="ci"><div class="ci-label">Investigator</div><div class="ci-value" id="ci-inv">{{ session.get('user_name','—') if session else '—' }}</div></div>
+    <div class="ci"><div class="ci-label">Started</div><div class="ci-value" id="ci-start">—</div></div>
+    <div class="ci"><div class="ci-label">Completed</div><div class="ci-value" id="ci-end">—</div></div>
+    <div class="ci"><div class="ci-label">Total Evidence</div><div class="ci-value green" id="ci-total">0 files</div></div>
+    <div class="ci"><div class="ci-label">Integrity</div><div class="ci-value green" id="ci-integrity">Awaiting extraction</div></div>
+  </div>
+</div>
+
+<!-- LIVE FEED + LOG -->
+<div class="main-grid">
+  <div class="panel">
+    <div class="ph"><span class="ph-title">Live Evidence Feed</span><span class="bdg bdg-blue" id="feedCount">0 files</span></div>
+    <div class="live-feed" id="liveFeed"><div class="empty">Files appear here as they are extracted from the device</div></div>
+  </div>
+  <div style="display:flex;flex-direction:column;gap:14px;">
+    <div class="panel">
+      <div class="ph"><span class="ph-title">Extraction Log</span><span class="bdg bdg-blue" id="logCount">0 events</span></div>
+      <div class="log-list" id="logList">
+        <div class="le info"><span class="lt">--:--:--</span><span class="lm">System ready — connect device and click Extract</span></div>
+      </div>
+    </div>
+    <div class="panel">
+      <div class="ph"><span class="ph-title">Evidence Breakdown</span></div>
+      <div style="padding:14px;" id="breakdownBody"><div class="empty" style="padding:12px;">— awaiting extraction —</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- FULL TABLE -->
+<div class="panel">
+  <div class="ph"><span class="ph-title">All Extracted Evidence</span><span class="bdg bdg-blue" id="tableCount">0 files</span></div>
+  <div class="tw"><table>
+    <thead><tr><th>#</th><th>Device</th><th>Filename</th><th>Type</th><th>Size</th><th>AI Analysis</th><th>Risk</th><th>SHA-256</th><th>Time</th></tr></thead>
+    <tbody id="evTable"><tr><td colspan="9"><div class="empty">No evidence yet</div></td></tr></tbody>
+  </table></div>
+</div>
+
+</div><!-- /content -->
+<div id="toast"></div>
+
+<script>
+const urlP      = new URLSearchParams(window.location.search);
+const CASE_ID   = urlP.get('case_id') || '';
+const CASE_TITLE= urlP.get('title')   || 'Unknown';
+const INV_NAME  = '{{ session.get("user_name","Investigator") if session else "Investigator" }}';
+
+let allFiles=[], activeDevices={}, sseConns={}, extractDone={device1:false,device2:false};
+let logCnt=1, feedCnt=0, tableRows=0, lastBytes=0, rateTimer=null;
+let _paused = {}; // per-slot pause state cache for UI toggle
+
+const TYPE_CFG={
+  image:    {cls:'fi-img', label:'Image',    svg:'<svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>'},
+  video:    {cls:'fi-vid', label:'Video',    svg:'<svg viewBox="0 0 24 24"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg>'},
+  chat:     {cls:'fi-chat',label:'Chat',     svg:'<svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>'},
+  call_log: {cls:'fi-call',label:'Calls',   svg:'<svg viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 01-2.18 2A19.79 19.79 0 0112 18.85a19.45 19.45 0 01-6-6A19.79 19.79 0 012.12 6.18 2 2 0 014.11 4h3a2 2 0 012 1.72 12.84 12.84 0 00.7 2.81 2 2 0 01-.45 2.11L8.09 11.91a16 16 0 006 6z"/></svg>'},
+  sms:      {cls:'fi-sms', label:'SMS',      svg:'<svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>'},
+  contacts: {cls:'fi-con', label:'Contacts', svg:'<svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>'},
+  browser:  {cls:'fi-brow',label:'Browser', svg:'<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z"/></svg>'},
+  download: {cls:'fi-dl',  label:'Download', svg:'<svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>'},
+  app_data: {cls:'fi-app', label:'Apps',     svg:'<svg viewBox="0 0 24 24"><rect x="5" y="2" width="14" height="20" rx="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg>'},
+  recovered:{cls:'fi-rec', label:'Recovered',svg:'<svg viewBox="0 0 24 24"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 102.13-9.36L1 10"/></svg>'},
+};
+
+setInterval(()=>document.getElementById('clock').textContent=new Date().toTimeString().slice(0,8),1000);
+
+// INIT
+if(CASE_ID){
+  document.getElementById('caseLabel').textContent=CASE_ID;
+  document.getElementById('cbTitle').textContent=`Case: ${CASE_TITLE} (${CASE_ID})`;
+  document.getElementById('cbSub').textContent='Started: '+new Date().toLocaleString();
+  document.getElementById('ci-case').textContent=CASE_ID;
+}else{
+  document.getElementById('caseBanner').style.cssText+='background:var(--red-bg);border-color:var(--red-bd);';
+  document.getElementById('cbTitle').textContent='⚠ No case selected — go back to dashboard';
+  document.getElementById('cbTitle').style.color='var(--red)';
+}
+
+function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),3000);}
+
+function addLog(msg,level='info'){
+  const list=document.getElementById('logList');
+  const el=document.createElement('div');el.className=`le ${level}`;
+  el.innerHTML=`<span class="lt">${new Date().toTimeString().slice(0,8)}</span><span class="lm">${msg}</span>`;
+  list.insertBefore(el,list.firstChild);logCnt++;
+  document.getElementById('logCount').textContent=logCnt+' events';
+}
+
+function fmtSize(b){if(!b)return'0B';if(b<1024)return b+'B';if(b<1048576)return Math.round(b/1024)+'KB';return(b/1048576).toFixed(1)+'MB';}
+
+function setDevState(num,state,info){
+  const dp=document.getElementById('dp'+num);const dps=document.getElementById('dps'+num);
+  dp.className='dp '+(state==='running'?'running':state==='complete'?'complete':state==='error'?'error':'');
+  const sm={idle:'ds-idle',running:'ds-run',complete:'ds-done',error:'ds-err'};
+  const st={idle:'IDLE',running:'EXTRACTING',complete:'COMPLETE',error:'ERROR'};
+  dps.className='dp-status '+(sm[state]||'ds-idle');dps.textContent=st[state]||state.toUpperCase();
+  if(info){document.getElementById('dpname'+num).textContent=`${info.brand||''} ${info.model||'Unknown'}`;
+    document.getElementById('dpmodel'+num).textContent=`Android ${info.android||'?'} · Serial: ${info.serial||'?'} · ${info.app_count||'?'} apps`;}
+}
+
+function setProg(num,pct,step,detail){
+  document.getElementById('pfill'+num).style.width=pct+'%';
+  document.getElementById('ppct'+num).textContent=pct+'%';
+  document.getElementById('pstep'+num).textContent=step||'';
+  document.getElementById('pdetail'+num).textContent=detail||'';
+  const p1=parseFloat(document.getElementById('ppct1').textContent)||0;
+  const p2=parseFloat(document.getElementById('ppct2').textContent)||0;
+  const has2=Object.keys(activeDevices).length>1;
+  document.getElementById('overallPct').textContent=`Overall: ${has2?Math.round((p1+p2)/2):p1}% complete`;
+}
+
+function updateMeter(num,slot){
+  const sf=allFiles.filter(f=>f.device_slot===slot);
+  const tb=sf.reduce((s,f)=>s+(f.size||0),0);
+  document.getElementById('d'+num+'-files').textContent=sf.length;
+  document.getElementById('d'+num+'-size').textContent=fmtSize(tb);
+  document.getElementById('d'+num+'-high').textContent=sf.filter(f=>f.risk_level==='HIGH').length;
+  document.getElementById('d'+num+'-hash').textContent=sf.length;
+  const types={img:'image',wa:'chat',call:'call_log',sms:'sms',dl:'download'};
+  const mx=Math.max(...Object.values(types).map(t=>sf.filter(f=>f.type===t).length),1);
+  Object.entries(types).forEach(([k,t])=>{
+    const cnt=sf.filter(f=>f.type===t).length;
+    document.getElementById('t'+num+'-'+k).style.width=Math.round(cnt/mx*100)+'%';
+    document.getElementById('c'+num+'-'+k).textContent=cnt;
+  });
+}
+
+function updateStats(){
+  const total=allFiles.length;
+  const totalB=allFiles.reduce((s,f)=>s+(f.size||0),0);
+  document.getElementById('s-total').textContent=total;
+  document.getElementById('s-images').textContent=allFiles.filter(f=>f.type==='image').length;
+  document.getElementById('s-chats').textContent=allFiles.filter(f=>f.type==='chat').length;
+  document.getElementById('s-calls').textContent=allFiles.filter(f=>['call_log','sms'].includes(f.type)).length;
+  document.getElementById('s-high').textContent=allFiles.filter(f=>f.risk_level==='HIGH').length;
+  document.getElementById('s-size').textContent=(totalB/1048576).toFixed(1)+' MB';
+  document.getElementById('s-hashed').textContent=total;
+  document.getElementById('feedCount').textContent=feedCnt+' files';
+  document.getElementById('tableCount').textContent=total+' files';
+  document.getElementById('ci-total').textContent=total+' files';
+  const diff=totalB-lastBytes;
+  if(diff>0)document.getElementById('s-rate').textContent=fmtSize(diff)+'/s';
+  lastBytes=totalB;
+}
+
+function updateBreakdown(){
+  const types=[
+    {l:'Images',k:'image',c:'#2563eb'},{l:'Videos',k:'video',c:'#7c3aed'},
+    {l:'WhatsApp',k:'chat',c:'#059669'},{l:'Calls',k:'call_log',c:'#d97706'},
+    {l:'SMS',k:'sms',c:'#9333ea'},{l:'Contacts',k:'contacts',c:'#0e7490'},
+    {l:'Browser',k:'browser',c:'#ea580c'},{l:'Downloads',k:'download',c:'#16a34a'},
+    {l:'Apps',k:'app_data',c:'#475569'},{l:'Recovered',k:'recovered',c:'#dc2626'},
+  ];
+  const total=allFiles.length||1;
+  document.getElementById('breakdownBody').innerHTML=types.map(t=>{
+    const cnt=allFiles.filter(f=>f.type===t.k).length;
+    const pct=Math.round(cnt/total*100);
+    return`<div class="bd-item"><div class="bd-hd"><span class="bd-lbl">${t.l}</span><span class="bd-val">${cnt}</span></div><div class="bd-track"><div class="bd-fill" style="width:${pct}%;background:${t.c}"></div></div></div>`;
+  }).join('');
+}
+
+function addToFeed(slot,f){
+  const feed=document.getElementById('liveFeed');
+  if(feed.querySelector('.empty'))feed.innerHTML='';
+  const cfg=TYPE_CFG[f.type]||TYPE_CFG.download;
+  const rpc=f.risk_level==='HIGH'?'fc-H':f.risk_level==='MED'?'fc-M':'';
+  const rpp=f.risk_level==='HIGH'?'rp-H':f.risk_level==='MED'?'rp-M':'rp-L';
+  const sz=fmtSize(f.size);const hash=(f.sha256||'').slice(0,22)+'...';
+  const el=document.createElement('div');el.className=`fc ${rpc}`;
+  el.style.cursor='pointer';
+  el.onclick = () => showAiReasoningForObject(f);
+  el.innerHTML=`<div class="fi ${cfg.cls}">${cfg.svg}</div><div class="f-info"><div class="f-name" title="${f.filename}">${f.filename}</div><div class="f-meta">${cfg.label} · ${sz} · ${slot} · ${new Date().toTimeString().slice(0,8)}</div><div class="f-hash">SHA-256: ${hash}</div></div><span class="rp ${rpp}">${f.risk_level}</span>`;
+  feed.insertBefore(el,feed.firstChild);
+  if(feed.children.length>200)feed.removeChild(feed.lastChild);
+  feedCnt++;
+}
+
+function addToTable(slot,f){
+  const tbody=document.getElementById('evTable');
+  if(tbody.querySelector('.empty'))tbody.innerHTML='';
+  tableRows++;
+  const rpp=f.risk_level==='HIGH'?'rp-H':f.risk_level==='MED'?'rp-M':'rp-L';
+  const hash=(f.sha256||'').slice(0,14)+'...';
+  const row=document.createElement('tr');
+  const idx = allFiles.length - 1;
+  row.innerHTML=`<td class="td-mono" style="color:var(--t2)">${String(tableRows).padStart(3,'0')}</td><td><span class="bdg bdg-blue" style="font-size:10px;padding:2px 7px;">${slot}</span></td><td class="td-bold" style="max-width:170px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="${f.filename}">${f.filename}</td><td style="font-family:var(--mono);font-size:11px;color:var(--blue)">${(f.type||'UNK').toUpperCase()}</td><td class="td-mono">${fmtSize(f.size)}</td><td class="clickable-ai" onclick="showAiReasoning(${idx})" style="font-size:11px;max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="Click to view full AI reasoning">${(f.ai_result||'—').replace('Detected:', '<strong style="color:var(--red);font-weight:600;">Detected:</strong>')}</td><td><span class="rp ${rpp}">${f.risk_level}</span></td><td><span class="td-hash" title="${f.sha256||''}">${hash}</span></td><td class="td-mono" style="font-size:11px;color:var(--t2)">${new Date().toTimeString().slice(0,8)}</td>`;
+  tbody.insertBefore(row,tbody.firstChild);
+}
+
+async function scanDevices(){
+  const btn=document.getElementById('btnScan');btn.disabled=true;btn.innerHTML='<span class="spin"></span>Scanning...';
+  addLog('Scanning for Android devices via ADB...','info');
+  try{
+    const r=await fetch('/api/devices/check');const d=await r.json();
+    if(!d.connected){addLog(d.error||'No device found','warn');toast('No device — enable USB Debugging');}
+    else{
+      d.devices.forEach((dev,i)=>{
+        const slot='device'+(i+1);activeDevices[slot]=dev.serial;
+        setDevState(i+1,'running',dev.info);
+        document.getElementById('dps'+(i+1)).textContent='READY';
+        document.getElementById('dps'+(i+1)).className='dp-status ds-done';
+        addLog(`Device ${i+1}: ${dev.info.brand} ${dev.info.model} | Android ${dev.info.android} | ${dev.info.app_count} apps`,'success');
+      });
+      document.getElementById('btnExtract').disabled=false;
+      toast(d.count+' device(s) connected!');
+    }
+  }catch(e){addLog('ADB error — try Demo Mode','danger');toast('ADB error — use Demo Mode');}
+  finally{btn.disabled=false;btn.innerHTML='<svg viewBox="0 0 24 24" style="width:13px;height:13px;stroke:currentColor;fill:none;stroke-width:2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>Scan Devices';}
+}
+
+async function startExtraction(){
+  if(!CASE_ID){toast('Select a case first!');return;}
+  if(!Object.keys(activeDevices).length){toast('No devices connected!');return;}
+  document.getElementById('liveBadge').style.display='inline-flex';
+  document.getElementById('btnExtract').disabled=true;
+  document.getElementById('btnPause').disabled=false;
+  document.getElementById('btnStop').disabled=false;
+  document.getElementById('ci-start').textContent=new Date().toLocaleString();
+  document.getElementById('ci-integrity').textContent='SHA-256 hashing active';
+  document.getElementById('custStatus').textContent='ACTIVE';
+  document.getElementById('custStatus').className='bdg bdg-green';
+  lastBytes=0;rateTimer=setInterval(updateStats,2000);
+  _paused={};
+  for(const[slot,serial]of Object.entries(activeDevices))startSlot(slot,serial);
+}
+
+async function startSlot(slot,serial){
+  const num=parseInt(slot.replace('device',''));
+  setDevState(num,'running',null);setProg(num,2,'Connecting...','Establishing ADB connection');
+  addLog(`[${slot}] Starting extraction from ${serial}`,'info');
+  try{
+    const r=await fetch('/api/extract/start-realtime',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({serial,slot,case_id:CASE_ID})});
+    const d=await r.json();
+    if(d.started)connectSSE(slot,num);
+    else{addLog(`[${slot}] Failed: ${d.error||'unknown'}`,'danger');setDevState(num,'error',null);}
+  }catch(e){addLog(`[${slot}] Error: ${e.message}`,'danger');setDevState(num,'error',null);}
+}
+
+function connectSSE(slot,num){
+  if(sseConns[slot])sseConns[slot].close();
+  const es=new EventSource(`/api/extract/stream/${slot}`);sseConns[slot]=es;
+  es.onmessage=e=>{try{handleEvent(slot,num,JSON.parse(e.data));}catch{}};
+  es.onerror=()=>{if(!extractDone[slot])addLog(`[${slot}] Reconnecting...`,'warn');};
+}
+
+function handleEvent(slot,num,ev){
+  const{type,data}=ev;
+  if(type==='ping')return;
+  if(type==='device'){setDevState(num,'running',data);return;}
+  if(type==='progress'){const detail=`${data.pct}% complete · ${allFiles.filter(f=>f.device_slot===slot).length} files so far`;setProg(num,data.pct,data.step,detail);return;}
+  if(type==='log'){addLog(`[${slot}] ${data.msg}`,data.level||'info');return;}
+  if(type==='file'){allFiles.push({...data,device_slot:slot});addToFeed(slot,data);addToTable(slot,data);updateStats();updateBreakdown();updateMeter(num,slot);return;}
+  if(type==='summary'){addLog(`[${slot}] DONE: ${data.total} files | ${data.size_mb}MB | ${data.high_risk} HIGH`,'success');return;}
+  if(type==='status'){
+    if(data.status==='complete'){
+      setDevState(num,'complete',null);setProg(num,100,'Extraction complete!','All files extracted and SHA-256 verified');
+      extractDone[slot]=true;document.getElementById('btnSave').disabled=false;
+      addLog(`[${slot}] Complete — chain of custody sealed`,'success');
+      toast(`Device ${num}: ${allFiles.filter(f=>f.device_slot===slot).length} files done!`);
+      if(sseConns[slot])sseConns[slot].close();
+      if(Object.values(extractDone).every(v=>v))onAllDone();
+    }else if(data.status==='stopped'){
+      // Extraction was stopped by the investigator
+      setDevState(num,'error',null);
+      document.getElementById('dps'+num).textContent='STOPPED';
+      document.getElementById('dps'+num).className='dp-status ds-err';
+      setProg(num, parseInt(document.getElementById('ppct'+num).textContent)||0, 'Stopped by investigator','Extraction aborted — files already extracted are preserved');
+      extractDone[slot]=true;
+      if(allFiles.filter(f=>f.device_slot===slot).length>0) document.getElementById('btnSave').disabled=false;
+      addLog(`[${slot}] Extraction STOPPED — ${allFiles.filter(f=>f.device_slot===slot).length} files preserved`,'warn');
+      toast(`Device ${num}: Extraction stopped — ${allFiles.filter(f=>f.device_slot===slot).length} files kept`);
+      if(sseConns[slot])sseConns[slot].close();
+      if(Object.values(extractDone).every(v=>v))onAllDone();
+    }else if(data.status==='error'){
+      setDevState(num,'error',null);extractDone[slot]=true;
+      if(sseConns[slot])sseConns[slot].close();
+    }
+  }
+}
+
+function onAllDone(){
+  clearInterval(rateTimer);
+  document.getElementById('liveBadge').style.display='none';
+  document.getElementById('btnExtract').disabled=false;
+  document.getElementById('btnPause').disabled=true;
+  document.getElementById('btnStop').disabled=true;
+  document.getElementById('ci-end').textContent=new Date().toLocaleString();
+  document.getElementById('ci-integrity').textContent='ALL FILES VERIFIED ✓';
+  document.getElementById('ci-integrity').style.color='var(--green)';
+  document.getElementById('custStatus').textContent='SEALED';
+  document.getElementById('custStatus').className='bdg bdg-green';
+  document.getElementById('s-rate').textContent='0 KB/s';
+  resetPauseBtn();
+}
+
+// ── STOP / PAUSE / RESUME ──────────────────────────────────────
+async function stopExtraction(){
+  const slots=Object.keys(activeDevices).length?Object.keys(activeDevices):['device1','device2'];
+  document.getElementById('btnStop').disabled=true;
+  document.getElementById('btnPause').disabled=true;
+  for(const slot of slots){
+    try{
+      await fetch(`/api/extract/stop/${slot}`,{method:'POST',headers:{'Content-Type':'application/json'}});
+      addLog(`[${slot}] Stop signal sent — waiting for current step to finish...`,'warn');
+    }catch(e){
+      addLog(`[${slot}] Could not send stop signal: ${e.message}`,'danger');
+    }
+  }
+  toast('Stop signal sent — extraction will halt after current step');
+}
+
+function resetPauseBtn(){
+  const btn=document.getElementById('btnPause');
+  btn.innerHTML='<svg viewBox="0 0 24 24" style="width:13px;height:13px;stroke:currentColor;fill:none;stroke-width:2"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>Pause';
+  btn.classList.remove('btn-green');
+  btn.classList.add('btn-amber');
+  _paused={};
+}
+
+async function togglePause(){
+  const slots=Object.keys(activeDevices).length?Object.keys(activeDevices):['device1','device2'];
+  const anyRunning=slots.some(s=>!_paused[s]);
+  const action=anyRunning?'pause':'resume';
+  for(const slot of slots){
+    try{
+      const r=await fetch(`/api/extract/pause/${slot}`,{
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({action})
+      });
+      const d=await r.json();
+      _paused[slot]=d.paused;
+    }catch(e){
+      addLog(`[${slot}] Pause/resume error: ${e.message}`,'danger');
+    }
+  }
+  const btn=document.getElementById('btnPause');
+  const allPaused=slots.every(s=>_paused[s]);
+  if(allPaused){
+    btn.innerHTML='<svg viewBox="0 0 24 24" style="width:13px;height:13px;stroke:currentColor;fill:none;stroke-width:2"><polygon points="5 3 19 12 5 21 5 3"/></svg>Resume';
+    btn.classList.remove('btn-amber');btn.classList.add('btn-green');
+    document.getElementById('custStatus').textContent='PAUSED';
+    document.getElementById('custStatus').className='bdg bdg-amber';
+    addLog('Extraction PAUSED — will resume at next step boundary','warn');
+    toast('Extraction paused');
+  }else{
+    resetPauseBtn();
+    document.getElementById('custStatus').textContent='ACTIVE';
+    document.getElementById('custStatus').className='bdg bdg-green';
+    addLog('Extraction RESUMED','success');
+    toast('Extraction resumed');
+  }
+}
+
+function demoMode(){
+  if(!CASE_ID){toast('Select a case first!');return;}
+  activeDevices={device1:'DEMO-001',device2:'DEMO-002'};
+  document.getElementById('btnExtract').disabled=false;
+  document.getElementById('liveBadge').style.display='inline-flex';
+  document.getElementById('ci-start').textContent=new Date().toLocaleString();
+  document.getElementById('ci-integrity').textContent='SHA-256 hashing active';
+  document.getElementById('custStatus').textContent='ACTIVE';document.getElementById('custStatus').className='bdg bdg-green';
+  lastBytes=0;rateTimer=setInterval(updateStats,1500);
+  setDevState(1,'running',{brand:'Samsung',model:'Galaxy S21',android:'13',serial:'R3CT204DEMO1',app_count:84});
+  setDevState(2,'running',{brand:'Xiaomi',model:'Redmi Note 12',android:'12',serial:'XDEMO00222',app_count:67});
+  addLog('DEMO: Samsung Galaxy S21 + Xiaomi Redmi Note 12','info');
+
+  const demo1=[
+    {filename:'IMG_20240715_083212.jpg',type:'image',size:2400000,sha256:'a1b2c3d4e5f6789012345678901234abcdef1234567890abcdef1234567890ab',risk_level:'LOW',ai_result:'CNN: Clean'},
+    {filename:'screenshot_bank_transfer.png',type:'image',size:800000,sha256:'b2c3d4e5f6789012345678901234abcdef1234567890abcdef1234567890abcd',risk_level:'HIGH',ai_result:'CNN: HIGH — Financial data'},
+    {filename:'IMG_weapon_photo.jpg',type:'image',size:1200000,sha256:'c3d4e5f6789012345678901234abcdef1234567890abcdef1234567890abcdef',risk_level:'HIGH',ai_result:'CNN: HIGH — Weapon detected'},
+    {filename:'VID_20240801.mp4',type:'video',size:45000000,sha256:'d4e5f6789012345678901234abcdef1234567890abcdef1234567890abcdef12',risk_level:'LOW',ai_result:'Video extracted'},
+    {filename:'msgstore.db',type:'chat',size:14200000,sha256:'e5f6789012345678901234abcdef1234567890abcdef1234567890abcdef1234',risk_level:'MED',ai_result:'NLP: Suspicious keywords'},
+    {filename:'call_logs.txt',type:'call_log',size:24000,sha256:'f6789012345678901234abcdef1234567890abcdef1234567890abcdef123456',risk_level:'LOW',ai_result:'847 call records'},
+    {filename:'sms_messages.txt',type:'sms',size:48000,sha256:'a789012345678901234abcdef1234567890abcdef1234567890abcdef1234567',risk_level:'MED',ai_result:'NLP: 3 threats flagged'},
+    {filename:'contacts.txt',type:'contacts',size:12000,sha256:'b89012345678901234abcdef1234567890abcdef1234567890abcdef12345678',risk_level:'LOW',ai_result:'312 contacts'},
+    {filename:'browser_history.txt',type:'browser',size:35000,sha256:'c9012345678901234abcdef1234567890abcdef1234567890abcdef123456789',risk_level:'MED',ai_result:'5 suspicious URLs'},
+    {filename:'suspicious.apk',type:'download',size:5200000,sha256:'d012345678901234abcdef1234567890abcdef1234567890abcdef1234567890',risk_level:'HIGH',ai_result:'HIGH: APK executable'},
+    {filename:'installed_apps.txt',type:'app_data',size:8000,sha256:'e12345678901234abcdef1234567890abcdef1234567890abcdef12345678901',risk_level:'LOW',ai_result:'84 apps'},
+  ];
+  const demo2=[
+    {filename:'IMG_drug_evidence.jpg',type:'image',size:3100000,sha256:'1a2b3c4d5e6f789012345678901234abcdef1234567890abcdef1234567890ab',risk_level:'HIGH',ai_result:'CNN: HIGH — Drug content'},
+    {filename:'Screenshot_weapon.png',type:'image',size:700000,sha256:'2b3c4d5e6f789012345678901234abcdef1234567890abcdef1234567890abcd',risk_level:'HIGH',ai_result:'CNN: HIGH — Weapon'},
+    {filename:'wa_backup.db',type:'chat',size:22000000,sha256:'3c4d5e6f789012345678901234abcdef1234567890abcdef1234567890abcdef',risk_level:'HIGH',ai_result:'NLP: HIGH — Extremist content'},
+    {filename:'calls_device2.txt',type:'call_log',size:18000,sha256:'4d5e6f789012345678901234abcdef1234567890abcdef1234567890abcdef12',risk_level:'MED',ai_result:'Unusual 2AM pattern'},
+    {filename:'threat_sms.txt',type:'sms',size:32000,sha256:'5e6f789012345678901234abcdef1234567890abcdef1234567890abcdef1234',risk_level:'HIGH',ai_result:'NLP: HIGH — Direct threats'},
+    {filename:'contacts_d2.txt',type:'contacts',size:9000,sha256:'6f789012345678901234abcdef1234567890abcdef1234567890abcdef123456',risk_level:'LOW',ai_result:'198 contacts'},
+    {filename:'malware.apk',type:'download',size:8500000,sha256:'7789012345678901234abcdef1234567890abcdef1234567890abcdef1234567',risk_level:'HIGH',ai_result:'HIGH: Malware signature'},
+  ];
+
+  const STEPS=[[5,'Connecting...'],[12,'Reading device info...'],[20,'Pulling DCIM images...'],[30,'Pulling WhatsApp...'],[40,'Extracting call logs...'],[50,'Extracting SMS...'],[60,'Extracting contacts...'],[68,'Extracting browser...'],[75,'Pulling downloads...'],[82,'Listing apps...'],[90,'Computing SHA-256...'],[100,'Complete!']];
+
+  function runDemo(slot,num,files,delay){
+    let d=delay;
+    STEPS.forEach(([pct,step],i)=>{
+      d+=450;
+      setTimeout(()=>{
+        setProg(num,pct,step,`${pct}% · adb extraction in progress · ${allFiles.filter(f=>f.device_slot===slot).length} files`);
+        addLog(`[${slot}] ${step}`,'info');
+        if(i<files.length){const f=files[i];allFiles.push({...f,device_slot:slot});addToFeed(slot,f);addToTable(slot,f);updateStats();updateBreakdown();updateMeter(num,slot);}
+        if(i===STEPS.length-1){
+          setDevState(num,'complete',null);extractDone[slot]=true;
+          document.getElementById('btnSave').disabled=false;
+          addLog(`[${slot}] Done — ${files.length} files · SHA-256 chain sealed`,'success');
+          toast(`Device ${num}: ${files.length} files extracted!`);
+          if(Object.values(extractDone).every(v=>v))onAllDone();
+        }
+      },d);
+    });
+    files.slice(STEPS.length).forEach((f,i)=>setTimeout(()=>{allFiles.push({...f,device_slot:slot});addToFeed(slot,f);addToTable(slot,f);updateStats();updateBreakdown();updateMeter(num,slot);},d+(i+1)*220));
+  }
+  runDemo('device1',1,demo1,0);
+  runDemo('device2',2,demo2,200);
+  toast('Demo started — watch live extraction!');
+}
+
+async function saveEvidence(){
+  if(!CASE_ID||!allFiles.length){toast('Nothing to save');return;}
+  const btn=document.getElementById('btnSave');btn.disabled=true;btn.innerHTML='<span class="spin"></span>Saving...';
+  try{
+    for(const slot of['device1','device2']){
+      const sf=allFiles.filter(f=>f.device_slot===slot);
+      if(sf.length)await fetch('/api/extract/save',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({case_id:CASE_ID,slot,files:sf})});
+    }
+    addLog(`Evidence saved — ${allFiles.length} files → ${CASE_ID}`,'success');toast('Evidence saved!');
+    btn.innerHTML='✓ Saved';btn.style.background='var(--green)';btn.style.color='#fff';
+  }catch(e){toast('Save error');btn.disabled=false;btn.innerHTML='Save to Case';}
+}
+
+function exportCSV(){
+  if(!allFiles.length){toast('No evidence yet');return;}
+  const rows=['#,Device,Filename,Type,Size(bytes),AI Result,Risk,SHA-256,Timestamp'];
+  allFiles.forEach((f,i)=>rows.push(`${i+1},${f.device_slot},"${f.filename}",${f.type},${f.size||0},"${f.ai_result||''}",${f.risk_level},${f.sha256||''},${new Date().toISOString()}`));
+  const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([rows.join('\n')],{type:'text/csv'}));
+  a.download=(CASE_ID||'forax')+'_evidence_'+new Date().toISOString().slice(0,10)+'.csv';a.click();
+  toast('CSV exported — '+allFiles.length+' records');
+}
+
+function resetAll(){
+  clearInterval(rateTimer);
+  allFiles=[];feedCnt=0;tableRows=0;logCnt=1;lastBytes=0;
+  activeDevices={};extractDone={device1:false,device2:false};
+  Object.values(sseConns).forEach(c=>c&&c.close());sseConns={};
+  [1,2].forEach(num=>{
+    setDevState(num,'idle',null);
+    document.getElementById('dpname'+num).textContent=num===1?'Device 1 — Not Connected':'Device 2 — Not Connected';
+    document.getElementById('dpmodel'+num).textContent=num===1?'Connect via USB · Enable USB Debugging':'Optional — second phone for dual extraction';
+    document.getElementById('dp'+num).className='dp';setProg(num,0,'Waiting...','—');
+    ['files','size','high','hash'].forEach(k=>document.getElementById('d'+num+'-'+k).textContent=k==='size'?'0 MB':'0');
+    ['img','wa','call','sms','dl'].forEach(k=>{document.getElementById('t'+num+'-'+k).style.width='0%';document.getElementById('c'+num+'-'+k).textContent='0';});
+  });
+  document.getElementById('liveFeed').innerHTML='<div class="empty">Files appear here as they are extracted from the device</div>';
+  document.getElementById('evTable').innerHTML='<tr><td colspan="9"><div class="empty">No evidence yet</div></td></tr>';
+  document.getElementById('breakdownBody').innerHTML='<div class="empty" style="padding:12px;">— awaiting extraction —</div>';
+  document.getElementById('logList').innerHTML='<div class="le info"><span class="lt">--:--:--</span><span class="lm">System ready — connect device and click Extract</span></div>';
+  ['s-total','s-images','s-chats','s-calls','s-high','s-hashed'].forEach(id=>document.getElementById(id).textContent='0');
+  document.getElementById('s-size').textContent='0 MB';document.getElementById('s-rate').textContent='0 KB/s';
+  document.getElementById('feedCount').textContent='0 files';document.getElementById('tableCount').textContent='0 files';
+  document.getElementById('logCount').textContent='1 events';document.getElementById('overallPct').textContent='Overall: 0% complete';
+  document.getElementById('liveBadge').style.display='none';
+  document.getElementById('btnExtract').disabled=true;document.getElementById('btnSave').disabled=true;
+  document.getElementById('btnPause').disabled=true;document.getElementById('btnStop').disabled=true;
+  resetPauseBtn();
+  document.getElementById('ci-start').textContent='—';document.getElementById('ci-end').textContent='—';
+  document.getElementById('ci-total').textContent='0 files';document.getElementById('ci-integrity').textContent='Awaiting extraction';
+  document.getElementById('ci-integrity').style.color='';
+  document.getElementById('custStatus').textContent='STANDBY';document.getElementById('custStatus').className='bdg bdg-amber';
+  toast('Reset complete');
+}
+
+function showAiReasoning(idx) {
+  const f = allFiles[idx];
+  if (!f) return;
+  showAiReasoningForObject(f);
+}
+function showAiReasoningForObject(f) {
+  const overlay = document.getElementById('aiReasoningOverlay');
+  document.getElementById('aiTitle').textContent = f.filename;
+  document.getElementById('aiRiskText').innerHTML = `<span class="rp ${f.risk_level==='HIGH'?'rp-H':f.risk_level==='MED'?'rp-M':'rp-L'}">${f.risk_level}</span>`;
+  document.getElementById('aiDetails').textContent = f.ai_result || 'No logic provided.';
+  overlay.classList.add('show');
+}
+function closeAiReasoning() {
+  document.getElementById('aiReasoningOverlay').classList.remove('show');
+}
+document.getElementById('aiReasoningOverlay').addEventListener('click', function(e){if(e.target===this)closeAiReasoning();});
+</script>
+
+<!-- AI REASONING MODAL -->
+<div class="overlay" id="aiReasoningOverlay">
+  <div class="modal">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
+      <div class="m-title" id="aiTitle">AI Forensic Logic</div>
+      <div id="aiRiskText"></div>
+    </div>
+    <div class="m-sub">Detailed reasoning from Gemini AI model.</div>
+    <div class="reasoning-box" id="aiDetails"></div>
+    <div class="m-footer">
+      <button class="btn btn-out" onclick="closeAiReasoning()">Close</button>
+    </div>
+  </div>
+</div>
+</body>
+</html>

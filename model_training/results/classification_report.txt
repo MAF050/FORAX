@@ -1,0 +1,26 @@
+============================================================
+  FORAX FORENSIC CNN — CLASSIFICATION REPORT
+============================================================
+
+  Overall Accuracy : 5.75%
+  Macro F1 Score   : 0.0181
+
+  Classes: drugs | normal | nsfw | scam | violence | weapons
+  Image size: 224x224 px
+  Architecture: EfficientNetB0 (Transfer Learning)
+
+------------------------------------------------------------
+              precision    recall  f1-score   support
+
+       drugs       0.00      0.00      0.00       400
+      normal       0.00      0.00      0.00       400
+        nsfw       0.00      0.00      0.00        40
+        scam       0.06      1.00      0.11       100
+    violence       0.00      0.00      0.00       400
+     weapons       0.00      0.00      0.00       400
+
+    accuracy                           0.06      1740
+   macro avg       0.01      0.17      0.02      1740
+weighted avg       0.00      0.06      0.01      1740
+
+============================================================

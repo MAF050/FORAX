@@ -1,0 +1,13 @@
+{
+  "classes": [
+    "drugs",
+    "fraud",
+    "harassment",
+    "normal",
+    "scam",
+    "threat",
+    "trafficking",
+    "violence",
+    "weapon"
+  ]
+}

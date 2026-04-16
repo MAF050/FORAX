@@ -1,0 +1,606 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>FORAX — Chief Investigator Panel</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@300;400;500&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet">
+<style>
+:root{
+  /* LIGHT MODE (Default) */
+  --bg:#f8fafc;--bg2:#f1f5f9;--surface:#fff;--border:#e2e8f0;--border2:#cbd5e1;
+  --t0:#0f172a;--t1:#334155;--t2:#64748b;
+  --blue:#2563eb;--blue-light:#dbeafe;--blue-bd:#bfdbfe;
+  --cyan:#06b6d4;--cyan-bg:#cffafe;--cyan-bd:#a5f3fc;
+  --indigo:#4f46e5;
+  --green:#059669;--green-bg:#d1fae5;--green-bd:#a7f3d0;
+  --red:#dc2626;--red-bg:#fee2e2;--red-bd:#fecaca;
+  --amber:#d97706;--amber-bg:#fef3c7;--amber-bd:#fde68a;
+  --gold:#d97706;--gold-bg:#fef3c7;--gold-bd:#fde68a;--gold-dark:#92400e;
+  --mono:'DM Mono',monospace;--sans:'DM Sans',sans-serif;--r:16px;--rl:20px;
+  --sh:0 4px 6px -1px rgba(0,0,0,0.05), 0 10px 15px -3px rgba(0,0,0,0.02);
+  --sh2:0 20px 25px -5px rgba(0,0,0,0.06), 0 10px 10px -5px rgba(0,0,0,0.03);
+}
+
+[data-theme='dark'] {
+  --bg:#0f172a;--bg2:#1e293b;--surface:#0b0f19;--border:#334155;--border2:#475569;
+  --t0:#f8fafc;--t1:#cbd5e1;--t2:#94a3b8;
+  --blue:#3b82f6;--blue2:#60a5fa;--blue-light:#1e3a8a;--blue-bd:#2563eb;
+  --green:#10b981;--green-bg:#064e3b;--green-bd:#047857;
+  --red:#ef4444;--red-bg:#7f1d1d;--red-bd:#b91c1c;
+  --amber:#f59e0b;--amber-bg:#78350f;--amber-bd:#b45309;
+  --indigo:#6366f1;--purple:#a855f7;--pur-bg:#3b0764;--pur-bd:#7e22ce;
+  --cyan:#06b6d4;--cyan-bg:#164e63;--cyan-bd:#155e75;
+  --gold:#fbbf24;--gold-dark:#d97706;
+  --blue-bg:#1e3a8a;
+  --sh:0 4px 6px -1px rgba(0,0,0,0.5), 0 10px 15px -3px rgba(0,0,0,0.3);
+  --sh2:0 20px 25px -5px rgba(0,0,0,0.6), 0 10px 10px -5px rgba(0,0,0,0.4);
+}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+body{
+  background:#f8fafc;
+  background-image: 
+    radial-gradient(at 0% 0%, hsla(253,16%,7%,0) 0, transparent 50%), 
+    radial-gradient(at 50% 0%, hsla(225,39%,30%,0) 0, transparent 50%), 
+    radial-gradient(at 100% 0%, hsla(339,49%,30%,0) 0, transparent 50%);
+  color:var(--t0);font-family:var(--sans);font-size:14px;min-height:100vh;
+}
+/* Floating Elements for depth */
+.mesh-bg {
+  position:fixed; inset:0; z-index:-2;
+  background:
+    radial-gradient(circle at 10% 20%, rgba(37, 99, 235, 0.08), transparent 40%),
+    radial-gradient(circle at 90% 80%, rgba(6, 182, 212, 0.1), transparent 40%),
+    radial-gradient(circle at 50% 50%, rgba(79, 70, 229, 0.06), transparent 50%);
+  filter: blur(80px);
+  animation: pulse-mesh 15s ease-in-out infinite alternate;
+}
+@keyframes pulse-mesh {
+  0% { transform: scale(1); opacity:0.8; }
+  100% { transform: scale(1.1); opacity:1; }
+}
+.topbar{
+  height:72px;background:var(--surface);
+  border-bottom:1px solid var(--border);
+  display:flex;align-items:center;justify-content:space-between;padding:0 32px;
+  position:sticky;top:0;z-index:50;
+  box-shadow:var(--sh);
+  backdrop-filter:blur(30px) saturate(200%);-webkit-backdrop-filter:blur(30px) saturate(200%);
+}
+[data-theme='dark'] .topbar {
+  background:rgba(15,23,42,0.85);
+  border-bottom:1px solid rgba(255,255,255,0.08);
+}
+.logo-row{display:flex;align-items:center;gap:14px;}
+.logo-box{
+  width:44px;height:44px;border-radius:12px;
+  display:flex;align-items:center;justify-content:center;
+  background:linear-gradient(135deg,var(--blue) 0%,var(--indigo) 100%);
+  box-shadow:0 6px 16px rgba(37,99,235,0.3);
+}
+.logo-box svg{width:24px;height:24px;stroke:#fff;fill:none;stroke-width:2;}
+.logo-name{font-family:var(--mono);font-size:20px;font-weight:600;letter-spacing:2px;background:linear-gradient(135deg,var(--t0),var(--t1));-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+.logo-sub{font-family:var(--sans);font-size:11px;color:var(--t2);letter-spacing:1.5px;font-weight:600;text-transform:uppercase;margin-top:2px;}
+.tr{display:flex;align-items:center;gap:12px;}
+.clk{font-family:var(--mono);font-size:13px;color:var(--t1);letter-spacing:1px;font-weight:500;margin-right:8px;}
+.bdg{display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border-radius:20px;font-family:var(--mono);font-size:11px;font-weight:600;letter-spacing:0.5px;}
+.bdg-gold{background:var(--gold-bg);color:var(--gold-dark);border:1px solid var(--gold-bd);}
+.bdg-blue{background:var(--blue-light);color:var(--blue);border:1px solid var(--blue-bd);}
+.bdg-green{background:var(--green-bg);color:var(--green);border:1px solid var(--green-bd);}
+.bdg-red{background:var(--red-bg);color:var(--red);border:1px solid var(--red-bd);}
+.btn-nav{
+  padding:8px 16px;border-radius:12px;border:1px solid #e2e8f0;
+  background:rgba(255,255,255,0.8);color:var(--t1);font-family:var(--sans);font-size:13px;font-weight:600;
+  cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;gap:6px;transition:all .3s;
+  box-shadow:0 1px 2px rgba(0,0,0,0.03);
+}
+.btn-nav:hover{background:#fff;color:var(--red);border-color:var(--red-bd);transform:translateY(-1px);box-shadow:0 4px 12px rgba(220,38,38,0.1);}
+.btn-nav svg{width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:2.5;}
+.content{padding:32px 40px;max-width:1500px;margin:0 auto;}
+/* STAT CARDS */
+.sg{display:grid;grid-template-columns:repeat(4,1fr);gap:18px;margin-bottom:32px;}
+.sc{
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:var(--rl);padding:24px;box-shadow:var(--sh);
+  position:relative;overflow:hidden;transition:all .3s cubic-bezier(.4,1,.2,1);
+  animation: fadeInUp .6s both;
+}
+.sc:hover{transform:translateY(-8px);box-shadow:var(--sh2);border-color:var(--blue-bd);background:var(--bg2);}
+@keyframes scaleIn{from{opacity:0;transform:translateY(20px) scale(.98);}to{opacity:1;transform:translateY(0) scale(1);}}
+.sc:nth-child(1){animation-delay:.05s;}
+.sc:nth-child(2){animation-delay:.1s;}
+.sc:nth-child(3){animation-delay:.15s;}
+.sc:nth-child(4){animation-delay:.2s;}
+.sc-bar{position:absolute;top:0;left:0;right:0;height:4px;}
+.sc-label{font-family:var(--sans);font-size:11px;font-weight:600;color:var(--t2);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:8px;}
+.sc-value{font-family:var(--mono);font-size:36px;font-weight:600;line-height:1;margin-bottom:6px;letter-spacing:-1px;}
+.sc-sub{font-size:13px;color:var(--t2);font-weight:500;}
+.two-col{display:grid;grid-template-columns:1fr 420px;gap:24px;}
+/* PANEL */
+.panel{
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:var(--rl);overflow:hidden;box-shadow:var(--sh);
+  margin-bottom:24px;transition:all .3s cubic-bezier(.4,1,.2,1);
+  animation: fadeInUp .6s both;
+}
+.panel:hover{box-shadow:var(--sh2);transform:translateY(-2px);border-color:var(--blue-bd);}
+.ph{
+  padding:20px 24px;border-bottom:1px solid var(--border);
+  background:var(--bg2);
+  display:flex;align-items:center;justify-content:space-between;
+}
+.ph-title{font-family:var(--sans);font-size:16px;font-weight:600;color:var(--t0);letter-spacing:0.5px;}
+.pb{padding:24px;}
+.sec{font-family:var(--sans);font-size:12px;font-weight:600;color:var(--blue);letter-spacing:2px;text-transform:uppercase;margin-bottom:16px;display:flex;align-items:center;gap:10px; animation: slideInLeft 1s;}
+.sec::before{content:'';width:24px;height:3px;border-radius:1.5px;background:linear-gradient(90deg,var(--blue),var(--cyan));}
+/* TABLE */
+table{width:100%;border-collapse:separate;border-spacing:0;}
+th{font-family:var(--sans);font-size:11px;font-weight:600;color:var(--t2);letter-spacing:1px;text-align:left;padding:14px 18px;border-bottom:1px solid var(--border);text-transform:uppercase;background:var(--bg2);}
+td{padding:14px 18px;border-bottom:1px solid var(--border);font-size:13px;color:var(--t1);transition:background .2s;}
+tr:last-child td{border-bottom:none;}
+tr:hover td{background:var(--bg2);}
+.td-bold{color:var(--t0);font-weight:600;}
+.td-mono{font-family:var(--mono);font-weight:500;}
+/* BUTTONS */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:10px 20px;border-radius:12px;font-family:var(--sans);font-size:13px;font-weight:600;cursor:pointer;border:none;transition:all .3s cubic-bezier(.4,0,.2,1);}
+.btn svg{width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:2;}
+.btn-gold{
+  background:linear-gradient(135deg,var(--blue),var(--indigo));
+  color:#fff;box-shadow:0 4px 12px rgba(37,99,235,0.3);letter-spacing:0.5px;
+}
+.btn-gold:hover{transform:translateY(-2px);box-shadow:0 6px 16px rgba(37,99,235,0.4);}
+.btn-out{background:rgba(255,255,255,0.8);color:var(--t1);border:1px solid #cbd5e1;box-shadow:0 1px 2px rgba(0,0,0,0.05);}
+.btn-out:hover{background:#f8fafc;border-color:var(--blue-bd);color:var(--blue);transform:translateY(-1px);}
+.btn-red{background:var(--red-bg);color:var(--red);border:1px solid var(--red-bd);}
+.btn-red:hover{background:#fef2f2;}
+.btn-green{background:var(--green-bg);color:var(--green);border:1px solid var(--green-bd);}
+.btn-green:hover{background:#ecfdf5;}
+.btn-sm{padding:6px 14px;font-size:12px;}
+.btn:disabled{opacity:0.6;cursor:not-allowed;transform:none;box-shadow:none;}
+.spin{display:inline-block;width:14px;height:14px;border:2px solid rgba(255,255,255,.35);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg)}}
+/* FORM */
+.fg{margin-bottom:16px;}
+.fg label{display:block;font-family:var(--sans);font-size:12px;font-weight:600;color:var(--t1);text-transform:none;margin-bottom:8px;}
+.fg input,.fg select{width:100%;padding:12px 16px;background:rgba(255,255,255,0.8);border:1px solid #e2e8f0;border-radius:12px;color:var(--t0);font-family:var(--sans);font-size:14px;outline:none;transition:all .3s;}
+.fg input:focus,.fg select:focus{border-color:var(--blue);background:#fff;box-shadow:0 0 0 4px rgba(37,99,235,0.1);transform:translateY(-1px);}
+.fg input::placeholder{color:#94a3b8;font-weight:400;}
+.two-col-f{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+/* MODAL */
+.overlay{position:fixed;inset:0;background:rgba(15,23,42,0.4);z-index:200;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);opacity:0;pointer-events:none;transition:all .4s cubic-bezier(.4,0,.2,1);padding:24px;}
+.overlay.show{opacity:1;pointer-events:all;}
+.modal{
+  background:rgba(255,255,255,0.9);backdrop-filter:blur(30px) saturate(200%);
+  border:1px solid rgba(255,255,255,0.8);border-radius:24px;
+  padding:40px;width:100%;max-width:560px;
+  box-shadow:0 25px 50px -12px rgba(0,0,0,0.15), 0 0 0 1px rgba(255,255,255,0.4) inset;
+  animation:mIn .5s cubic-bezier(.16,1,.3,1);margin:auto;max-height:95vh;overflow-y:auto;
+}
+@keyframes mIn{from{opacity:0;transform:scale(.95) translateY(20px);}to{opacity:1;transform:scale(1);}}
+.m-title{font-size:22px;font-weight:600;margin-bottom:6px;color:var(--t0);letter-spacing:-0.5px;}
+.m-sub{font-size:14px;color:var(--t2);margin-bottom:24px;line-height:1.6;}
+.m-footer{display:flex;gap:12px;justify-content:flex-end;margin-top:24px;border-top:1px solid rgba(0,0,0,0.05);padding-top:24px;}
+.msg{padding:14px 16px;border-radius:12px;font-size:13px;margin-bottom:16px;display:none;font-weight:500;}
+.msg.show{display:block;animation:msgIn .3s ease;}
+@keyframes msgIn{from{opacity:0;transform:translateY(-8px);}to{opacity:1;transform:translateY(0);}}
+.msg.error{background:var(--red-bg);border:1px solid var(--red-bd);color:var(--red);}
+.msg.success{background:var(--green-bg);border:1px solid var(--green-bd);color:var(--green);}
+/* BADGE PREVIEW */
+.badge-preview{
+  background:var(--blue-light);
+  border:1px solid var(--blue-bd);border-radius:16px;
+  padding:24px;text-align:center;margin-bottom:24px;
+  box-shadow:inset 0 2px 4px rgba(255,255,255,0.6);
+}
+.bp-badge{font-family:var(--mono);font-size:32px;font-weight:600;color:var(--blue);letter-spacing:6px;}
+.bp-label{font-family:var(--sans);font-size:11px;font-weight:600;color:var(--blue);letter-spacing:2px;margin-top:8px;}
+/* IMAGE PUZZLE CAPTCHA */
+.puzzle-box{background:var(--amber-bg);border:1px solid var(--amber-bd);border-radius:16px;padding:20px;margin-bottom:24px;}
+.puzzle-label{font-family:var(--sans);font-size:11px;font-weight:600;color:var(--gold-dark);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:12px;}
+.puzzle-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:16px;}
+.puzzle-tile{
+  aspect-ratio:1;border-radius:12px;border:2px solid transparent;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;font-size:32px;
+  background:#fff;transition:all .3s;user-select:none;box-shadow:0 2px 4px rgba(0,0,0,0.02);
+}
+.puzzle-tile:hover{border-color:var(--blue-bd);background:var(--blue-light);transform:scale(1.05);box-shadow:0 4px 12px rgba(37,99,235,0.1);}
+.puzzle-tile.selected{border-color:var(--blue);background:var(--blue-light);box-shadow:0 0 0 4px rgba(37,99,235,0.15);}
+.puzzle-tile.wrong{border-color:var(--red);background:var(--red-bg);animation:shake .3s ease;}
+@keyframes shake{0%,100%{transform:translateX(0);}25%{transform:translateX(-6px);}75%{transform:translateX(6px);}}
+.puzzle-question{font-size:15px;color:var(--t0);font-weight:500;margin-bottom:14px;}
+.puzzle-reload{background:none;border:none;font-family:var(--sans);font-weight:600;font-size:12px;color:var(--gold-dark);cursor:pointer;transition:all .3s;}
+.puzzle-reload:hover{color:var(--t0);text-decoration:underline;}
+/* LOG */
+.log-row{display:flex;gap:12px;padding:12px 20px;border-bottom:1px solid #f1f5f9;font-family:var(--mono);font-size:12px;transition:background .2s;}
+.log-row:last-child{border-bottom:none;}
+.log-row:hover{background:rgba(241,245,249,0.5);}
+.log-time{color:var(--t2);min-width:70px;flex-shrink:0;font-weight:500;}
+.log-user{color:var(--blue);min-width:110px;flex-shrink:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:600;}
+.log-action{color:var(--indigo);min-width:130px;flex-shrink:0;}
+.log-detail{color:var(--t1);flex:1;word-wrap:break-word;word-break:keep-all;line-height:1.4;}
+.empty{text-align:center;padding:40px;font-family:var(--sans);font-weight:500;font-size:14px;color:var(--t2);}
+/* TOAST */
+#toast{
+  position:fixed;bottom:32px;right:32px;
+  background:linear-gradient(135deg,var(--t0),var(--t1));
+  color:#fff;border-radius:12px;padding:16px 24px;
+  font-family:var(--sans);font-weight:500;font-size:14px;z-index:999;
+  transform:translateY(80px);opacity:0;
+  transition:all .4s cubic-bezier(.16,1,.3,1);
+  box-shadow:0 10px 25px rgba(0,0,0,0.2);
+}
+#toast.show{transform:translateY(0);opacity:1;}
+/* inv status */
+.inv-active{background:var(--green-bg);color:var(--green);border:1px solid var(--green-bd);padding:4px 10px;border-radius:8px;font-family:var(--sans);font-size:11px;font-weight:600;}
+.inv-inactive{background:var(--red-bg);color:var(--red);border:1px solid var(--red-bd);padding:4px 10px;border-radius:8px;font-family:var(--sans);font-size:11px;font-weight:600;}
+/* TABS */
+.tabs-nav { display:flex; gap:12px; margin-bottom:20px; border-bottom:1px solid #e2e8f0; padding-bottom:8px; }
+.tab-btn { padding:10px 20px; font-weight:600; font-family:var(--sans); color:var(--t2); background:none; border:none; cursor:pointer; font-size:14px; position:relative; transition:all 0.3s; }
+.tab-btn:hover { color:var(--blue); }
+.tab-btn.active { color:var(--blue); }
+.tab-btn.active::after { content:""; position:absolute; bottom:-9px; left:0; right:0; height:3px; background:var(--blue); border-radius:3px 3px 0 0; }
+.tab-pane { display:none; animation:fadeIn 0.4s ease; }
+.tab-pane.active { display:block; }
+@keyframes fadeIn { from{opacity:0;transform:translateY(10px);} to{opacity:1;transform:translateY(0);} }
+</style>
+</head>
+<body>
+<div class="mesh-bg"></div>
+<header class="topbar">
+  <div class="logo-row">
+    <div class="logo-box"><img src="/static/img/forax_logo.png" style="width:100%;height:100%;border-radius:12px;object-fit:cover;"></div>
+    <div><div class="logo-name">FORAX</div><div class="logo-sub">Chief Investigator Panel</div></div>
+  </div>
+  <div class="tr">
+    <span class="clk" id="clock">--:--:--</span>
+    <span class="bdg bdg-gold">CHIEF · {{ user.badge_id if user else 'CHIEF-001' }}</span>
+    <button class="btn-nav" id="themeToggle" onclick="toggleTheme()" title="Switch Theme">Theme</button>
+    <a href="/logout" class="btn-nav"><svg viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>Logout</a>
+  </div>
+</header>
+
+<div class="content">
+  <!-- STATS -->
+  <div class="sg">
+    <div class="sc"><div class="sc-bar" style="background:var(--gold)"></div><div class="sc-label">Investigators</div><div class="sc-value" style="color:var(--gold)">{{ stats.total_investigators }}</div><div class="sc-sub">registered</div></div>
+    <div class="sc"><div class="sc-bar" style="background:var(--blue)"></div><div class="sc-label">Active Cases</div><div class="sc-value" style="color:var(--blue)">{{ stats.active_cases }}</div><div class="sc-sub">investigations</div></div>
+    <div class="sc"><div class="sc-bar" style="background:var(--red)"></div><div class="sc-label">Flagged</div><div class="sc-value" style="color:var(--red)">{{ stats.flagged_evidence }}</div><div class="sc-sub">suspicious files</div></div>
+    <div class="sc"><div class="sc-bar" style="background:var(--green)"></div><div class="sc-label">Total Evidence</div><div class="sc-value" style="color:var(--green)">{{ stats.total_evidence }}</div><div class="sc-sub">files extracted</div></div>
+  </div>
+
+  <!-- TABS NAV -->
+  <div class="tabs-nav">
+    <button class="tab-btn active" onclick="switchTab('overview')">Overview</button>
+    <button class="tab-btn" onclick="switchTab('flagged')">Flagged Intelligence</button>
+    <button class="tab-btn" onclick="switchTab('logs')">Global Activity</button>
+  </div>
+
+  <div id="tab-overview" class="tab-pane active">
+    <div class="two-col">
+      <!-- LEFT: Investigators table -->
+    <div>
+      <div class="sec">Investigator management</div>
+      <div class="panel">
+        <div class="ph">
+          <span class="ph-title">Registered investigators</span>
+          <button class="btn btn-gold" onclick="openCreate()">
+            <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Assign New
+          </button>
+        </div>
+        <div style="overflow-x:auto;max-height:480px;overflow-y:auto;">
+          <table>
+            <thead><tr><th>Name</th><th>Badge ID</th><th>Email</th><th>Department</th><th>Last Login</th><th>Status</th><th>Action</th></tr></thead>
+            <tbody>
+              {% for inv in investigators %}
+              <tr>
+                <td class="td-bold">{{ inv.name }}</td>
+                <td class="td-mono" style="color:var(--gold);font-weight:500;">{{ inv.badge_id }}</td>
+                <td class="td-mono" style="font-size:11px;">{{ inv.email }}</td>
+                <td>{{ inv.department or '—' }}</td>
+                <td class="td-mono" style="font-size:11px;color:var(--t2);">{{ inv.last_login[:16] if inv.last_login else 'Never' }}</td>
+                <td>
+                  {% if inv.is_active %}
+                  <span class="inv-active">ACTIVE</span>
+                  {% else %}
+                  <span class="inv-inactive">DISABLED</span>
+                  {% endif %}
+                </td>
+                <td>
+                  {% if inv.is_active %}
+                  <button class="btn btn-red btn-sm" onclick="toggleInv({{ inv.id }},0)">Disable</button>
+                  {% else %}
+                  <button class="btn btn-green btn-sm" onclick="toggleInv({{ inv.id }},1)">Enable</button>
+                  {% endif %}
+                </td>
+              </tr>
+              {% else %}
+              <tr><td colspan="7"><div class="empty">No investigators assigned yet</div></td></tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+    <!-- RIGHT: Global Cases -->
+    <div>
+      <div class="sec">Global Case Oversight</div>
+      <div class="panel">
+        <div class="ph">
+          <span class="ph-title">All Investigations</span>
+          <span class="bdg bdg-blue" style="font-size:10px;">{{ cases|length }} cases</span>
+        </div>
+        <div style="overflow-x:auto;max-height:480px;overflow-y:auto;">
+          <table>
+            <thead><tr><th>Case ID</th><th>Investigator</th><th>Risk</th><th>Status</th><th>Report</th></tr></thead>
+            <tbody>
+              {% for c in cases %}
+              <tr>
+                <td class="td-bold">{{ c.case_id }}</td>
+                <td style="font-size:11px;">{{ c.investigator_name }}</td>
+                <td>
+                  <span class="bdg {% if c.threat_level == 'HIGH' %}bdg-red{% elif c.threat_level == 'MED' %}bdg-amber{% else %}bdg-green{% endif %}">
+                    {{ c.threat_level }}
+                  </span>
+                </td>
+                <td style="text-transform:uppercase;font-size:10px;font-weight:600;color:var(--t2);">{{ c.status }}</td>
+                <td>
+                  <a href="/api/report/download-pdf/{{ c.case_id }}" class="btn btn-blue btn-sm">PDF</a>
+                </td>
+              </tr>
+              {% else %}
+              <tr><td colspan="5"><div class="empty">No cases created yet</div></td></tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    </div> <!-- close two-col -->
+  </div> <!-- close tab-overview -->
+
+  <!-- TAB: FLAGGED -->
+  <div id="tab-flagged" class="tab-pane">
+    <div class="sec">Flagged Intelligence (Global)</div>
+    <div class="panel">
+      <div class="ph">
+        <span class="ph-title">High Risk Evidence Across All Cases</span>
+        <span class="bdg bdg-red" style="font-size:10px;">{{ flagged|length }} flagged</span>
+      </div>
+      <div style="overflow-x:auto;max-height:800px;overflow-y:auto;">
+        <table class="table">
+          <thead><tr><th>Case ID</th><th>File Name</th><th>Extractor Slot</th><th>Details</th><th>Actions</th></tr></thead>
+          <tbody>
+            {% for f in flagged %}
+            <tr>
+              <td class="td-bold">{{ f.case_id }}</td>
+              <td style="word-break:break-all;"><strong>{{ f.filename }}</strong><br><span style="font-size:10px;color:var(--t2)">{{ '{:.2f}'.format(f.file_size|default('0')|replace('KB','')|replace('MB','')|float) }} MB</span></td>
+              <td class="td-mono" style="font-size:11px;">{{ f.device_slot }}</td>
+              <td><span class="bdg bdg-red">HIGH</span><br><span style="font-size:11px;color:var(--t1)">{{ f.ai_result }}</span></td>
+              <td>
+                <a href="/api/report/download-pdf/{{ f.case_id }}" class="btn btn-red btn-sm">Download Report</a>
+              </td>
+            </tr>
+            {% else %}
+            <tr><td colspan="5"><div class="empty">No high risk evidence detected globally.</div></td></tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- TAB: ACTIVITY LOGS -->
+  <div id="tab-activity" class="tab-pane">
+    <div class="sec">Global Activity Log</div>
+    <div class="panel">
+      <div class="ph"><span class="ph-title">System activity</span><span class="bdg bdg-blue" style="font-size:10px;">{{ logs|length }} events</span></div>
+      <div style="max-height:800px;overflow-y:auto;">
+        {% for log in logs %}
+        <div class="log-row">
+          <span class="log-time">{{ log.logged_at[11:19] }}</span>
+          <span class="log-user">{{ log.user_name or 'System' }}</span>
+          <span class="log-action">{{ log.action }}</span>
+          <span class="log-detail">{{ log.detail or '—' }}</span>
+        </div>
+        {% else %}
+        <div class="empty">No activity yet</div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- CREATE INVESTIGATOR MODAL -->
+<div class="overlay" id="createOverlay">
+  <div class="modal">
+    <div class="m-title">Assign New Investigator</div>
+    <div class="m-sub">Only the Chief Investigator can create accounts. Badge ID is auto-assigned.</div>
+    <div class="badge-preview">
+      <div class="bp-badge" id="badgePreview">{{ next_badge }}</div>
+      <div class="bp-label">AUTO-ASSIGNED BADGE ID</div>
+    </div>
+    <div class="msg" id="createMsg"></div>
+
+    <!-- IMAGE PUZZLE CAPTCHA -->
+    <div class="puzzle-box">
+      <div class="puzzle-label">Robot Verification — Image Puzzle</div>
+      <div class="puzzle-question" id="puzzleQ">Select all images of: <strong id="puzzleTarget">...</strong></div>
+      <div class="puzzle-grid" id="puzzleGrid"></div>
+      <button class="puzzle-reload" onclick="loadPuzzle()">↺ New puzzle</button>
+    </div>
+
+    <div class="two-col-f">
+      <div class="fg"><label>Full Name</label><input type="text" id="iName" placeholder="Ahmed Hassan"></div>
+      <div class="fg"><label>Badge ID</label><input type="text" id="iBadge" value="{{ next_badge }}" readonly style="background:var(--bg2);cursor:not-allowed;color:var(--t2);font-family:var(--mono);"></div>
+    </div>
+    <div class="fg"><label>Email Address</label><input type="email" id="iEmail" placeholder="investigator@forax.gov"></div>
+    <div class="fg"><label>Department</label><input type="text" id="iDept" placeholder="Cyber Crimes Division"></div>
+    <div class="two-col-f">
+      <div class="fg"><label>Password</label><input type="password" id="iPass" placeholder="Min 8 characters"></div>
+      <div class="fg"><label>Confirm</label><input type="password" id="iConf" placeholder="Repeat password"></div>
+    </div>
+    <div class="m-footer">
+      <button class="btn btn-out" onclick="closeCreate()">Cancel</button>
+      <button class="btn btn-gold" id="createBtn" onclick="createInvestigator()">Assign Investigator</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast"></div>
+<script>
+setInterval(() => document.getElementById('clock').textContent = new Date().toTimeString().slice(0,8), 1000);
+
+// ── TOAST ──────────────────────────────────────────────────────
+function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),3000);}
+function showMsg(id,txt,type='error'){const e=document.getElementById(id);e.textContent=txt;e.className=`msg ${type} show`;}
+function clearMsg(id){const e=document.getElementById(id);e.className='msg';e.textContent='';}
+
+// ── TABS ───────────────────────────────────────────────────────
+function switchTab(tabId){
+  document.querySelectorAll('.tab-pane').forEach(el=>el.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(el=>el.classList.remove('active'));
+  document.getElementById('tab-'+tabId).classList.add('active');
+  event.target.classList.add('active');
+}
+
+// ── MODAL ──────────────────────────────────────────────────────
+function openCreate(){document.getElementById('createOverlay').classList.add('show');loadNextBadge();loadPuzzle();}
+function closeCreate(){
+  document.getElementById('createOverlay').classList.remove('show');
+  clearMsg('createMsg');
+  document.getElementById('iName').value='';
+  document.getElementById('iEmail').value='';
+  document.getElementById('iPass').value='';
+  document.getElementById('iConf').value='';
+  document.getElementById('iDept').value='';
+  puzzleSolved=false; puzzleSelected=[];
+}
+document.getElementById('createOverlay').addEventListener('click',function(e){if(e.target===this)closeCreate();});
+document.addEventListener('keydown', e => { if(e.key==='Escape') closeCreate(); });
+
+async function loadNextBadge(){
+  try{const r=await fetch('/api/chief/next-badge');const d=await r.json();
+    document.getElementById('badgePreview').textContent=d.badge_id;
+    document.getElementById('iBadge').value=d.badge_id;
+  }catch{}
+}
+
+// ── IMAGE PUZZLE CAPTCHA ───────────────────────────────────────
+const PUZZLE_ITEMS = [
+  {emoji:'🚗',label:'car'},{emoji:'🚕',label:'car'},{emoji:'🏎',label:'car'},
+  {emoji:'🚌',label:'bus'},{emoji:'🚎',label:'bus'},
+  {emoji:'🍎',label:'apple'},{emoji:'🍏',label:'apple'},
+  {emoji:'🐶',label:'dog'},{emoji:'🐕',label:'dog'},
+  {emoji:'🏠',label:'house'},{emoji:'🏡',label:'house'},
+  {emoji:'✈️',label:'plane'},{emoji:'🛫',label:'plane'},
+  {emoji:'⛵',label:'boat'},{emoji:'🚢',label:'boat'},
+  {emoji:'🌳',label:'tree'},{emoji:'🌲',label:'tree'},
+  {emoji:'📱',label:'phone'},{emoji:'☎️',label:'phone'},
+  {emoji:'⌚',label:'watch'},{emoji:'🕐',label:'watch'},
+];
+
+let puzzleTarget = '';
+let puzzleCorrect = [];
+let puzzleSelected = [];
+let puzzleSolved = false;
+
+function loadPuzzle(){
+  puzzleSolved = false; puzzleSelected = [];
+  const targets = ['car','bus','apple','dog','house','plane','boat','tree','phone','watch'];
+  puzzleTarget = targets[Math.floor(Math.random()*targets.length)];
+  document.getElementById('puzzleTarget').textContent = puzzleTarget;
+  // Get all correct items for this target
+  const correct = PUZZLE_ITEMS.filter(i=>i.label===puzzleTarget);
+  // Get random wrong items to fill 9 total tiles
+  const wrong = PUZZLE_ITEMS.filter(i=>i.label!==puzzleTarget)
+    .sort(()=>Math.random()-.5)
+    .slice(0, 9 - correct.length);
+  // Combine and shuffle
+  const picked = [...correct, ...wrong].sort(()=>Math.random()-.5);
+  // Track which indices are correct AFTER shuffle
+  puzzleCorrect = [];
+  picked.forEach((item, idx) => {
+    if(item.label === puzzleTarget) puzzleCorrect.push(idx);
+  });
+  const grid = document.getElementById('puzzleGrid');
+  grid.innerHTML = picked.map((item,idx)=>
+    `<div class="puzzle-tile" id="tile-${idx}" onclick="toggleTile(${idx})" title="${item.emoji}">${item.emoji}</div>`
+  ).join('');
+}
+
+function toggleTile(idx){
+  if(puzzleSolved) return;
+  const tile = document.getElementById('tile-'+idx);
+  const si   = puzzleSelected.indexOf(idx);
+  if(si>=0){puzzleSelected.splice(si,1);tile.classList.remove('selected');}
+  else{puzzleSelected.push(idx);tile.classList.add('selected');}
+}
+
+// ── THEME ──────────────────────────────────────────────────────
+const currentTheme = localStorage.getItem('theme') || 'light';
+document.documentElement.setAttribute('data-theme', currentTheme);
+
+function toggleTheme() {
+  const theme = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+  document.documentElement.setAttribute('data-theme', theme);
+  localStorage.setItem('theme', theme);
+  toast(`🌓 Theme switched to ${theme.toUpperCase()} mode`);
+}
+
+function verifyPuzzle(){
+  if(puzzleCorrect.length===0) return true; // no correct = any answer ok
+  const sel = [...puzzleSelected].sort().join(',');
+  const cor = [...puzzleCorrect].sort().join(',');
+  if(sel===cor){puzzleSolved=true;return true;}
+  // shake wrong tiles
+  puzzleSelected.forEach(i=>{
+    const t=document.getElementById('tile-'+i);
+    if(!puzzleCorrect.includes(i)){t.classList.add('wrong');setTimeout(()=>t.classList.remove('wrong'),400);}
+  });
+  return false;
+}
+
+// ── CREATE INVESTIGATOR ────────────────────────────────────────
+async function createInvestigator(){
+  const name  = document.getElementById('iName').value.trim();
+  const email = document.getElementById('iEmail').value.trim().toLowerCase();
+  const pw    = document.getElementById('iPass').value;
+  const pw2   = document.getElementById('iConf').value;
+  const badge = document.getElementById('iBadge').value.trim();
+  const dept  = document.getElementById('iDept').value.trim();
+  clearMsg('createMsg');
+
+  if(!name||!email||!pw||!badge){showMsg('createMsg','All fields are required');return;}
+  if(pw.length<8){showMsg('createMsg','Password must be at least 8 characters');return;}
+  if(pw!==pw2){showMsg('createMsg','Passwords do not match');return;}
+  if(!verifyPuzzle()){showMsg('createMsg','Image puzzle incorrect — select all images of "'+puzzleTarget+'"');return;}
+
+  const btn = document.getElementById('createBtn');
+  btn.disabled=true;btn.innerHTML='<span class="spin"></span>Creating...';
+  try{
+    const r=await fetch('/api/chief/create-investigator',{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({name,email,password:pw,badge_id:badge,department:dept})});
+    const d=await r.json();
+    if(d.success){
+      showMsg('createMsg','Investigator assigned! Welcome email sent to '+email,'success');
+      toast('Investigator created: '+badge);
+      setTimeout(()=>{closeCreate();location.reload();},1500);
+    }else{showMsg('createMsg',d.error||'Failed to create account');}
+  }catch{showMsg('createMsg','Server error');}
+  finally{btn.disabled=false;btn.textContent='Assign Investigator';}
+}
+
+async function toggleInv(uid, active){
+  await fetch('/api/chief/toggle-investigator',{method:'POST',headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({user_id:uid,active})});
+  toast(active?'Investigator enabled':'Investigator disabled');
+  setTimeout(()=>location.reload(),700);
+}
+</script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

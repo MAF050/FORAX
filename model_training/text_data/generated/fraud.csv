@@ -1,0 +1,321 @@
+text
+"The memo describes shell company, fullz, and leak in the fraud investigation. Context: cashout."
+"The memo describes ponzi scheme, cvv, and washing check in the fraud investigation. Context: stealer."
+Case notes reference stealer alongside fake check and breach. Context: cvv.
+"The report flags kickback, washing check, and cred as financial crime indicators. Context: swiping."
+Case notes reference extortion alongside ssn and bin. Context: bins.
+Case notes reference identity theft alongside credit card fraud and bins. Context: bins.
+"The memo describes bin, stealer, and money mule in the fraud investigation. Context: credit card fraud."
+Case notes reference slush fund alongside securities fraud and kickback. Context: counterfeiting.
+Case notes reference offshore account alongside ransom and fake check. Context: swiping.
+Case notes reference fullz alongside botnet and combolist. Context: credit card fraud.
+"The report flags wire fraud, money laundering, and pyramid scheme as financial crime indicators. Context: shell company."
+Case notes reference forgery alongside extortion and check fraud. Context: blackmail.
+"The memo describes blackmail, corruption, and carder in the fraud investigation. Context: money laundering."
+Case notes reference money mule alongside combolist and extortion. Context: bin.
+Case notes reference identity theft alongside extortion and fake check. Context: securities fraud.
+"The memo describes racketeering, structuring, and swiping in the fraud investigation. Context: pyramid scheme."
+"The report flags combolist, credit card fraud, and money laundering as financial crime indicators. Context: cvv."
+Case notes reference kickback alongside carder and carding. Context: leak.
+"The memo describes swiping, pyramid scheme, and forgery in the fraud investigation. Context: botnet."
+Case notes reference ransom alongside carding and bins. Context: combolist.
+Case notes reference bins alongside breach and smurfing. Context: breach.
+Case notes reference securities fraud alongside extortion and swiping. Context: cashout.
+"The memo describes shell company, identity theft, and smurfing in the fraud investigation. Context: combolist."
+"The report flags pyramid scheme, cvv, and structuring as financial crime indicators. Context: fraud."
+"The memo describes forgery, logs, and carder in the fraud investigation. Context: swipe."
+"The report flags structuring, ransom, and securities fraud as financial crime indicators. Context: fullz."
+Case notes reference bank fraud alongside cashout and leak. Context: racketeering.
+Case notes reference credit card fraud alongside counterfeiting and fake check. Context: securities fraud.
+"The memo describes shell company, extortion, and swipe in the fraud investigation. Context: combolist."
+Case notes reference bin alongside forgery and washing check. Context: fake check.
+"The memo describes breach, offshore account, and cashout in the fraud investigation. Context: wire fraud."
+Case notes reference pyramid scheme alongside structuring and ponzi scheme. Context: bin.
+Case notes reference swiping alongside offshore account and forgery. Context: bank fraud.
+"The report flags kickback, money laundering, and identity theft as financial crime indicators. Context: money laundering."
+"The memo describes wire fraud, blackmail, and structuring in the fraud investigation. Context: counterfeiting."
+"The memo describes swiping, fraud, and securities fraud in the fraud investigation. Context: fraud."
+Case notes reference logs alongside check fraud and slush fund. Context: logs.
+Case notes reference fullz alongside carding and forgery. Context: extortion.
+"The memo describes identity theft, bribery, and offshore account in the fraud investigation. Context: breach."
+Case notes reference carder alongside wire fraud and bank fraud. Context: fraud.
+Case notes reference ponzi scheme alongside counterfeiting and racketeering. Context: racketeering.
+"The report flags embezzlement, bank fraud, and carding as financial crime indicators. Context: bad check."
+Case notes reference check fraud alongside carder and ssn. Context: kickback.
+"The report flags credit card fraud, bins, and embezzlement as financial crime indicators. Context: ponzi scheme."
+"The memo describes shell company, carder, and bins in the fraud investigation. Context: fullz."
+"The memo describes bribery, bad check, and check fraud in the fraud investigation. Context: bins."
+Case notes reference swipe alongside kickback and fraud. Context: botnet.
+"The memo describes ponzi scheme, money mule, and racketeering in the fraud investigation. Context: botnet."
+Case notes reference forgery alongside carder and ransom. Context: extortion.
+"The report flags racketeering, credit card fraud, and logs as financial crime indicators. Context: bin."
+"The report flags slush fund, bins, and bribery as financial crime indicators. Context: identity theft."
+Case notes reference forgery alongside breach and blackmail. Context: securities fraud.
+Case notes reference kickback alongside leak and fake check. Context: bank fraud.
+"The report flags money laundering, forgery, and ssn as financial crime indicators. Context: pyramid scheme."
+Case notes reference shell company alongside embezzlement and logs. Context: leak.
+"The memo describes structuring, breach, and forgery in the fraud investigation. Context: stealer."
+"The report flags wire fraud, breach, and cvv as financial crime indicators. Context: carding."
+"The memo describes offshore account, ransom, and leak in the fraud investigation. Context: combolist."
+"The report flags identity theft, swiping, and structuring as financial crime indicators. Context: fullz."
+Case notes reference carding alongside fraud and bins. Context: wire fraud.
+Case notes reference money laundering alongside bin and fullz. Context: corruption.
+"The report flags bad check, breach, and ssn as financial crime indicators. Context: washing check."
+Case notes reference logs alongside leak and identity theft. Context: kickback.
+"The memo describes cashout, fake check, and kickback in the fraud investigation. Context: combolist."
+"The memo describes bad check, corruption, and embezzlement in the fraud investigation. Context: embezzlement."
+"The report flags bank fraud, blackmail, and logs as financial crime indicators. Context: fake check."
+"The report flags ssn, bad check, and logs as financial crime indicators. Context: forgery."
+"The memo describes botnet, shell company, and bribery in the fraud investigation. Context: ransom."
+"The report flags counterfeiting, corruption, and fraud as financial crime indicators. Context: logs."
+Case notes reference extortion alongside carding and bins. Context: leak.
+"The report flags cashout, fullz, and counterfeiting as financial crime indicators. Context: offshore account."
+"The memo describes combolist, embezzlement, and corruption in the fraud investigation. Context: check fraud."
+Case notes reference combolist alongside blackmail and securities fraud. Context: bank fraud.
+"The report flags bank fraud, combolist, and bad check as financial crime indicators. Context: bins."
+"The report flags wire fraud, leak, and cashout as financial crime indicators. Context: stealer."
+"The report flags cvv, washing check, and carding as financial crime indicators. Context: swipe."
+Case notes reference blackmail alongside credit card fraud and wire fraud. Context: cred.
+"The report flags slush fund, bad check, and credit card fraud as financial crime indicators. Context: swiping."
+Case notes reference cvv alongside kickback and leak. Context: bins.
+"The report flags swipe, kickback, and ransom as financial crime indicators. Context: breach."
+Case notes reference check fraud alongside ssn and leak. Context: swiping.
+Case notes reference swiping alongside money mule and fraud. Context: ransom.
+"The memo describes money laundering, combolist, and pyramid scheme in the fraud investigation. Context: smurfing."
+"The report flags securities fraud, check fraud, and kickback as financial crime indicators. Context: offshore account."
+"The memo describes leak, cred, and stealer in the fraud investigation. Context: embezzlement."
+Case notes reference carding alongside cvv and identity theft. Context: fullz.
+Case notes reference botnet alongside racketeering and securities fraud. Context: extortion.
+"The report flags stealer, money mule, and check fraud as financial crime indicators. Context: kickback."
+"The report flags carder, wire fraud, and logs as financial crime indicators. Context: stealer."
+"The memo describes blackmail, ransom, and fake check in the fraud investigation. Context: stealer."
+Case notes reference ssn alongside extortion and bribery. Context: swipe.
+"The report flags cashout, ponzi scheme, and securities fraud as financial crime indicators. Context: fraud."
+"The report flags bins, ssn, and bribery as financial crime indicators. Context: embezzlement."
+Case notes reference kickback alongside breach and stealer. Context: cred.
+"The report flags forgery, securities fraud, and identity theft as financial crime indicators. Context: money mule."
+"The memo describes swiping, ransom, and stealer in the fraud investigation. Context: securities fraud."
+"The memo describes swipe, structuring, and money mule in the fraud investigation. Context: slush fund."
+"The report flags extortion, carder, and stealer as financial crime indicators. Context: money mule."
+Case notes reference shell company alongside extortion and money mule. Context: forgery.
+Case notes reference pyramid scheme alongside carder and leak. Context: money mule.
+"The report flags fake check, stealer, and bank fraud as financial crime indicators. Context: combolist."
+Case notes reference racketeering alongside corruption and offshore account. Context: washing check.
+Case notes reference stealer alongside extortion and ponzi scheme. Context: swipe.
+Case notes reference fullz alongside cvv and bank fraud. Context: ransom.
+Case notes reference fake check alongside money laundering and smurfing. Context: bin.
+"The memo describes swiping, bin, and identity theft in the fraud investigation. Context: bank fraud."
+"The memo describes washing check, fullz, and identity theft in the fraud investigation. Context: bribery."
+"The memo describes racketeering, bin, and identity theft in the fraud investigation. Context: slush fund."
+Case notes reference forgery alongside ponzi scheme and smurfing. Context: money laundering.
+Case notes reference slush fund alongside check fraud and breach. Context: leak.
+"The report flags carder, bin, and identity theft as financial crime indicators. Context: bad check."
+"The report flags money laundering, ssn, and botnet as financial crime indicators. Context: embezzlement."
+"The memo describes shell company, credit card fraud, and bribery in the fraud investigation. Context: forgery."
+"The report flags bin, offshore account, and bribery as financial crime indicators. Context: fraud."
+"The report flags corruption, ssn, and bad check as financial crime indicators. Context: bad check."
+"The report flags fullz, blackmail, and money laundering as financial crime indicators. Context: ssn."
+"The memo describes securities fraud, ssn, and cred in the fraud investigation. Context: kickback."
+"The memo describes logs, ransom, and breach in the fraud investigation. Context: bank fraud."
+"The memo describes cred, carding, and leak in the fraud investigation. Context: embezzlement."
+Case notes reference racketeering alongside combolist and smurfing. Context: money mule.
+Case notes reference credit card fraud alongside money laundering and cvv. Context: cvv.
+Case notes reference bins alongside smurfing and racketeering. Context: bribery.
+"The report flags bins, shell company, and ssn as financial crime indicators. Context: offshore account."
+"The report flags securities fraud, identity theft, and slush fund as financial crime indicators. Context: pyramid scheme."
+"The report flags extortion, ssn, and combolist as financial crime indicators. Context: bins."
+"The report flags washing check, securities fraud, and cashout as financial crime indicators. Context: identity theft."
+Case notes reference swipe alongside smurfing and ransom. Context: breach.
+"The report flags pyramid scheme, check fraud, and fake check as financial crime indicators. Context: washing check."
+"The report flags bank fraud, pyramid scheme, and smurfing as financial crime indicators. Context: combolist."
+"The report flags pyramid scheme, swipe, and identity theft as financial crime indicators. Context: credit card fraud."
+"The report flags kickback, corruption, and leak as financial crime indicators. Context: ponzi scheme."
+Case notes reference wire fraud alongside kickback and identity theft. Context: cashout.
+"The report flags cashout, smurfing, and swiping as financial crime indicators. Context: offshore account."
+"The memo describes identity theft, bank fraud, and blackmail in the fraud investigation. Context: money laundering."
+"The report flags bin, offshore account, and ransom as financial crime indicators. Context: securities fraud."
+Case notes reference ransom alongside securities fraud and washing check. Context: extortion.
+"The report flags forgery, carder, and pyramid scheme as financial crime indicators. Context: carder."
+Case notes reference counterfeiting alongside fake check and fullz. Context: logs.
+"The memo describes carder, pyramid scheme, and credit card fraud in the fraud investigation. Context: embezzlement."
+"The report flags cashout, fraud, and offshore account as financial crime indicators. Context: bad check."
+Case notes reference bank fraud alongside check fraud and corruption. Context: bin.
+"The memo describes logs, forgery, and kickback in the fraud investigation. Context: swipe."
+"The report flags money mule, embezzlement, and ransom as financial crime indicators. Context: kickback."
+"The report flags money mule, bin, and stealer as financial crime indicators. Context: combolist."
+"The memo describes fake check, counterfeiting, and embezzlement in the fraud investigation. Context: swiping."
+"The report flags carding, embezzlement, and racketeering as financial crime indicators. Context: money mule."
+"The report flags embezzlement, leak, and ssn as financial crime indicators. Context: bribery."
+Case notes reference bank fraud alongside structuring and swiping. Context: structuring.
+"The report flags carding, credit card fraud, and swipe as financial crime indicators. Context: bribery."
+"The report flags forgery, combolist, and identity theft as financial crime indicators. Context: swiping."
+"The report flags extortion, cred, and ponzi scheme as financial crime indicators. Context: forgery."
+Case notes reference breach alongside pyramid scheme and money mule. Context: swiping.
+"The report flags money laundering, wire fraud, and carding as financial crime indicators. Context: bank fraud."
+"The report flags carding, extortion, and shell company as financial crime indicators. Context: fake check."
+"The memo describes counterfeiting, credit card fraud, and ponzi scheme in the fraud investigation. Context: counterfeiting."
+"The report flags swiping, bins, and fullz as financial crime indicators. Context: counterfeiting."
+Case notes reference ssn alongside cred and bin. Context: leak.
+"The report flags ssn, embezzlement, and credit card fraud as financial crime indicators. Context: bad check."
+"The memo describes identity theft, credit card fraud, and wire fraud in the fraud investigation. Context: cashout."
+"The memo describes smurfing, swiping, and structuring in the fraud investigation. Context: ponzi scheme."
+Case notes reference pyramid scheme alongside bank fraud and fraud. Context: fraud.
+"The report flags carding, logs, and breach as financial crime indicators. Context: logs."
+Case notes reference racketeering alongside check fraud and botnet. Context: carding.
+"The report flags cashout, swiping, and extortion as financial crime indicators. Context: fraud."
+"The report flags racketeering, leak, and offshore account as financial crime indicators. Context: leak."
+"The memo describes check fraud, bribery, and wire fraud in the fraud investigation. Context: fake check."
+"The report flags cvv, embezzlement, and identity theft as financial crime indicators. Context: ransom."
+"The memo describes smurfing, slush fund, and extortion in the fraud investigation. Context: cashout."
+"The report flags wire fraud, credit card fraud, and washing check as financial crime indicators. Context: bad check."
+"The memo describes forgery, ransom, and stealer in the fraud investigation. Context: carding."
+Case notes reference botnet alongside fullz and embezzlement. Context: kickback.
+"The report flags fullz, ssn, and corruption as financial crime indicators. Context: corruption."
+"The report flags structuring, carder, and pyramid scheme as financial crime indicators. Context: offshore account."
+"The report flags slush fund, combolist, and cashout as financial crime indicators. Context: check fraud."
+"The report flags bin, bribery, and blackmail as financial crime indicators. Context: bins."
+"The report flags combolist, extortion, and carder as financial crime indicators. Context: counterfeiting."
+Case notes reference structuring alongside swipe and ransom. Context: combolist.
+"The report flags stealer, bin, and cvv as financial crime indicators. Context: stealer."
+"The report flags logs, combolist, and bins as financial crime indicators. Context: securities fraud."
+"The memo describes counterfeiting, structuring, and bank fraud in the fraud investigation. Context: money laundering."
+"The report flags carding, bins, and ponzi scheme as financial crime indicators. Context: cashout."
+"The report flags cashout, embezzlement, and slush fund as financial crime indicators. Context: bins."
+"The report flags check fraud, fraud, and bins as financial crime indicators. Context: structuring."
+"The report flags shell company, corruption, and smurfing as financial crime indicators. Context: kickback."
+Case notes reference fraud alongside ponzi scheme and washing check. Context: money mule.
+"The memo describes stealer, bin, and money laundering in the fraud investigation. Context: slush fund."
+"The report flags slush fund, washing check, and carder as financial crime indicators. Context: pyramid scheme."
+"The report flags carder, identity theft, and bins as financial crime indicators. Context: slush fund."
+Case notes reference carding alongside cashout and bribery. Context: stealer.
+"The memo describes washing check, kickback, and leak in the fraud investigation. Context: check fraud."
+"The memo describes stealer, washing check, and slush fund in the fraud investigation. Context: identity theft."
+"The report flags offshore account, money laundering, and slush fund as financial crime indicators. Context: breach."
+"The memo describes credit card fraud, stealer, and ransom in the fraud investigation. Context: ransom."
+"The report flags ponzi scheme, smurfing, and counterfeiting as financial crime indicators. Context: embezzlement."
+"The memo describes offshore account, cashout, and extortion in the fraud investigation. Context: fullz."
+Case notes reference swiping alongside smurfing and check fraud. Context: wire fraud.
+"The memo describes ponzi scheme, fullz, and embezzlement in the fraud investigation. Context: swiping."
+"The memo describes cred, money laundering, and carder in the fraud investigation. Context: slush fund."
+"The memo describes carder, combolist, and smurfing in the fraud investigation. Context: blackmail."
+"The report flags combolist, washing check, and pyramid scheme as financial crime indicators. Context: embezzlement."
+"The memo describes carding, ssn, and counterfeiting in the fraud investigation. Context: fraud."
+"The memo describes smurfing, embezzlement, and washing check in the fraud investigation. Context: slush fund."
+"The report flags carding, embezzlement, and blackmail as financial crime indicators. Context: smurfing."
+"The memo describes money laundering, stealer, and smurfing in the fraud investigation. Context: kickback."
+Case notes reference bank fraud alongside structuring and offshore account. Context: swiping.
+"The memo describes bad check, ponzi scheme, and offshore account in the fraud investigation. Context: offshore account."
+"The report flags ponzi scheme, fraud, and bin as financial crime indicators. Context: blackmail."
+Case notes reference check fraud alongside breach and cvv. Context: offshore account.
+"The memo describes identity theft, counterfeiting, and structuring in the fraud investigation. Context: credit card fraud."
+"The report flags corruption, smurfing, and bin as financial crime indicators. Context: swiping."
+"The report flags bribery, pyramid scheme, and money laundering as financial crime indicators. Context: bribery."
+Case notes reference blackmail alongside ssn and bribery. Context: money mule.
+"The report flags wire fraud, counterfeiting, and ransom as financial crime indicators. Context: forgery."
+Case notes reference forgery alongside swiping and bin. Context: slush fund.
+"The memo describes bank fraud, counterfeiting, and bad check in the fraud investigation. Context: carding."
+Case notes reference stealer alongside pyramid scheme and extortion. Context: blackmail.
+"The report flags carding, smurfing, and washing check as financial crime indicators. Context: carding."
+Case notes reference carder alongside securities fraud and identity theft. Context: fullz.
+Case notes reference money mule alongside wire fraud and forgery. Context: kickback.
+Case notes reference carding alongside logs and money laundering. Context: ponzi scheme.
+Case notes reference cvv alongside carder and carding. Context: cvv.
+"The memo describes ransom, stealer, and pyramid scheme in the fraud investigation. Context: money mule."
+"The report flags counterfeiting, blackmail, and kickback as financial crime indicators. Context: corruption."
+"The report flags smurfing, breach, and carding as financial crime indicators. Context: cashout."
+Case notes reference racketeering alongside bin and leak. Context: ssn.
+"The report flags corruption, slush fund, and check fraud as financial crime indicators. Context: swipe."
+"The report flags swipe, stealer, and slush fund as financial crime indicators. Context: racketeering."
+"The report flags wire fraud, bad check, and corruption as financial crime indicators. Context: logs."
+Case notes reference ponzi scheme alongside botnet and ransom. Context: leak.
+Case notes reference blackmail alongside swiping and wire fraud. Context: corruption.
+Case notes reference ransom alongside blackmail and washing check. Context: logs.
+"The memo describes fake check, bad check, and bribery in the fraud investigation. Context: pyramid scheme."
+"The report flags botnet, bins, and fraud as financial crime indicators. Context: identity theft."
+"The report flags swiping, breach, and structuring as financial crime indicators. Context: stealer."
+Case notes reference swiping alongside bank fraud and check fraud. Context: smurfing.
+"The report flags stealer, washing check, and smurfing as financial crime indicators. Context: cvv."
+"The report flags extortion, botnet, and fraud as financial crime indicators. Context: money mule."
+"The report flags pyramid scheme, structuring, and bribery as financial crime indicators. Context: bribery."
+"The memo describes fraud, counterfeiting, and leak in the fraud investigation. Context: structuring."
+"The report flags money laundering, racketeering, and swipe as financial crime indicators. Context: money mule."
+Case notes reference bins alongside kickback and counterfeiting. Context: ssn.
+"The memo describes swipe, breach, and check fraud in the fraud investigation. Context: carder."
+Case notes reference pyramid scheme alongside bank fraud and leak. Context: cashout.
+"The memo describes identity theft, structuring, and bad check in the fraud investigation. Context: fraud."
+"The report flags corruption, fake check, and money laundering as financial crime indicators. Context: logs."
+"The memo describes bad check, swipe, and pyramid scheme in the fraud investigation. Context: fake check."
+Case notes reference cashout alongside carding and forgery. Context: bin.
+"The report flags wire fraud, carding, and cred as financial crime indicators. Context: swiping."
+Case notes reference ssn alongside cvv and securities fraud. Context: ransom.
+"The report flags fraud, stealer, and logs as financial crime indicators. Context: cred."
+Case notes reference offshore account alongside cashout and breach. Context: embezzlement.
+Case notes reference embezzlement alongside stealer and carder. Context: ponzi scheme.
+"The memo describes botnet, carder, and forgery in the fraud investigation. Context: combolist."
+"The report flags offshore account, carding, and combolist as financial crime indicators. Context: bin."
+"The report flags extortion, racketeering, and carder as financial crime indicators. Context: bad check."
+"The report flags bad check, corruption, and washing check as financial crime indicators. Context: botnet."
+"The report flags smurfing, bin, and bribery as financial crime indicators. Context: fraud."
+"The report flags carder, carding, and cred as financial crime indicators. Context: slush fund."
+"The memo describes cashout, cvv, and structuring in the fraud investigation. Context: forgery."
+"The memo describes ransom, smurfing, and stealer in the fraud investigation. Context: bins."
+"The memo describes carder, botnet, and credit card fraud in the fraud investigation. Context: bad check."
+"The memo describes structuring, bin, and money laundering in the fraud investigation. Context: pyramid scheme."
+"The memo describes cred, corruption, and offshore account in the fraud investigation. Context: bin."
+"The report flags offshore account, shell company, and fraud as financial crime indicators. Context: wire fraud."
+Case notes reference botnet alongside identity theft and bad check. Context: wire fraud.
+"The memo describes shell company, forgery, and racketeering in the fraud investigation. Context: combolist."
+"The report flags embezzlement, slush fund, and extortion as financial crime indicators. Context: identity theft."
+"The report flags logs, cashout, and ssn as financial crime indicators. Context: swiping."
+"The report flags bins, credit card fraud, and check fraud as financial crime indicators. Context: cvv."
+"The memo describes bribery, fake check, and shell company in the fraud investigation. Context: credit card fraud."
+Case notes reference carding alongside money mule and carder. Context: breach.
+Case notes reference securities fraud alongside ssn and washing check. Context: carder.
+"The memo describes shell company, identity theft, and combolist in the fraud investigation. Context: structuring."
+"The report flags swiping, ssn, and washing check as financial crime indicators. Context: washing check."
+Case notes reference embezzlement alongside blackmail and breach. Context: swipe.
+Case notes reference bin alongside fake check and offshore account. Context: offshore account.
+Case notes reference blackmail alongside shell company and fake check. Context: carding.
+"The report flags washing check, racketeering, and botnet as financial crime indicators. Context: slush fund."
+"The report flags washing check, forgery, and wire fraud as financial crime indicators. Context: fraud."
+"The memo describes washing check, fraud, and corruption in the fraud investigation. Context: combolist."
+"The memo describes blackmail, washing check, and swiping in the fraud investigation. Context: structuring."
+"The report flags shell company, bank fraud, and embezzlement as financial crime indicators. Context: extortion."
+"The report flags bribery, ransom, and bad check as financial crime indicators. Context: bins."
+"The memo describes ponzi scheme, counterfeiting, and extortion in the fraud investigation. Context: ssn."
+"The memo describes bad check, fake check, and stealer in the fraud investigation. Context: forgery."
+"The report flags wire fraud, shell company, and structuring as financial crime indicators. Context: corruption."
+"The report flags bins, carding, and offshore account as financial crime indicators. Context: bad check."
+Case notes reference kickback alongside shell company and credit card fraud. Context: bribery.
+Case notes reference ssn alongside slush fund and bribery. Context: wire fraud.
+"The report flags swiping, corruption, and logs as financial crime indicators. Context: money mule."
+"The memo describes wire fraud, fake check, and logs in the fraud investigation. Context: breach."
+"The memo describes swipe, check fraud, and bin in the fraud investigation. Context: swiping."
+"The memo describes counterfeiting, shell company, and blackmail in the fraud investigation. Context: corruption."
+Case notes reference stealer alongside shell company and swiping. Context: identity theft.
+"The report flags fake check, bins, and fraud as financial crime indicators. Context: ssn."
+Case notes reference offshore account alongside identity theft and forgery. Context: stealer.
+Case notes reference fraud alongside cred and counterfeiting. Context: swipe.
+"The memo describes money mule, corruption, and breach in the fraud investigation. Context: ssn."
+"The report flags forgery, carder, and ponzi scheme as financial crime indicators. Context: cvv."
+"The memo describes slush fund, washing check, and smurfing in the fraud investigation. Context: bins."
+Case notes reference fake check alongside extortion and fullz. Context: extortion.
+"The memo describes carding, structuring, and fake check in the fraud investigation. Context: leak."
+Case notes reference embezzlement alongside ssn and bad check. Context: forgery.
+Case notes reference ssn alongside blackmail and bins. Context: logs.
+"The memo describes extortion, bins, and swiping in the fraud investigation. Context: embezzlement."
+Case notes reference bank fraud alongside money laundering and botnet. Context: ssn.
+Case notes reference corruption alongside breach and fake check. Context: breach.
+"The memo describes swiping, money laundering, and embezzlement in the fraud investigation. Context: slush fund."
+"The report flags embezzlement, money mule, and ponzi scheme as financial crime indicators. Context: bad check."
+"The memo describes combolist, carding, and washing check in the fraud investigation. Context: botnet."
+Case notes reference securities fraud alongside corruption and embezzlement. Context: fake check.
+"The memo describes money laundering, carder, and bin in the fraud investigation. Context: forgery."
+"The report flags fake check, pyramid scheme, and fraud as financial crime indicators. Context: bribery."
+"The memo describes smurfing, blackmail, and carding in the fraud investigation. Context: botnet."
+"The report flags corruption, blackmail, and ponzi scheme as financial crime indicators. Context: bin."
+Case notes reference securities fraud alongside corruption and bank fraud. Context: washing check.
+"The report flags money mule, kickback, and ponzi scheme as financial crime indicators. Context: breach."
+"The report flags pyramid scheme, kickback, and check fraud as financial crime indicators. Context: wire fraud."
+"The memo describes slush fund, corruption, and ponzi scheme in the fraud investigation. Context: cashout."
+"The memo describes credit card fraud, forgery, and fullz in the fraud investigation. Context: swiping."

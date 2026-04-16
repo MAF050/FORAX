@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>FORAX — Authority CMS</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@300;400;500&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#f0f4ff;--bg2:#f5f3ff;--surface:#fff;--border:#e0e7ff;--border2:#c7d2fe;
+  --t0:#1e1b4b;--t1:#4c4a8a;--t2:#818cf8;
+  --blue:#4f46e5;--blue-bg:#eef2ff;--blue-bd:#c7d2fe;
+  --green:#059669;--green-bg:#ecfdf5;--green-bd:#a7f3d0;
+  --red:#dc2626;--red-bg:#fef2f2;--red-bd:#fecaca;
+  --amber:#d97706;--amber-bg:#fffbeb;--amber-bd:#fde68a;
+  --purple:#7c3aed;--pur-bg:#f5f3ff;--pur-bd:#ddd6fe;
+  --mono:'DM Mono',monospace;--sans:'DM Sans',sans-serif;--r:9px;--rl:14px;
+  --sh:0 1px 4px rgba(79,70,229,.07);--sh2:0 6px 18px rgba(79,70,229,.12);
+}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+body{
+  background:linear-gradient(150deg,#eef2ff 0%,#f5f3ff 40%,#fdf4ff 100%);
+  color:var(--t0);font-family:var(--sans);font-size:14px;min-height:100vh;
+  display:flex;flex-direction:column;
+}
+.topbar{
+  height:58px;background:rgba(255,255,255,.88);
+  border-bottom:1.5px solid var(--border);
+  display:flex;align-items:center;justify-content:space-between;padding:0 24px;
+  position:sticky;top:0;z-index:50;
+  box-shadow:0 2px 16px rgba(124,58,237,.08);
+  backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);
+  flex-shrink:0;
+}
+.logo-row{display:flex;align-items:center;gap:10px;}
+.logo-box{
+  width:36px;height:36px;
+  background:linear-gradient(135deg,var(--purple),#a855f7);
+  border-radius:10px;display:flex;align-items:center;justify-content:center;
+  box-shadow:0 3px 12px rgba(124,58,237,.35);
+  animation:logoPulse 6s ease-in-out infinite;
+}
+@keyframes logoPulse{0%,100%{box-shadow:0 3px 12px rgba(124,58,237,.35);}50%{box-shadow:0 6px 20px rgba(124,58,237,.5);}}
+.logo-box svg{width:17px;height:17px;stroke:#fff;fill:none;stroke-width:2;}
+.logo-name{font-family:var(--mono);font-size:15px;font-weight:500;}
+.logo-sub{font-family:var(--mono);font-size:10px;color:var(--t2);letter-spacing:1px;}
+.tr{display:flex;align-items:center;gap:8px;}
+.clk{font-family:var(--mono);font-size:12px;color:var(--t2);letter-spacing:.5px;}
+.bdg{display:inline-flex;align-items:center;gap:4px;padding:4px 10px;border-radius:20px;font-family:var(--mono);font-size:11px;}
+.bdg-purple{background:var(--pur-bg);color:var(--purple);border:1.5px solid var(--pur-bd);}
+.bdg-blue{background:var(--blue-bg);color:var(--blue);border:1px solid var(--blue-bd);}
+.bdg-green{background:var(--green-bg);color:var(--green);border:1px solid var(--green-bd);}
+.bdg-red{background:var(--red-bg);color:var(--red);border:1px solid var(--red-bd);}
+.bdg-amber{background:var(--amber-bg);color:var(--amber);border:1px solid var(--amber-bd);}
+.btn-nav{
+  padding:7px 13px;border-radius:var(--r);border:1.5px solid var(--pur-bd);
+  background:var(--pur-bg);color:var(--purple);font-family:var(--mono);font-size:11px;
+  cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;gap:5px;transition:all .2s;
+}
+.btn-nav:hover{background:var(--purple);color:#fff;transform:translateY(-1px);box-shadow:0 4px 14px rgba(124,58,237,.3);}
+.btn-nav svg{width:12px;height:12px;stroke:currentColor;fill:none;stroke-width:2;}
+/* layout */
+.layout{display:flex;flex:1;}
+.sidebar{
+  width:220px;background:rgba(255,255,255,.88);
+  border-right:1.5px solid var(--border);
+  backdrop-filter:blur(12px);
+  flex-shrink:0;display:flex;flex-direction:column;
+}
+.sb-nav{padding:10px 8px;flex:1;}
+.sb-sec{font-family:var(--mono);font-size:10px;color:var(--t2);letter-spacing:1.8px;padding:12px 8px 4px;text-transform:uppercase;}
+.sb-item{
+  display:flex;align-items:center;gap:9px;padding:9px 12px;border-radius:10px;
+  cursor:pointer;color:var(--t1);font-size:13px;border:none;background:none;
+  width:100%;text-align:left;transition:all .2s;
+}
+.sb-item:hover{background:var(--pur-bg);color:var(--purple);transform:translateX(2px);}
+.sb-item.active{
+  background:linear-gradient(135deg,var(--pur-bg),var(--blue-bg));
+  color:var(--purple);font-weight:500;
+  box-shadow:inset 3px 0 0 var(--purple);
+}
+.sb-item svg{width:15px;height:15px;stroke:currentColor;fill:none;stroke-width:1.5;flex-shrink:0;}
+.sb-footer{padding:10px;border-top:1px solid var(--border);}
+.sb-user{padding:10px 12px;background:linear-gradient(135deg,var(--pur-bg),var(--blue-bg));border-radius:var(--r);border:1px solid var(--pur-bd);}
+.sb-uname{font-size:13px;font-weight:500;}
+.sb-ubadge{font-family:var(--mono);font-size:10px;color:var(--purple);margin-top:2px;}
+.main{flex:1;padding:22px 24px;overflow-y:auto;}
+/* stats */
+.sg{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:20px;}
+.sc{
+  background:rgba(255,255,255,.9);border:1.5px solid var(--border);
+  border-radius:var(--rl);padding:16px;box-shadow:var(--sh);
+  position:relative;overflow:hidden;transition:all .25s;
+  animation:scaleIn .5s cubic-bezier(.22,1,.36,1) both;
+}
+.sc:hover{transform:translateY(-3px);box-shadow:var(--sh2);border-color:var(--pur-bd);}
+@keyframes scaleIn{from{opacity:0;transform:translateY(14px) scale(.97);}to{opacity:1;transform:translateY(0) scale(1);}}
+.sc:nth-child(1){animation-delay:.06s;}.sc:nth-child(2){animation-delay:.12s;}
+.sc:nth-child(3){animation-delay:.18s;}.sc:nth-child(4){animation-delay:.24s;}
+.sc-bar{position:absolute;top:0;left:0;right:0;height:3px;border-radius:0 0 2px 2px;}
+.sc-label{font-family:var(--mono);font-size:10px;color:var(--t2);letter-spacing:1.2px;text-transform:uppercase;margin-bottom:6px;}
+.sc-value{font-family:var(--mono);font-size:24px;font-weight:600;line-height:1;margin-bottom:3px;}
+.sc-sub{font-size:11px;color:var(--t2);}
+/* panel */
+.panel{
+  background:rgba(255,255,255,.9);border:1.5px solid var(--border);
+  border-radius:var(--rl);overflow:hidden;box-shadow:var(--sh);
+  margin-bottom:18px;transition:box-shadow .2s;
+  animation:scaleIn .5s cubic-bezier(.22,1,.36,1) both;
+}
+.panel:hover{box-shadow:var(--sh2);}
+.ph{
+  padding:13px 18px;border-bottom:1.5px solid var(--border);
+  background:linear-gradient(135deg,#fafafe,var(--bg2));
+  display:flex;align-items:center;justify-content:space-between;
+}
+.ph-title{font-family:var(--mono);font-size:12px;font-weight:500;color:var(--t0);}
+/* search */
+.search-bar{padding:12px 18px;border-bottom:1.5px solid var(--border);}
+.search-input{
+  width:100%;padding:9px 14px;background:#fafafe;
+  border:1.5px solid #ddd6fe;border-radius:var(--r);
+  color:var(--t0);font-family:var(--sans);font-size:13px;
+  outline:none;transition:all .25s;
+}
+.search-input:focus{border-color:var(--purple);background:#fff;box-shadow:0 0 0 4px rgba(124,58,237,.09);transform:translateY(-1px);}
+.search-input::placeholder{color:#c4b5fd;}
+/* table */
+table{width:100%;border-collapse:collapse;}
+th{font-family:var(--mono);font-size:10px;color:var(--t2);letter-spacing:1px;text-align:left;padding:10px 14px;border-bottom:1.5px solid var(--border);font-weight:500;text-transform:uppercase;background:linear-gradient(135deg,#fafafe,var(--bg2));position:sticky;top:0;z-index:2;}
+td{padding:9px 14px;border-bottom:1px solid var(--border);font-size:12px;color:var(--t1);}
+tr:last-child td{border-bottom:none;}
+tr:hover td{background:var(--pur-bg);transition:background .15s;}
+.td-bold{color:var(--t0);font-weight:500;}
+.td-mono{font-family:var(--mono);}
+.tw{overflow-x:auto;max-height:480px;overflow-y:auto;}
+.tw::-webkit-scrollbar{width:4px;height:4px;}
+.tw::-webkit-scrollbar-thumb{background:var(--pur-bd);border-radius:2px;}
+.rp{font-family:var(--mono);font-size:10px;font-weight:500;padding:3px 9px;border-radius:6px;}
+.rp-H{background:var(--red-bg);color:var(--red);border:1.5px solid var(--red-bd);}
+.rp-M{background:var(--amber-bg);color:var(--amber);border:1.5px solid var(--amber-bd);}
+.rp-L{background:var(--green-bg);color:var(--green);border:1.5px solid var(--green-bd);}
+.status-active{background:var(--green-bg);color:var(--green);border:1.5px solid var(--green-bd);padding:3px 9px;border-radius:6px;font-family:var(--mono);font-size:10px;}
+.status-inactive{background:var(--red-bg);color:var(--red);border:1.5px solid var(--red-bd);padding:3px 9px;border-radius:6px;font-family:var(--mono);font-size:10px;}
+.role-inv{background:var(--blue-bg);color:var(--blue);border:1.5px solid var(--blue-bd);padding:3px 9px;border-radius:6px;font-family:var(--mono);font-size:10px;}
+.role-chief{background:var(--amber-bg);color:var(--amber);border:1.5px solid var(--amber-bd);padding:3px 9px;border-radius:6px;font-family:var(--mono);font-size:10px;}
+.role-auth{background:var(--pur-bg);color:var(--purple);border:1.5px solid var(--pur-bd);padding:3px 9px;border-radius:6px;font-family:var(--mono);font-size:10px;}
+/* log */
+.log-row{display:flex;gap:8px;padding:8px 14px;border-bottom:1px solid var(--border);font-family:var(--mono);font-size:11px;transition:background .15s;}
+.log-row:last-child{border-bottom:none;}
+.log-row:hover{background:var(--pur-bg);}
+.log-time{color:var(--t2);min-width:64px;flex-shrink:0;}
+.log-user{color:var(--purple);min-width:100px;flex-shrink:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.log-action{color:var(--blue);min-width:120px;flex-shrink:0;}
+.log-detail{color:var(--t1);flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.empty{text-align:center;padding:30px;font-family:var(--mono);font-size:12px;color:var(--t2);}
+/* view only badge */
+.view-only{
+  background:linear-gradient(135deg,var(--pur-bg),var(--blue-bg));
+  border:1.5px solid var(--pur-bd);border-radius:var(--rl);
+  padding:11px 16px;margin-bottom:16px;
+  display:flex;align-items:center;gap:8px;
+  font-family:var(--mono);font-size:11px;color:var(--purple);
+}
+.view-only svg{width:13px;height:13px;stroke:var(--purple);fill:none;flex-shrink:0;}
+.tab-strip{display:flex;gap:0;background:var(--bg2);border:1.5px solid var(--pur-bd);border-radius:var(--rl);padding:3px;margin-bottom:16px;}
+.tab-btn{
+  flex:1;padding:8px;border:none;background:none;font-family:var(--mono);font-size:11px;
+  color:var(--t1);border-radius:8px;cursor:pointer;transition:all .25s;
+}
+.tab-btn.active{
+  background:linear-gradient(135deg,var(--purple),#a855f7);
+  color:#fff;box-shadow:0 3px 10px rgba(124,58,237,.28);
+}
+/* TOAST */
+#toast{
+  position:fixed;bottom:24px;right:24px;
+  background:linear-gradient(135deg,var(--purple),#a855f7);
+  color:#fff;border-radius:14px;padding:13px 20px;
+  font-family:var(--mono);font-size:12px;z-index:999;
+  transform:translateY(60px);opacity:0;
+  transition:all .35s cubic-bezier(.22,1,.36,1);
+  box-shadow:0 8px 28px rgba(124,58,237,.35);
+  border:1px solid rgba(255,255,255,.15);
+}
+#toast.show{transform:translateY(0);opacity:1;}
+.two-col-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+</style>
+</head>
+<body>
+<header class="topbar">
+  <div class="logo-row">
+    <div class="logo-box"><svg viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></div>
+    <div><div class="logo-name">FORAX</div><div class="logo-sub">AUTHORITY CMS — VIEW ONLY</div></div>
+  </div>
+  <div class="tr">
+    <span class="clk" id="clock">--:--:--</span>
+    <span class="bdg bdg-purple">AUTHORITY</span>
+    <a href="/logout" class="btn-nav"><svg viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>Logout</a>
+  </div>
+</header>
+
+<div class="layout">
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <nav class="sb-nav">
+    <div class="sb-sec">View</div>
+    <button class="sb-item active" onclick="showTab('overview',this)">
+      <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>📊 Overview
+    </button>
+    <button class="sb-item" onclick="showTab('investigators',this)">
+      <svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>👮 Investigators
+    </button>
+    <button class="sb-item" onclick="showTab('cases',this)">
+      <svg viewBox="0 0 24 24"><path d="M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 3h9a2 2 0 012 2z"/></svg>📂 All Cases
+    </button>
+    <button class="sb-item" onclick="showTab('logs',this)">
+      <svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>📜 Activity Logs
+    </button>
+  </nav>
+  <div class="sb-footer">
+    <div class="sb-user">
+      <div class="sb-uname">{{ user.name if user else 'Authority' }}</div>
+      <div class="sb-ubadge">{{ user.badge_id if user and user.badge_id else 'AUTH-001' }}</div>
+    </div>
+  </div>
+</aside>
+
+<!-- MAIN -->
+<main class="main">
+
+  <!-- VIEW ONLY NOTICE -->
+  <div class="view-only">
+    <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+    View-only access — you can monitor all activity but cannot make changes
+  </div>
+
+  <!-- OVERVIEW -->
+  <div id="tab-overview">
+    <div class="sg">
+      <div class="sc"><div class="sc-bar" style="background:var(--blue)"></div><div class="sc-label">Investigators 👮</div><div class="sc-value" style="color:var(--blue)">{{ stats.total_investigators }}</div><div class="sc-sub">registered</div></div>
+      <div class="sc"><div class="sc-bar" style="background:var(--green)"></div><div class="sc-label">Total Cases 📂</div><div class="sc-value" style="color:var(--green)">{{ stats.total_cases }}</div><div class="sc-sub">investigations</div></div>
+      <div class="sc"><div class="sc-bar" style="background:var(--red)"></div><div class="sc-label">Flagged Files 🚨</div><div class="sc-value" style="color:var(--red)">{{ stats.flagged_evidence }}</div><div class="sc-sub">high risk</div></div>
+      <div class="sc"><div class="sc-bar" style="background:var(--purple)"></div><div class="sc-label">Total Evidence 📁</div><div class="sc-value" style="color:var(--purple)">{{ stats.total_evidence }}</div><div class="sc-sub">files extracted</div></div>
+    </div>
+    <div class="two-col-grid">
+      <div class="panel">
+        <div class="ph"><span class="ph-title">Recent cases</span></div>
+        <div class="tw"><table>
+          <thead><tr><th>Case ID</th><th>Title</th><th>Investigator</th><th>Threat</th><th>Date</th></tr></thead>
+          <tbody>{% for c in cases[:10] %}
+            <tr>
+              <td class="td-mono" style="color:var(--blue);font-size:11px">{{ c.case_id }}</td>
+              <td class="td-bold">{{ c.title }}</td>
+              <td>{{ c.investigator_name or '—' }}</td>
+              <td><span class="rp rp-{{ c.threat_level[0] if c.threat_level else 'L' }}">{{ c.threat_level or 'LOW' }}</span></td>
+              <td class="td-mono" style="font-size:11px;color:var(--t2)">{{ c.created_at[:10] }}</td>
+            </tr>
+          {% else %}<tr><td colspan="5"><div class="empty">No cases</div></td></tr>{% endfor %}</tbody>
+        </table></div>
+      </div>
+      <div class="panel">
+        <div class="ph"><span class="ph-title">Recent activity</span></div>
+        <div style="max-height:400px;overflow-y:auto;">
+          {% for log in logs[:20] %}
+          <div class="log-row">
+            <span class="log-time">{{ log.logged_at[11:19] }}</span>
+            <span class="log-user">{{ log.user_name or 'System' }}</span>
+            <span class="log-action">{{ log.action }}</span>
+            <span class="log-detail">{{ log.detail or '—' }}</span>
+          </div>
+          {% else %}<div class="empty">No activity</div>{% endfor %}
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- INVESTIGATORS -->
+  <div id="tab-investigators" style="display:none;">
+    <div class="panel">
+      <div class="ph"><span class="ph-title">All investigators</span><span class="bdg bdg-blue">{{ users|length }} users</span></div>
+      <div class="search-bar"><input class="search-input" type="text" placeholder="Search by name, email, badge..." oninput="filterTable('invTable',this.value)"></div>
+      <div class="tw"><table id="invTable">
+        <thead><tr><th>Name</th><th>Badge ID</th><th>Email</th><th>Role</th><th>Department</th><th>Last Login</th><th>Status</th></tr></thead>
+        <tbody>{% for u in users %}
+          <tr>
+            <td class="td-bold">{{ u.name }}</td>
+            <td class="td-mono" style="color:var(--blue)">{{ u.badge_id or '—' }}</td>
+            <td class="td-mono" style="font-size:11px">{{ u.email }}</td>
+            <td>
+              {% if u.role=='chief' %}<span class="role-chief">CHIEF</span>
+              {% elif u.role=='authority' %}<span class="role-auth">AUTHORITY</span>
+              {% else %}<span class="role-inv">INVESTIGATOR</span>{% endif %}
+            </td>
+            <td>{{ u.department or '—' }}</td>
+            <td class="td-mono" style="font-size:11px;color:var(--t2)">{{ u.last_login[:16] if u.last_login else 'Never' }}</td>
+            <td>{% if u.is_active %}<span class="status-active">ACTIVE</span>{% else %}<span class="status-inactive">DISABLED</span>{% endif %}</td>
+          </tr>
+        {% else %}<tr><td colspan="7"><div class="empty">No users</div></td></tr>{% endfor %}</tbody>
+      </table></div>
+    </div>
+  </div>
+
+  <!-- CASES -->
+  <div id="tab-cases" style="display:none;">
+    <div class="panel">
+      <div class="ph"><span class="ph-title">All investigations</span><span class="bdg bdg-blue">{{ cases|length }} cases</span></div>
+      <div class="search-bar"><input class="search-input" type="text" placeholder="Search cases..." oninput="filterTable('casesTable',this.value)"></div>
+      <div class="tw"><table id="casesTable">
+        <thead><tr><th>Case ID</th><th>Title</th><th>Investigator</th><th>Device 1</th><th>Device 2</th><th>Files</th><th>Flagged</th><th>Size</th><th>Threat</th><th>Status</th><th>Date</th></tr></thead>
+        <tbody>{% for c in cases %}
+          <tr>
+            <td class="td-mono" style="color:var(--blue);font-size:11px">{{ c.case_id }}</td>
+            <td class="td-bold">{{ c.title }}</td>
+            <td>{{ c.investigator_name or '—' }}</td>
+            <td class="td-mono" style="font-size:11px">{{ c.device1_model or '—' }}</td>
+            <td class="td-mono" style="font-size:11px">{{ c.device2_model or '—' }}</td>
+            <td class="td-mono">{{ c.total_files }}</td>
+            <td class="td-mono" style="color:var(--red)">{{ c.flagged_files }}</td>
+            <td class="td-mono">{{ c.total_size_mb }} MB</td>
+            <td><span class="rp rp-{{ c.threat_level[0] if c.threat_level else 'L' }}">{{ c.threat_level or 'LOW' }}</span></td>
+            <td><span class="bdg bdg-green" style="font-size:10px;padding:2px 7px;">{{ c.status }}</span></td>
+            <td class="td-mono" style="font-size:11px;color:var(--t2)">{{ c.created_at[:10] }}</td>
+          </tr>
+        {% else %}<tr><td colspan="11"><div class="empty">No cases</div></td></tr>{% endfor %}</tbody>
+      </table></div>
+    </div>
+  </div>
+
+  <!-- LOGS -->
+  <div id="tab-logs" style="display:none;">
+    <div class="panel">
+      <div class="ph"><span class="ph-title">System activity log</span><span class="bdg bdg-purple">{{ logs|length }} events</span></div>
+      <div class="search-bar"><input class="search-input" type="text" placeholder="Search logs..." oninput="filterTable('logsTable',this.value)"></div>
+      <div class="tw"><table id="logsTable">
+        <thead><tr><th>Time</th><th>User</th><th>Role</th><th>Action</th><th>Detail</th><th>IP</th></tr></thead>
+        <tbody>{% for log in logs %}
+          <tr>
+            <td class="td-mono" style="font-size:11px;color:var(--t2)">{{ log.logged_at }}</td>
+            <td class="td-bold">{{ log.user_name or 'System' }}</td>
+            <td>{% if log.role=='chief' %}<span class="role-chief">CHIEF</span>{% elif log.role=='authority' %}<span class="role-auth">AUTH</span>{% elif log.role %}<span class="role-inv">INV</span>{% else %}<span style="color:var(--t2);font-size:11px;">—</span>{% endif %}</td>
+            <td class="td-mono" style="color:var(--blue);font-size:11px">{{ log.action }}</td>
+            <td style="font-size:11px;max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">{{ log.detail or '—' }}</td>
+            <td class="td-mono" style="font-size:11px;color:var(--t2)">{{ log.ip_address or '—' }}</td>
+          </tr>
+        {% else %}<tr><td colspan="6"><div class="empty">No logs</div></td></tr>{% endfor %}</tbody>
+      </table></div>
+    </div>
+  </div>
+
+</main>
+</div>
+<div id="toast"></div>
+<script>
+setInterval(()=>document.getElementById('clock').textContent=new Date().toTimeString().slice(0,8),1000);
+function showTab(name,btn){
+  ['overview','investigators','cases','logs'].forEach(t=>document.getElementById('tab-'+t).style.display=t===name?'block':'none');
+  document.querySelectorAll('.sb-item').forEach(b=>b.classList.remove('active'));
+  if(btn)btn.classList.add('active');
+}
+function filterTable(tableId, query) {
+  const q = query.toLowerCase();
+  const rows = document.getElementById(tableId).querySelectorAll('tbody tr');
+  rows.forEach(row => {
+    row.style.display = row.textContent.toLowerCase().includes(q) ? '' : 'none';
+  });
+}
+</script>
+</body>
+</html>

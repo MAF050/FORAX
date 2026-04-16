@@ -1,0 +1,2690 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>FORAX — Dashboard</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@300;400;500&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<style>
+:root{
+  /* LIGHT MODE (Default) */
+  --bg:#f8fafc;--bg2:#f1f5f9;--surface:#fff;--border:#e2e8f0;--border2:#cbd5e1;
+  --t0:#0f172a;--t1:#334155;--t2:#64748b;
+  --blue:#2563eb;--blue2:#1d4ed8;--blue-light:#dbeafe;--blue-bd:#bfdbfe;
+  --green:#059669;--green-bg:#d1fae5;--green-bd:#a7f3d0;
+  --red:#dc2626;--red-bg:#fee2e2;--red-bd:#fecaca;
+  --amber:#d97706;--amber-bg:#fef3c7;--amber-bd:#fde68a;
+  --indigo:#4f46e5;--purple:#4f46e5;--pur-bg:#e0e7ff;--pur-bd:#c7d2fe;
+  --cyan:#0891b2;--cyan-bg:#cffafe;--cyan-bd:#a5f3fc;
+  --gold:#fbbf24;--gold-dark:#d97706;
+  --blue-bg:#dbeafe;
+  --mono:'DM Mono',monospace;--sans:'DM Sans',sans-serif;--r:12px;--rl:20px;
+  --sh:0 4px 6px -1px rgba(0,0,0,0.05), 0 10px 15px -3px rgba(0,0,0,0.02);
+  --sh2:0 20px 25px -5px rgba(0,0,0,0.06), 0 10px 10px -5px rgba(0,0,0,0.03);
+}
+
+[data-theme='dark'] {
+  --bg:#0f172a;--bg2:#1e293b;--surface:#0b0f19;--border:#334155;--border2:#475569;
+  --t0:#f8fafc;--t1:#cbd5e1;--t2:#94a3b8;
+  --blue:#3b82f6;--blue2:#60a5fa;--blue-light:#1e3a8a;--blue-bd:#2563eb;
+  --green:#10b981;--green-bg:#064e3b;--green-bd:#047857;
+  --red:#ef4444;--red-bg:#7f1d1d;--red-bd:#b91c1c;
+  --amber:#f59e0b;--amber-bg:#78350f;--amber-bd:#b45309;
+  --indigo:#6366f1;--purple:#a855f7;--pur-bg:#3b0764;--pur-bd:#7e22ce;
+  --cyan:#06b6d4;--cyan-bg:#164e63;--cyan-bd:#155e75;
+  --gold:#fbbf24;--gold-dark:#d97706;
+  --blue-bg:#1e3a8a;
+  --sh:0 4px 6px -1px rgba(0,0,0,0.5), 0 10px 15px -3px rgba(0,0,0,0.3);
+  --sh2:0 20px 25px -5px rgba(0,0,0,0.6), 0 10px 10px -5px rgba(0,0,0,0.4);
+}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+body{
+  background:var(--bg);
+  background-image: 
+    radial-gradient(at 0% 0%, hsla(253,16%,7%,0) 0, transparent 50%), 
+    radial-gradient(at 50% 0%, hsla(225,39%,30%,0) 0, transparent 50%), 
+    radial-gradient(at 100% 0%, hsla(339,49%,30%,0) 0, transparent 50%);
+  color:var(--t0);font-family:var(--sans);font-size:14px;min-height:100vh;display:flex;flex-direction:column;
+}
+/* Floating Elements for depth */
+.mesh-bg {
+  position:fixed; inset:0; z-index:-2;
+  background:
+    radial-gradient(circle at 10% 20%, rgba(37, 99, 235, 0.08), transparent 40%),
+    radial-gradient(circle at 90% 80%, rgba(6, 182, 212, 0.1), transparent 40%),
+    radial-gradient(circle at 50% 50%, rgba(79, 70, 229, 0.06), transparent 50%);
+  filter: blur(80px);
+  animation: pulse-mesh 15s ease-in-out infinite alternate;
+}
+@keyframes pulse-mesh {
+  0% { transform: scale(1); opacity:0.8; }
+  100% { transform: scale(1.1); opacity:1; }
+}
+/* TOPBAR */
+.topbar{
+  height:72px;
+  background:rgba(var(--surface-rgb), 0.85); /* fallback if I used RGB */
+  background:var(--surface);
+  border-bottom:1px solid var(--border);
+  backdrop-filter:blur(32px);-webkit-backdrop-filter:blur(32px);
+  display:flex;align-items:center;justify-content:space-between;padding:0 32px;
+  position:sticky;top:0;z-index:100;
+  box-shadow:var(--sh);
+  flex-shrink:0;
+}
+[data-theme='dark'] .topbar {
+  background:rgba(15,23,42,0.85);
+  border-bottom:1px solid rgba(255,255,255,0.08);
+}
+.logo-row{display:flex;align-items:center;gap:14px;}
+.logo-box{
+  width:44px;height:44px;border-radius:12px;
+  display:flex;align-items:center;justify-content:center;
+  background:linear-gradient(135deg,var(--blue) 0%,var(--purple) 100%);
+  box-shadow:0 6px 16px rgba(37,99,235,0.3);
+}
+.logo-box svg{width:24px;height:24px;stroke:#fff;fill:none;stroke-width:2;}
+.logo-name{font-family:var(--mono);font-size:20px;font-weight:600;letter-spacing:2px;background:linear-gradient(135deg,var(--t0),var(--t1));-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+.logo-sub{font-family:var(--sans);font-size:11px;color:var(--t2);letter-spacing:1.5px;font-weight:600;text-transform:uppercase;margin-top:2px;}
+.tr{display:flex;align-items:center;gap:12px;}
+.clk{font-family:var(--mono);font-size:13px;color:var(--t1);letter-spacing:1px;font-weight:500;margin-right:8px;}
+.bdg{display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border-radius:20px;font-family:var(--mono);font-size:11px;font-weight:600;letter-spacing:0.5px;}
+.bdg-blue{background:var(--blue-light);color:var(--blue);border:1px solid var(--blue-bd);}
+.bdg-green{background:var(--green-bg);color:var(--green);border:1px solid var(--green-bd);}
+.bdg-red{background:var(--red-bg);color:var(--red);border:1px solid var(--red-bd);}
+.bdg-amber{background:var(--amber-bg);color:var(--amber);border:1px solid var(--amber-bd);}
+.bdg-cyan{background:var(--cyan-bg);color:var(--cyan);border:1px solid var(--cyan-bd);}
+
+.btn-nav{
+  padding:8px 16px;border-radius:12px;border:1px solid #e2e8f0;
+  background:rgba(255,255,255,0.8);color:var(--t1);font-family:var(--sans);font-size:13px;font-weight:600;
+  cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;gap:6px;transition:all .3s;
+  box-shadow:0 1px 2px rgba(0,0,0,0.03);
+}
+.btn-nav:hover{background:#fff;color:var(--blue);border-color:var(--blue-bd);transform:translateY(-1px);box-shadow:0 4px 12px rgba(37,99,235,0.1);}
+.btn-nav svg{width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:2.5;}
+/* LAYOUT */
+.layout{display:flex;flex:1;overflow:hidden;}
+.sidebar{
+  width:260px;
+  background:rgba(255,255,255,0.7);backdrop-filter:blur(30px) saturate(200%);-webkit-backdrop-filter:blur(30px) saturate(200%);
+  border-right:1px solid rgba(255,255,255,0.6);
+  flex-shrink:0;display:flex;flex-direction:column;overflow-y:auto;
+}
+[data-theme='dark'] .sidebar{
+  background:rgba(15,23,42,0.85);border-right:1px solid rgba(255,255,255,0.08);
+}
+[data-theme='dark'] .sb-item.active{
+  background:rgba(59,130,246,0.15);color:var(--blue);
+  box-shadow:0 2px 4px rgba(0,0,0,0.2), inset 4px 0 0 var(--blue);
+}
+[data-theme='dark'] .sb-user{background:rgba(30,41,59,0.6);}
+.sb-nav{padding:16px 12px;flex:1;}
+.sb-sec{font-family:var(--sans);font-size:11px;font-weight:600;color:var(--t2);letter-spacing:1.5px;padding:16px 12px 6px;text-transform:uppercase;}
+.sb-item{
+  display:flex;align-items:center;gap:12px;padding:12px 16px;border-radius:12px;
+  cursor:pointer;color:var(--t1);font-family:var(--sans);font-size:14px;font-weight:500;border:none;background:none;
+  width:100%;text-align:left;transition:all .3s cubic-bezier(.4,0,.2,1);
+}
+.sb-item:hover{background:var(--bg2);color:var(--t0);transform:translateX(2px);}
+.sb-item.active{
+  background:rgba(255,255,255,0.9);color:var(--blue);font-weight:600;
+  box-shadow:0 2px 4px rgba(0,0,0,0.02), inset 4px 0 0 var(--blue);
+}
+.sb-item svg{width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:2;flex-shrink:0;}
+.sb-footer{padding:16px;border-top:1px solid rgba(0,0,0,0.04);}
+.sb-user{padding:14px;background:rgba(255,255,255,0.5);border-radius:16px;border:1px solid var(--border);}
+.sb-uname{font-family:var(--sans);font-size:14px;font-weight:600;color:var(--t0);margin-bottom:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.sb-ubadge{font-family:var(--mono);font-size:11px;color:var(--t2);letter-spacing:1px;font-weight:500;}
+
+/* MAIN */
+.main{flex:1;overflow-y:auto;padding:32px 40px;}
+
+/* PREMIUM EFFECTS */
+.glass {
+  background: var(--surface) !important;
+  backdrop-filter: blur(16px) saturate(180%);
+  -webkit-backdrop-filter: blur(16px) saturate(180%);
+  border: 1px solid var(--border) !important;
+}
+.glow-blue { box-shadow: 0 0 20px rgba(37, 99, 235, 0.15); }
+.glow-green { box-shadow: 0 0 20px rgba(16, 185, 129, 0.15); }
+.glow-red { box-shadow: 0 0 20px rgba(239, 68, 68, 0.15); }
+
+/* STATS */
+.sg{display:grid;grid-template-columns:repeat(5,1fr);gap:18px;margin-bottom:24px;}
+.sc{
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:var(--rl);padding:24px;box-shadow:var(--sh);
+  position:relative;overflow:hidden;transition:all .4s cubic-bezier(.4,1,.2,1);
+  animation:fadeInUp .6s both;
+}
+.sc:hover{transform:translateY(-8px);box-shadow:var(--sh2);border-color:var(--blue-bd);background:var(--bg2);}
+.sc-bar{position:absolute;top:0;left:0;right:0;height:4px;}
+.sc-label{font-family:var(--sans);font-size:11px;font-weight:600;color:var(--t2);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:8px;}
+.sc-value{font-family:var(--mono);font-size:36px;font-weight:600;line-height:1;margin-bottom:6px;letter-spacing:-1px;}
+.sc-sub{font-size:13px;color:var(--t2);font-weight:500;}
+
+/* PANEL */
+.panel{
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:var(--rl);overflow:hidden;box-shadow:var(--sh);
+  margin-bottom:24px;transition:all .3s cubic-bezier(.4,1,.2,1);
+}
+.panel:hover{box-shadow:var(--sh2);transform:translateY(-2px);border-color:var(--blue-bd);}
+.ph{
+  padding:20px 24px;border-bottom:1px solid var(--border);
+  background:var(--bg2);
+  display:flex;align-items:center;justify-content:space-between;
+}
+.ph-title{font-family:var(--sans);font-size:16px;font-weight:600;color:var(--t0);letter-spacing:0.5px;}
+.pb{padding:24px;}
+/* SECTION */
+.sec{font-family:var(--sans);font-size:12px;font-weight:600;color:var(--blue);letter-spacing:2px;text-transform:uppercase;margin-bottom:16px;display:flex;align-items:center;gap:10px;animation:slideInLeft 1s;}
+.sec::before{content:'';width:24px;height:3px;border-radius:1.5px;background:linear-gradient(90deg,var(--blue),var(--cyan));}
+/* TABLE */
+table{width:100%;border-collapse:separate;border-spacing:0;}
+th{font-family:var(--sans);font-size:11px;font-weight:600;color:var(--t2);letter-spacing:1px;text-align:left;padding:14px 18px;border-bottom:1px solid var(--border);text-transform:uppercase;background:var(--bg2);position:sticky;top:0;z-index:2;}
+td{padding:14px 18px;border-bottom:1px solid var(--border);font-size:13px;color:var(--t1);transition:background .2s;}
+tr:last-child td{border-bottom:none;}
+tr:hover td{background:var(--bg2);}
+.td-bold{color:var(--t0);font-weight:600;}
+.td-mono{font-family:var(--mono);font-weight:500;}
+.td-hash{font-family:var(--mono);font-size:11px;color:var(--t2);max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;display:inline-block;}
+
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:10px 20px;border-radius:12px;font-family:var(--sans);font-size:13px;font-weight:600;cursor:pointer;border:none;transition:all .3s cubic-bezier(.4,0,.2,1); animation:fadeIn .5s;}
+.btn svg{width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:2;}
+.btn-blue{
+  background:linear-gradient(135deg,var(--blue) 0%,var(--indigo) 100%);
+  color:#fff;box-shadow:0 4px 12px rgba(37,99,235,0.3);letter-spacing:0.5px;
+}
+.btn-blue:hover{transform:translateY(-2px);box-shadow:0 6px 16px rgba(37,99,235,0.4);}
+.btn-green{
+  background:linear-gradient(135deg,var(--green) 0%,var(--cyan) 100%);
+  color:#fff;box-shadow:0 4px 12px rgba(5,150,105,0.25);
+}
+.btn-green:hover{transform:translateY(-2px);box-shadow:0 6px 16px rgba(5,150,105,0.35);}
+.btn-out{background:rgba(255,255,255,0.8);color:var(--t1);border:1px solid #cbd5e1;box-shadow:0 1px 2px rgba(0,0,0,0.05);}
+.btn-out:hover{background:#f8fafc;border-color:var(--blue-bd);color:var(--blue);transform:translateY(-1px);}
+
+.btn-red{background:var(--red-bg);color:var(--red);border:1px solid var(--red-bd);}
+.btn-red:hover{background:#fef2f2;}
+.btn-green{background:linear-gradient(135deg,var(--green) 0%,#047857 100%);color:#fff;box-shadow:0 4px 12px rgba(5,150,105,0.3);letter-spacing:0.5px;}
+.btn-green:hover{transform:translateY(-2px);box-shadow:0 6px 16px rgba(5,150,105,0.4);}
+.btn-sm{padding:6px 14px;font-size:12px;}
+.btn:disabled{opacity:0.6;cursor:not-allowed;transform:none;box-shadow:none;}
+.spin{display:inline-block;width:14px;height:14px;border:2px solid rgba(255,255,255,.35);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg)}}
+/* lp = live pulse */
+@keyframes lp{0%,100%{opacity:1;transform:scale(1);}50%{opacity:.5;transform:scale(1.35);}}
+/* FORM */
+.fg{margin-bottom:16px;}
+.fg label{display:block;font-family:var(--sans);font-size:12px;font-weight:600;color:var(--t1);text-transform:none;margin-bottom:8px;}
+.fg input,.fg textarea,.fg select{width:100%;padding:12px 16px;background:rgba(255,255,255,0.8);border:1px solid #e2e8f0;border-radius:12px;color:var(--t0);font-family:var(--sans);font-size:14px;outline:none;transition:all .3s;}
+.fg input:focus,.fg textarea:focus,.fg select:focus{border-color:var(--blue);background:#fff;box-shadow:0 0 0 4px rgba(37,99,235,0.1);transform:translateY(-1px);}
+.fg input::placeholder,.fg textarea::placeholder{color:#94a3b8;font-weight:400;}
+.fg textarea{resize:vertical;min-height:64px;line-height:1.6;}
+.two-col-f{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+/* OVERLAY / MODAL */
+.overlay{position:fixed;inset:0;background:rgba(15,23,42,0.4);z-index:200;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);opacity:0;pointer-events:none;transition:all .4s cubic-bezier(.4,0,.2,1);padding:24px;}
+.overlay.show{opacity:1;pointer-events:all;}
+.modal{
+  display: block !important;
+  background:rgba(255,255,255,0.9);backdrop-filter:blur(30px) saturate(200%);
+  border:1px solid rgba(255,255,255,0.8);border-radius:24px;
+  padding:40px;width:100%;max-width:560px;
+  box-shadow:0 25px 50px -12px rgba(0,0,0,0.15), 0 0 0 1px rgba(255,255,255,0.4) inset;
+  animation:mIn .5s cubic-bezier(.16,1,.3,1);margin:auto;max-height:95vh;overflow-y:auto;
+  position:relative;
+}
+@keyframes mIn{from{opacity:0;transform:scale(.95) translateY(20px);}to{opacity:1;transform:scale(1);}}
+.m-title{font-size:22px;font-weight:600;margin-bottom:6px;color:var(--t0);letter-spacing:-0.5px;}
+.m-sub{font-size:14px;color:var(--t2);margin-bottom:24px;line-height:1.6;}
+.m-footer{display:flex;gap:12px;justify-content:flex-end;margin-top:24px;border-top:1px solid rgba(0,0,0,0.05);padding-top:24px;}
+/* MODAL CLOSE BUTTON */
+.modal-close-btn{
+  position:absolute;top:16px;right:16px;
+  width:32px;height:32px;border-radius:50%;
+  background:var(--bg2);border:1px solid var(--border);
+  color:var(--t2);font-size:18px;line-height:1;
+  display:flex;align-items:center;justify-content:center;
+  cursor:pointer;transition:all .2s;flex-shrink:0;
+}
+.modal-close-btn:hover{background:var(--red-bg);border-color:var(--red-bd);color:var(--red);transform:scale(1.1);}
+/* MSG */
+.msg{padding:14px 16px;border-radius:12px;font-size:13px;margin-bottom:16px;display:none;font-weight:500;}
+.msg.show{display:block;}
+.msg.error{background:var(--red-bg);border:1px solid var(--red-bd);color:var(--red);}
+.msg.success{background:var(--green-bg);border:1px solid var(--green-bd);color:var(--green);}
+/* RISK PILL */
+.rp{font-family:var(--sans);font-size:11px;font-weight:600;padding:4px 10px;border-radius:8px;}
+.rp-H{background:var(--red-bg);color:var(--red);border:1px solid var(--red-bd);}
+.rp-M{background:var(--amber-bg);color:var(--amber);border:1px solid var(--amber-bd);}
+.rp-L{background:var(--green-bg);color:var(--green);border:1px solid var(--green-bd);}
+/* TOAST */
+#toast{
+  position:fixed;bottom:32px;right:32px;
+  background:linear-gradient(135deg,var(--t0),var(--t1));
+  color:#fff;border-radius:12px;padding:16px 24px;
+  font-family:var(--sans);font-weight:500;font-size:14px;z-index:999;
+  transform:translateY(80px);opacity:0;
+  transition:all .4s cubic-bezier(.16,1,.3,1);
+  box-shadow:0 10px 25px rgba(0,0,0,0.2);
+}
+#toast.show{transform:translateY(0);opacity:1;}
+.clickable-ai {
+  cursor: pointer;
+  text-decoration: underline dotted;
+  transition: color 0.2s;
+}
+.clickable-ai:hover {
+  color: var(--blue);
+}
+.reasoning-box {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 16px;
+  margin-top: 12px;
+  font-family: var(--sans);
+  font-size: 13px;
+  color: var(--t1);
+  line-height: 1.6;
+  white-space: pre-wrap;
+  box-shadow: inset 0 2px 4px rgba(0,0,0,0.02);
+}
+
+/* FORENSIC AI DRAWER */
+.forensic-drawer {
+  position:fixed; top:0; right:-420px; width:400px; height:100vh;
+  background: var(--surface); backdrop-filter: blur(32px); border-left: 1px solid var(--border);
+  z-index: 1000; box-shadow: -10px 0 30px rgba(0,0,0,0.1);
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  display: flex; flex-direction: column; padding: 0;
+}
+.forensic-drawer.show { right: 0; }
+.forensic-header {
+  padding: 32px 24px 24px; border-bottom: 1px solid var(--border);
+  background: linear-gradient(135deg, rgba(37,99,235,0.05) 0%, rgba(79,70,229,0.05) 100%);
+}
+.forensic-body { padding: 24px; flex: 1; overflow-y: auto; }
+.forensic-ai-msg {
+  background: var(--bg2); border: 1px solid var(--border); border-radius: 12px; padding: 20px;
+  font-size: 13px; line-height: 1.6; color: var(--t1); position: relative;
+  animation: slideInUp 0.6s both;
+}
+.forensic-ai-msg::before {
+  content: "AI REASONING"; position: absolute; top: -10px; left: 16px;
+  background: var(--blue); color: #fff; font-size: 9px; font-weight: 700;
+  padding: 2px 8px; border-radius: 4px; letter-spacing: 1px;
+}
+.forensic-footer { padding: 24px; border-top: 1px solid var(--border); }
+
+/* Icons for new types */
+.ic-doc { color: #2563eb; }
+.ic-vid { color: #dc2626; }
+.ic-xls { color: #059669; }
+/* EMPTY */
+.empty{text-align:center;padding:32px;font-family:var(--mono);font-size:12px;color:var(--t2);}
+/* CHART */
+.chart-wrap{position:relative;height:200px;}
+/* TWOCOL */
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+.two-col-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;}
+/* TABLE WRAP */
+.tw{overflow-x:auto;max-height:460px;overflow-y:auto;}
+.tw::-webkit-scrollbar{width:4px;height:4px;}
+.tw::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px;}
+/* CASE CARD */
+.case-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--rl);
+  padding:16px;cursor:pointer;transition:all .2s;box-shadow:var(--sh);}
+.case-card:hover{box-shadow:var(--sh2);border-color:var(--border2);}
+.case-card.selected{border-color:var(--blue);box-shadow:0 0 0 3px rgba(37,99,235,.1);}
+.cc-id{font-family:var(--mono);font-size:11px;color:var(--blue);margin-bottom:4px;}
+.cc-title{font-size:14px;font-weight:600;margin-bottom:6px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.cc-meta{font-family:var(--mono);font-size:11px;color:var(--t2);}
+.cc-foot{display:flex;align-items:center;justify-content:space-between;margin-top:10px;padding-top:10px;border-top:1px solid var(--border);}
+/* actions bar */
+.active-case-banner{background:var(--blue-bg);border:1px solid var(--blue-bd);
+  border-radius:var(--rl);padding:12px 18px;margin-bottom:16px;
+  display:flex;align-items:center;justify-content:space-between;}
+.acb-left{display:flex;align-items:center;gap:8px;}
+.acb-left svg{width:15px;height:15px;stroke:var(--blue);fill:none;stroke-width:1.5;}
+.acb-title{font-family:var(--mono);font-size:12px;color:var(--blue);font-weight:500;}
+.acb-sub{font-family:var(--mono);font-size:11px;color:var(--t2);}
+/* breakdown */
+.bd-item{margin-bottom:9px;}
+.bd-hd{display:flex;justify-content:space-between;margin-bottom:3px;font-family:var(--mono);font-size:11px;}
+.bd-label{color:var(--t1);}
+.bd-val{color:var(--blue);font-weight:500;}
+.bd-track{height:5px;background:var(--border);border-radius:3px;overflow:hidden;}
+.bd-fill{height:100%;border-radius:3px;transition:width .7s ease;}
+/* tab strip */
+.tab-strip{display:flex;gap:0;background:var(--bg);border:1px solid var(--border);
+  border-radius:var(--rl);padding:3px;margin-bottom:16px;}
+.tab-btn{
+  flex:1;padding:8px;border:none;background:none;font-family:var(--mono);font-size:11px;
+  color:var(--t1);border-radius:8px;cursor:pointer;transition:all .25s;letter-spacing:.5px;
+}
+.tab-btn.active{
+  background:linear-gradient(135deg,var(--blue),var(--purple));
+  color:#fff;box-shadow:0 3px 10px rgba(79,70,229,.28);
+}
+/* evidence filter */
+.ev-filter{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px;}
+.ef-btn{padding:5px 12px;border-radius:20px;border:1px solid var(--border2);background:var(--surface);
+  color:var(--t1);font-family:var(--mono);font-size:11px;cursor:pointer;transition:all .15s;}
+.ef-btn:hover,.ef-btn.active{background:var(--blue-bg);color:var(--blue);border-color:var(--blue-bd);}
+/* LIGHTBOX */
+.lightbox-overlay{position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:300;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .25s;}
+.lightbox-overlay.show{opacity:1;pointer-events:all;}
+.lightbox-img{max-width:90vw;max-height:85vh;border-radius:12px;box-shadow:0 12px 48px rgba(0,0,0,.5);}
+.lightbox-close{position:absolute;top:20px;right:24px;width:40px;height:40px;background:rgba(255,255,255,.15);border:none;border-radius:50%;color:#fff;font-size:20px;cursor:pointer;}
+.lightbox-info{position:absolute;bottom:20px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,.7);border-radius:10px;padding:10px 20px;color:#fff;font-family:var(--mono);font-size:11px;text-align:center;}
+/* SEARCH */
+.search-box{position:relative;}
+.search-input{width:220px;padding:7px 12px 7px 32px;background:var(--bg);border:1px solid var(--border2);border-radius:var(--r);font-family:var(--mono);font-size:11px;color:var(--t0);outline:none;transition:all .2s;}
+.search-input:focus{border-color:var(--blue);width:300px;background:#fff;box-shadow:0 0 0 3px rgba(37,99,235,.08);}
+.search-icon{position:absolute;left:10px;top:50%;transform:translateY(-50%);width:14px;height:14px;stroke:var(--t2);fill:none;stroke-width:2;}
+.search-results{position:absolute;top:100%;left:0;right:0;min-width:360px;max-height:420px;overflow-y:auto;background:var(--surface);border:1px solid var(--border);border-radius:var(--rl);box-shadow:0 12px 36px rgba(0,0,0,.12);z-index:100;display:none;margin-top:4px;}
+.search-results.show{display:block;}
+.sr-sec{font-family:var(--mono);font-size:10px;color:var(--t2);letter-spacing:1px;padding:8px 14px;border-bottom:1px solid var(--border);background:var(--bg2);text-transform:uppercase;}
+.sr-item{padding:9px 14px;border-bottom:1px solid var(--border);cursor:pointer;transition:background .1s;}
+.sr-item:hover{background:var(--blue-bg);}
+.sr-name{font-size:13px;font-weight:500;}
+.sr-meta{font-family:var(--mono);font-size:10px;color:var(--t2);margin-top:2px;}
+/* MAP */
+#mapContainer{height:440px;border-radius:var(--rl);overflow:hidden;border:1px solid var(--border);}
+/* SESSION TIMER */
+.session-timer{font-family:var(--mono);font-size:10px;color:var(--amber);}
+.dl-types{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px;min-width:360px;}
+.dl-type-item{display:flex;align-items:center;gap:6px;padding:6px 8px;background:var(--surface);border:1px solid var(--border2);border-radius:8px;font-family:var(--mono);font-size:10px;color:var(--t1);}
+.dl-type-item input{accent-color:var(--blue);}
+.dl-types-actions{display:flex;gap:6px;}
+.dl-link-btn{padding:6px 10px;border:1px solid var(--border2);border-radius:8px;background:var(--surface);font-family:var(--mono);font-size:10px;color:var(--blue);cursor:pointer;}
+.dl-link-btn:hover{background:var(--blue-bg);border-color:var(--blue-bd);}
+@media(max-width:900px){.sg{grid-template-columns:repeat(3,1fr);}.sidebar{display:none;}.two-col{grid-template-columns:1fr;}.search-input{width:140px;}.search-input:focus{width:200px;}}
+
+/* TIMELINE */
+.timeline-item{position:relative;padding:0 0 28px 40px;border-left:2px solid var(--border2);}
+.timeline-item:last-child{border-left-color:transparent;padding-bottom:0;}
+.timeline-dot{position:absolute;left:-7px;top:2px;width:12px;height:12px;border-radius:50%;border:2px solid var(--surface);z-index:1;}
+.timeline-time{font-family:var(--mono);font-size:10px;color:var(--t2);margin-bottom:4px;letter-spacing:.5px;}
+.timeline-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:14px 16px;transition:all .2s;box-shadow:var(--sh);}
+.timeline-card:hover{border-color:var(--blue-bd);box-shadow:var(--sh2);transform:translateX(4px);}
+.timeline-title{font-size:13px;font-weight:600;color:var(--t0);margin-bottom:6px;}
+.timeline-desc{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px;}
+.timeline-meta{border-top:1px solid var(--border);padding-top:8px;}
+</style>
+
+</head>
+<body>
+<div class="mesh-bg"></div>
+<!-- TOPBAR -->
+<header class="topbar">
+  <div class="logo-row">
+    <div class="logo-box"><img src="/static/img/forax_logo.png" style="width:100%;height:100%;border-radius:12px;object-fit:cover;"></div>
+    <div><div class="logo-name">FORAX</div><div class="logo-sub">INVESTIGATOR DASHBOARD</div></div>
+  </div>
+  <div class="tr">
+    <div class="search-box">
+      <svg class="search-icon" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      <input class="search-input" id="searchInput" placeholder="Search cases, evidence..." autocomplete="off">
+      <div class="search-results" id="searchResults"></div>
+    </div>
+    <span class="clk" id="clock">--:--:--</span>
+    <span class="session-timer" id="sessionTimer" title="Session timeout"></span>
+    <span class="bdg bdg-blue" id="activeBadge">NO CASE</span>
+    <button class="btn-nav" id="themeToggle" onclick="toggleTheme()" title="Switch Theme">Theme</button>
+    <a href="/logout" class="btn-nav"><svg viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>Logout</a>
+  </div>
+</header>
+
+<div class="layout">
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <nav class="sb-nav">
+    <div class="sb-sec">Investigation</div>
+    <button class="sb-item active" onclick="showTab('overview', this)">Overview</button>
+    <button class="sb-item" onclick="showTab('cases', this)">Investigations</button>
+    <button class="sb-item" onclick="showTab('extraction', this)">Live Extraction</button>
+    <button class="sb-item" onclick="showTab('evidence', this)">Evidence Viewer</button>
+    <button class="sb-item" onclick="showTab('analysis', this)">AI Intelligence</button>
+    <button class="sb-item" onclick="showTab('timeline', this)">Timeline Builder</button>
+    <button class="sb-item" onclick="showTab('map', this)">Evidence Map</button>
+    <div style="flex:1"></div>
+    <button class="sb-item" onclick="showTab('settings', this)">Settings</button>
+  </nav>
+  <div class="sb-footer">
+    <div class="sb-user">
+      <div class="sb-uname">{{ user.name if user else 'Investigator' }}</div>
+      <div class="sb-ubadge">{{ user.badge_id if user and user.badge_id else '—' }}</div>
+    </div>
+  </div>
+</aside>
+
+<!-- MAIN -->
+<main class="main">
+
+<!-- OVERVIEW TAB -->
+<div id="tab-overview">
+  <div class="sg">
+    <div class="sc glow-blue"><div class="sc-bar" style="background:var(--blue)"></div><div class="sc-label">Total Cases</div><div class="sc-value" style="color:var(--blue)">{{ cases|length }}</div><div class="sc-sub">cases</div></div>
+    <div class="sc glass"><div class="sc-bar" style="background:var(--green)"></div><div class="sc-label">Evidence</div><div class="sc-value" style="color:var(--green)" id="ov-evidence">{{ cases|sum(attribute='total_files') }}</div><div class="sc-sub">extracted</div></div>
+    <div class="sc glow-red"><div class="sc-bar" style="background:var(--red)"></div><div class="sc-label">Flagged</div><div class="sc-value" style="color:var(--red)" id="ov-flagged">{{ cases|sum(attribute='flagged_files') }}</div><div class="sc-sub">risk identified</div></div>
+    <div class="sc glass"><div class="sc-bar" style="background:var(--amber)"></div><div class="sc-label">Active</div><div class="sc-value" style="color:var(--amber)">{{ cases|selectattr('status','eq','active')|list|length }}</div><div class="sc-sub">open</div></div>
+    <div class="sc glass"><div class="sc-bar" style="background:var(--purple)"></div><div class="sc-label">Total Size</div><div class="sc-value" style="color:var(--purple)">{{ "%.1f"|format(cases|sum(attribute='total_size_mb')) }} MB</div><div class="sc-sub">storage</div></div>
+  </div>
+
+  <div class="two-col">
+    <div>
+      <div class="sec">Recent cases</div>
+      <div class="panel">
+        <div class="ph"><span class="ph-title">My investigations</span>
+          <button class="btn btn-blue btn-sm" onclick="openNewCase()">
+            <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>New Case
+          </button>
+        </div>
+        <div class="tw"><table>
+          <thead><tr><th>Case ID</th><th>Title</th><th>Files</th><th>Threat</th><th>Date</th><th style="width:40px;"></th></tr></thead>
+          <tbody>
+            {% for c in cases[:8] %}
+            <tr onclick="selectCase('{{ c.case_id }}','{{ c.title }}')" style="cursor:pointer;">
+              <td class="td-mono" style="color:var(--blue);font-size:11px">{{ c.case_id }}</td>
+              <td class="td-bold">{{ c.title }}</td>
+              <td class="td-mono">{{ c.total_files }}</td>
+              <td><span class="rp rp-{{ c.threat_level[0] if c.threat_level else 'L' }}">{{ c.threat_level or 'LOW' }}</span></td>
+              <td class="td-mono" style="font-size:11px;color:var(--t2)">{{ c.created_at[:10] }}</td>
+              <td>
+                <button onclick="event.stopPropagation(); deleteCase('{{ c.case_id }}')" class="btn-out" style="padding:4px; border-radius:5px; color:var(--red); border:1px solid var(--red-bd); background:var(--red-bg);" title="Delete Case">🗑️</button>
+              </td>
+            </tr>
+            {% else %}
+            <tr><td colspan="6"><div class="empty">No cases yet — create your first case</div></td></tr>
+            {% endfor %}
+          </tbody>
+        </table></div>
+      </div>
+    </div>
+    <div>
+      <div class="sec">Active case actions</div>
+      <div id="activeCaseCard" class="panel">
+        <div class="ph"><span class="ph-title">Selected case</span></div>
+        <div class="pb">
+          <div id="acInfo" style="font-family:var(--mono);font-size:12px;color:var(--t2);margin-bottom:16px;">Click a case from the table to select it, then perform actions below.</div>
+          <div style="display:flex;flex-direction:column;gap:8px;">
+            <button class="btn btn-blue" onclick="goExtract()" style="justify-content:center;">
+              <svg viewBox="0 0 24 24"><polyline points="8 17 12 21 16 17"/><line x1="12" y1="12" x2="12" y2="21"/><path d="M20.88 18.09A5 5 0 0018 9h-1.26A8 8 0 103 16.29"/></svg>🚀 Start Extraction
+            </button>
+            <button class="btn btn-out" onclick="showTab('evidence',null);loadEvidence()" style="justify-content:center;">
+              <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>🔍 View Evidence
+            </button>
+            <button class="btn btn-out" onclick="showTab('analysis',null);runAnalysis()" style="justify-content:center;">
+              <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>🧠 Run AI Analysis
+            </button>
+            <button class="btn btn-out" onclick="generateReport()" style="justify-content:center;">
+              <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>📄 Generate Report
+            </button>
+            <button class="btn btn-red" onclick="deleteCase(activeCaseId)" style="justify-content:center; margin-top: 8px;">
+              <svg viewBox="0 0 24 24"><path d="M3 6h18M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/></svg>🗑️ Delete Case
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- CASES TAB -->
+<div id="tab-cases" style="display:none;">
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
+    <div class="sec" style="margin:0;">All my cases</div>
+    <button class="btn btn-blue" onclick="openNewCase()">
+      <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>New Case
+    </button>
+  </div>
+  <div class="panel">
+    <div class="tw"><table>
+      <thead><tr><th>Case ID</th><th>Title</th><th>Device 1</th><th>Device 2</th><th>Files</th><th>Flagged</th><th>Size</th><th>Threat</th><th>Status</th><th>Created</th><th style="width:40px;"></th></tr></thead>
+      <tbody>
+        {% for c in cases %}
+        <tr onclick="selectCase('{{ c.case_id }}','{{ c.title }}')" style="cursor:pointer;">
+          <td class="td-mono" style="color:var(--blue);font-size:11px">{{ c.case_id }}</td>
+          <td class="td-bold">{{ c.title }}</td>
+          <td class="td-mono" style="font-size:11px">{{ c.device1_model or '—' }}</td>
+          <td class="td-mono" style="font-size:11px">{{ c.device2_model or '—' }}</td>
+          <td class="td-mono">{{ c.total_files }}</td>
+          <td class="td-mono" style="color:var(--red)">{{ c.flagged_files }}</td>
+          <td class="td-mono">{{ c.total_size_mb }} MB</td>
+          <td><span class="rp rp-{{ c.threat_level[0] if c.threat_level else 'L' }}">{{ c.threat_level or 'LOW' }}</span></td>
+          <td><span class="bdg bdg-green" style="font-size:10px;">{{ c.status }}</span></td>
+          <td class="td-mono" style="font-size:11px;color:var(--t2)">{{ c.created_at[:10] }}</td>
+          <td>
+            <button onclick="event.stopPropagation(); deleteCase('{{ c.case_id }}')" class="btn-out" style="padding:4px; border-radius:5px; color:var(--red); border:1px solid var(--red-bd); background:var(--red-bg);" title="Delete Case">🗑️</button>
+          </td>
+        </tr>
+        {% else %}
+        <tr><td colspan="11"><div class="empty">No cases yet</div></td></tr>
+        {% endfor %}
+      </tbody>
+    </table></div>
+  </div>
+</div>
+
+<!-- EXTRACTION TAB (FULL — Embedded) -->
+<div id="tab-extraction" style="display:none;">
+  <div id="extNoCaseMsg" style="display:none;">
+    <div style="background:var(--amber-bg);border:1px solid var(--amber-bd);border-radius:var(--rl);padding:14px 18px;margin-bottom:16px;font-family:var(--mono);font-size:12px;color:var(--amber);">
+      ⚠ Select a case first — click a row in My Cases or Overview
+    </div>
+  </div>
+  <div id="extContent">
+    <!-- CASE BANNER -->
+    <div style="background:var(--blue-bg);border:1px solid var(--blue-bd);border-radius:var(--rl);padding:11px 16px;margin-bottom:12px;display:flex;align-items:center;justify-content:space-between;" id="extCaseBanner" class="active-case-banner">
+      <div class="acb-left">
+        <svg viewBox="0 0 24 24" style="width:15px;height:15px;stroke:var(--blue);fill:none;stroke-width:1.5;"><path d="M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 3h9a2 2 0 012 2z"/></svg>
+        <div><div class="acb-title" id="extCaseId">—</div><div class="acb-sub" id="extCaseTitle">—</div></div>
+      </div>
+      <span class="bdg bdg-green" id="extLiveBadge" style="display:none;"><span style="width:7px;height:7px;border-radius:50%;background:var(--green);display:inline-block;animation:lp 1.4s ease-in-out infinite;margin-right:4px;"></span>⚡ LIVE</span>
+    </div>
+
+    <!-- SECURITY STRIP -->
+    <div style="background:var(--pur-bg);border:1px solid var(--pur-bd);border-radius:var(--rl);padding:9px 14px;margin-bottom:12px;display:flex;gap:12px;flex-wrap:wrap;align-items:center;">
+      <span style="font-family:var(--mono);font-size:10px;color:var(--purple);display:flex;align-items:center;gap:4px;"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>SHA-256 Chain</span>
+      <span style="font-family:var(--mono);font-size:10px;color:var(--purple);display:flex;align-items:center;gap:4px;"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>ADB Secure</span>
+      <span style="font-family:var(--mono);font-size:10px;color:var(--purple);display:flex;align-items:center;gap:4px;"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>Real-Time SSE</span>
+      <span style="font-family:var(--mono);font-size:10px;color:var(--purple);display:flex;align-items:center;gap:4px;"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="2" width="14" height="20" rx="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg>Dual Device</span>
+    </div>
+
+    <!-- LIVE STATS (4-col in dashboard) -->
+    <div style="display:grid;grid-template-columns:repeat(6,1fr);gap:10px;margin-bottom:12px;">
+      <div class="sc"><div class="sc-bar" style="background:var(--blue)"></div><div class="sc-label">Total Files</div><div class="sc-value" id="ex-s-total" style="color:var(--blue)">0</div><div class="sc-sub">extracted</div></div>
+      <div class="sc"><div class="sc-bar" style="background:#2563eb"></div><div class="sc-label">Images</div><div class="sc-value" id="ex-s-images" style="color:#2563eb">0</div><div class="sc-sub">photos</div></div>
+      <div class="sc"><div class="sc-bar" style="background:var(--green)"></div><div class="sc-label">WhatsApp</div><div class="sc-value" id="ex-s-chats" style="color:var(--green)">0</div><div class="sc-sub">databases</div></div>
+      <div class="sc"><div class="sc-bar" style="background:var(--red)"></div><div class="sc-label">High Risk</div><div class="sc-value" id="ex-s-high" style="color:var(--red)">0</div><div class="sc-sub">flagged</div></div>
+      <div class="sc"><div class="sc-bar" style="background:var(--purple)"></div><div class="sc-label">Data Size</div><div class="sc-value" id="ex-s-size" style="color:var(--purple)">0 MB</div><div class="sc-sub">extracted</div></div>
+      <div class="sc"><div class="sc-bar" style="background:var(--green)"></div><div class="sc-label">Rate</div><div class="sc-value" id="ex-s-rate" style="color:var(--green)">0 KB/s</div><div class="sc-sub">transfer</div></div>
+    </div>
+
+    <!-- DEVICE PROGRESS -->
+    <div class="panel" style="margin-bottom:12px;">
+      <div class="ph"><span class="ph-title">Live Extraction Progress</span><span class="ph-title" id="exOverallPct" style="font-weight:400;color:var(--t2);">Overall: 0%</span></div>
+      <div style="padding:14px;">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
+          <!-- D1 -->
+          <div id="exDp1" style="background:var(--bg);border:2px dashed var(--border2);border-radius:var(--r);padding:12px;transition:all .3s;">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;">
+              <div><div style="font-size:13px;font-weight:600;" id="exDpName1">Device 1 — Not Connected</div>
+                <div style="font-family:var(--mono);font-size:10px;color:var(--t1);" id="exDpModel1">Connect via USB · Enable USB Debugging</div></div>
+              <span style="font-family:var(--mono);font-size:10px;font-weight:500;padding:3px 8px;border-radius:4px;background:var(--bg2);color:var(--t2);border:1px solid var(--border);" id="exDps1">IDLE</span>
+            </div>
+            <div style="margin-bottom:6px;">
+              <div style="display:flex;justify-content:space-between;margin-bottom:3px;font-family:var(--mono);font-size:11px;">
+                <span style="color:var(--t1);" id="exPStep1">Waiting...</span><span style="color:var(--blue);font-weight:500;" id="exPPct1">0%</span>
+              </div>
+              <div style="height:7px;background:var(--border);border-radius:4px;overflow:hidden;"><div id="exPFill1" style="height:100%;border-radius:4px;background:linear-gradient(90deg,var(--blue),#60a5fa);transition:width .5s ease;width:0%;"></div></div>
+              <div style="font-family:var(--mono);font-size:10px;color:var(--t2);margin-top:2px;" id="exPDetail1">—</div>
+            </div>
+            <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:5px;">
+              <div style="background:var(--surface);border:1px solid var(--border);border-radius:5px;padding:5px;text-align:center;"><div style="font-family:var(--mono);font-size:12px;font-weight:500;" id="exD1Files">0</div><div style="font-family:var(--mono);font-size:8px;color:var(--t2);">FILES</div></div>
+              <div style="background:var(--surface);border:1px solid var(--border);border-radius:5px;padding:5px;text-align:center;"><div style="font-family:var(--mono);font-size:12px;font-weight:500;" id="exD1Size">0 MB</div><div style="font-family:var(--mono);font-size:8px;color:var(--t2);">SIZE</div></div>
+              <div style="background:var(--surface);border:1px solid var(--border);border-radius:5px;padding:5px;text-align:center;"><div style="font-family:var(--mono);font-size:12px;font-weight:500;color:var(--red);" id="exD1High">0</div><div style="font-family:var(--mono);font-size:8px;color:var(--t2);">HIGH RISK</div></div>
+              <div style="background:var(--surface);border:1px solid var(--border);border-radius:5px;padding:5px;text-align:center;"><div style="font-family:var(--mono);font-size:12px;font-weight:500;color:var(--green);" id="exD1Hash">0</div><div style="font-family:var(--mono);font-size:8px;color:var(--t2);">HASHED</div></div>
+            </div>
+          </div>
+          <!-- D2 -->
+          <div id="exDp2" style="background:var(--bg);border:2px dashed var(--border2);border-radius:var(--r);padding:12px;transition:all .3s;">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;">
+              <div><div style="font-size:13px;font-weight:600;" id="exDpName2">Device 2 — Not Connected</div>
+                <div style="font-family:var(--mono);font-size:10px;color:var(--t1);" id="exDpModel2">Optional — second phone</div></div>
+              <span style="font-family:var(--mono);font-size:10px;font-weight:500;padding:3px 8px;border-radius:4px;background:var(--bg2);color:var(--t2);border:1px solid var(--border);" id="exDps2">IDLE</span>
+            </div>
+            <div style="margin-bottom:6px;">
+              <div style="display:flex;justify-content:space-between;margin-bottom:3px;font-family:var(--mono);font-size:11px;">
+                <span style="color:var(--t1);" id="exPStep2">Waiting...</span><span style="color:var(--blue);font-weight:500;" id="exPPct2">0%</span>
+              </div>
+              <div style="height:7px;background:var(--border);border-radius:4px;overflow:hidden;"><div id="exPFill2" style="height:100%;border-radius:4px;background:linear-gradient(90deg,var(--green),#34d399);transition:width .5s ease;width:0%;"></div></div>
+              <div style="font-family:var(--mono);font-size:10px;color:var(--t2);margin-top:2px;" id="exPDetail2">—</div>
+            </div>
+            <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:5px;">
+              <div style="background:var(--surface);border:1px solid var(--border);border-radius:5px;padding:5px;text-align:center;"><div style="font-family:var(--mono);font-size:12px;font-weight:500;" id="exD2Files">0</div><div style="font-family:var(--mono);font-size:8px;color:var(--t2);">FILES</div></div>
+              <div style="background:var(--surface);border:1px solid var(--border);border-radius:5px;padding:5px;text-align:center;"><div style="font-family:var(--mono);font-size:12px;font-weight:500;" id="exD2Size">0 MB</div><div style="font-family:var(--mono);font-size:8px;color:var(--t2);">SIZE</div></div>
+              <div style="background:var(--surface);border:1px solid var(--border);border-radius:5px;padding:5px;text-align:center;"><div style="font-family:var(--mono);font-size:12px;font-weight:500;color:var(--red);" id="exD2High">0</div><div style="font-family:var(--mono);font-size:8px;color:var(--t2);">HIGH RISK</div></div>
+              <div style="background:var(--surface);border:1px solid var(--border);border-radius:5px;padding:5px;text-align:center;"><div style="font-family:var(--mono);font-size:12px;font-weight:500;color:var(--green);" id="exD2Hash">0</div><div style="font-family:var(--mono);font-size:8px;color:var(--t2);">HASHED</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CONTROLS -->
+    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px;">
+      <button class="btn btn-blue" id="exBtnScan" onclick="exScanDevices()">
+        <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>🔍 Scan Devices
+      </button>
+      <button class="btn btn-green" id="exBtnExtract" onclick="exStartExtraction()" disabled>
+        <svg viewBox="0 0 24 24"><polyline points="8 17 12 21 16 17"/><line x1="12" y1="12" x2="12" y2="21"/><path d="M20.88 18.09A5 5 0 0018 9h-1.26A8 8 0 103 16.29"/></svg>📥 Extract Evidence
+      </button>
+      <button class="btn" id="exBtnPause" onclick="exTogglePause()" disabled
+              style="background:var(--amber-bg);color:var(--amber);border:1.5px solid var(--amber-bd);"
+              title="Pause / Resume extraction between steps">
+        <svg viewBox="0 0 24 24" id="exPauseIcon"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg><span id="exPauseLabel">Pause</span>
+      </button>
+      <button class="btn" id="exBtnStop" onclick="exStopExtraction()" disabled
+              style="background:linear-gradient(135deg,#dc2626,#b91c1c);color:#fff;box-shadow:0 3px 12px rgba(220,38,38,.3);"
+              title="Stop extraction permanently (files already extracted are kept)">
+        <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/></svg>Stop
+      </button>
+      <button class="btn btn-out" onclick="exDemoMode()">
+        <svg viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg>🎬 Demo Mode
+      </button>
+      <button class="btn btn-out" id="exBtnSave" onclick="exSaveEvidence()" disabled>
+        <svg viewBox="0 0 24 24"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/></svg>Save to Case
+      </button>
+      <button class="btn btn-out" onclick="exExportCSV()">
+        <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>Export CSV
+      </button>
+      <button class="btn btn-red" onclick="exResetAll()">
+        <svg viewBox="0 0 24 24"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 102.13-9.36L1 10"/></svg>Reset
+      </button>
+    </div>
+
+    <!-- CHAIN OF CUSTODY -->
+    <div style="background:var(--green-bg);border:1px solid var(--green-bd);border-radius:var(--rl);margin-bottom:12px;overflow:hidden;">
+      <div style="padding:9px 14px;border-bottom:1px solid var(--green-bd);display:flex;align-items:center;justify-content:space-between;background:linear-gradient(135deg,#ecfdf5,#d1fae5);">
+        <span style="font-family:var(--mono);font-size:11px;font-weight:500;color:var(--green);">🛡 Chain of Custody — Evidence Integrity</span>
+        <span class="bdg bdg-amber" id="exCustStatus" style="font-size:10px;">STANDBY</span>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(6,1fr);">
+        <div style="padding:10px 12px;border-right:1px solid var(--green-bd);"><div style="font-family:var(--mono);font-size:9px;color:var(--green);letter-spacing:1px;margin-bottom:3px;">CASE ID</div><div style="font-family:var(--mono);font-size:11px;font-weight:500;color:var(--blue);" id="exCiCase">—</div></div>
+        <div style="padding:10px 12px;border-right:1px solid var(--green-bd);"><div style="font-family:var(--mono);font-size:9px;color:var(--green);letter-spacing:1px;margin-bottom:3px;">INVESTIGATOR</div><div style="font-family:var(--mono);font-size:11px;font-weight:500;" id="exCiInv">{{ user.name if user else '—' }}</div></div>
+        <div style="padding:10px 12px;border-right:1px solid var(--green-bd);"><div style="font-family:var(--mono);font-size:9px;color:var(--green);letter-spacing:1px;margin-bottom:3px;">STARTED</div><div style="font-family:var(--mono);font-size:11px;font-weight:500;" id="exCiStart">—</div></div>
+        <div style="padding:10px 12px;border-right:1px solid var(--green-bd);"><div style="font-family:var(--mono);font-size:9px;color:var(--green);letter-spacing:1px;margin-bottom:3px;">COMPLETED</div><div style="font-family:var(--mono);font-size:11px;font-weight:500;" id="exCiEnd">—</div></div>
+        <div style="padding:10px 12px;border-right:1px solid var(--green-bd);"><div style="font-family:var(--mono);font-size:9px;color:var(--green);letter-spacing:1px;margin-bottom:3px;">TOTAL FILES</div><div style="font-family:var(--mono);font-size:11px;font-weight:500;color:var(--green);" id="exCiTotal">0</div></div>
+        <div style="padding:10px 12px;"><div style="font-family:var(--mono);font-size:9px;color:var(--green);letter-spacing:1px;margin-bottom:3px;">INTEGRITY</div><div style="font-family:var(--mono);font-size:11px;font-weight:500;color:var(--green);" id="exCiIntegrity">Awaiting</div></div>
+      </div>
+    </div>
+
+    <!-- LIVE FEED + LOG -->
+    <div style="display:grid;grid-template-columns:1fr 340px;gap:12px;margin-bottom:12px;">
+      <div class="panel">
+        <div class="ph"><span class="ph-title">Live Evidence Feeds</span><span class="bdg bdg-blue" id="exFeedCount">0 files</span></div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:4px;background:var(--bg);height:320px;overflow:hidden;">
+          <div id="exLiveFeed1" style="height:100%;overflow-y:auto;display:flex;flex-direction:column;gap:3px;padding:8px;border-right:1px solid var(--border);">
+            <div class="empty" style="font-size:10px;padding:12px;">D1 — Waiting</div>
+          </div>
+          <div id="exLiveFeed2" style="height:100%;overflow-y:auto;display:flex;flex-direction:column;gap:3px;padding:8px;">
+            <div class="empty" style="font-size:10px;padding:12px;">D2 — Waiting</div>
+          </div>
+        </div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:10px;">
+        <div class="panel">
+          <div class="ph"><span class="ph-title">Log</span><span class="bdg bdg-blue" id="exLogCount">0</span></div>
+          <div id="exLogList" style="max-height:160px;overflow-y:auto;display:flex;flex-direction:column;gap:2px;padding:6px;">
+            <div style="display:flex;gap:5px;padding:4px 6px;border-radius:5px;background:var(--bg);border:1px solid var(--border);font-family:var(--mono);font-size:10px;">
+              <span style="color:var(--t2);min-width:46px;">--:--</span><span style="color:var(--blue);">System ready</span>
+            </div>
+          </div>
+        </div>
+        <div class="panel">
+          <div class="ph"><span class="ph-title">Evidence Breakdown</span></div>
+          <div style="padding:10px;" id="exBreakdown"><div class="empty" style="padding:8px;">— awaiting —</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- EXTRACTED EVIDENCE TABLE -->
+    <div class="panel">
+      <div class="ph"><span class="ph-title">All Extracted Evidence</span><span class="bdg bdg-blue" id="exTableCount">0</span></div>
+      <div class="tw"><table>
+        <thead><tr><th>#</th><th>Device 📱</th><th>Filename 📄</th><th>Type 🏷️</th><th>Size ⚖️</th><th>AI Analysis 🧠</th><th>Risk 🚨</th><th>SHA-256 🔒</th><th>Time ⏱️</th></tr></thead>
+        <tbody id="exEvTable"><tr><td colspan="9"><div class="empty">No evidence yet</div></td></tr></tbody>
+      </table></div>
+    </div>
+  </div>
+</div>
+
+<!-- EVIDENCE TAB -->
+<div id="tab-evidence" style="display:none;">
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;flex-wrap:wrap;gap:10px;">
+    <div class="sec" style="margin:0;">Evidence — <span id="evCaseLabel" style="color:var(--blue)">select a case</span></div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;">
+      <div class="tab-strip" style="margin:0;">
+        <button class="tab-btn active" onclick="filterEvidence('all',this)">All</button>
+        <button class="tab-btn" onclick="filterEvidence('device1',this)">Device 1</button>
+        <button class="tab-btn" onclick="filterEvidence('device2',this)">Device 2</button>
+      </div>
+
+      <button class="btn btn-out" style="padding: 6px 12px; font-size: 11px;" onclick="document.getElementById('localEvInput').click()">
+        <svg viewBox="0 0 24 24" width="12" height="12"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15" stroke="currentColor" stroke-width="2" fill="none"/></svg>
+        📤 Upload Local File
+      </button>
+      <input type="file" id="localEvInput" style="display:none;" multiple onchange="handleLocalUpload(this.files)">
+      <button class="btn btn-red" id="btnDeleteDeviceEv" onclick="deleteDeviceEvidence()" style="display:none; padding: 6px 12px; font-size: 11px;">
+        <svg viewBox="0 0 24 24" width="12" height="12"><path d="M3 6h18M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2" stroke="currentColor" stroke-width="2" fill="none"/></svg>
+        🗑️ Wipe Device Data
+      </button>
+    </div>
+  </div>
+
+  <!-- DOWNLOAD PANEL -->
+  <div class="panel" style="margin-bottom:14px;">
+    <div class="ph">
+      <span class="ph-title">Download Evidence</span>
+      <span class="bdg bdg-blue" id="evCount">0 files</span>
+    </div>
+    <div class="pb">
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:14px;">
+        <!-- ZIP ALL -->
+        <div style="background:var(--bg);border:1px solid var(--border);border-radius:var(--r);padding:14px;">
+          <div style="font-family:var(--mono);font-size:11px;color:var(--t2);letter-spacing:1px;text-transform:uppercase;margin-bottom:6px;">Full Package</div>
+          <div style="font-size:12px;color:var(--t1);margin-bottom:10px;line-height:1.5;">All evidence files + manifest + chain of custody</div>
+          <button class="btn btn-blue" style="width:100%;justify-content:center;font-size:12px;" onclick="downloadZip('all','all','all')">
+            <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            Download All as ZIP
+          </button>
+        </div>
+        <!-- CSV -->
+        <div style="background:var(--bg);border:1px solid var(--border);border-radius:var(--r);padding:14px;">
+          <div style="font-family:var(--mono);font-size:11px;color:var(--t2);letter-spacing:1px;text-transform:uppercase;margin-bottom:6px;">Spreadsheet</div>
+          <div style="font-size:12px;color:var(--t1);margin-bottom:10px;line-height:1.5;">Evidence table as CSV — open in Excel or any analysis tool</div>
+          <button class="btn btn-out" style="width:100%;justify-content:center;font-size:12px;" onclick="downloadCSV()">
+            <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+            Download CSV
+          </button>
+        </div>
+        <!-- HIGH RISK -->
+        <div style="background:var(--red-bg);border:1px solid var(--red-bd);border-radius:var(--r);padding:14px;">
+          <div style="font-family:var(--mono);font-size:11px;color:var(--red);letter-spacing:1px;text-transform:uppercase;margin-bottom:6px;">High Risk Only</div>
+          <div style="font-size:12px;color:var(--red);margin-bottom:10px;line-height:1.5;opacity:.8;">Only flagged HIGH risk files — for priority review</div>
+          <button class="btn btn-red" style="width:100%;justify-content:center;font-size:12px;background:var(--red);color:#fff;" onclick="downloadZip('all','all','HIGH')">
+            <svg viewBox="0 0 24 24"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+            Download HIGH Risk ZIP
+          </button>
+        </div>
+      </div>
+
+      <!-- FILTER DOWNLOADS -->
+      <div style="background:var(--bg);border:1px solid var(--border);border-radius:var(--r);padding:14px;">
+        <div style="font-family:var(--mono);font-size:11px;color:var(--t2);letter-spacing:1px;text-transform:uppercase;margin-bottom:10px;">Filter & Download</div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;">
+          <select id="dlSlot" style="padding:7px 10px;background:var(--surface);border:1px solid var(--border2);border-radius:var(--r);font-family:var(--mono);font-size:11px;color:var(--t0);outline:none;">
+            <option value="all">All Devices</option>
+            <option value="device1">Device 1 Only</option>
+            <option value="device2">Device 2 Only</option>
+          </select>
+          <div>
+            <div class="dl-types-actions" style="margin-bottom:6px;">
+              <button type="button" class="dl-link-btn" onclick="setAllTypeChecks(true)">Select All Types</button>
+              <button type="button" class="dl-link-btn" onclick="setAllTypeChecks(false)">Clear Types</button>
+            </div>
+            <div class="dl-types" id="dlTypesWrap">
+              <label class="dl-type-item"><input type="checkbox" class="dl-type-check" value="image" checked>Images</label>
+              <label class="dl-type-item"><input type="checkbox" class="dl-type-check" value="video" checked>Videos</label>
+              <label class="dl-type-item"><input type="checkbox" class="dl-type-check" value="chat" checked>WhatsApp</label>
+              <label class="dl-type-item"><input type="checkbox" class="dl-type-check" value="call_log" checked>Calls</label>
+              <label class="dl-type-item"><input type="checkbox" class="dl-type-check" value="sms" checked>SMS</label>
+              <label class="dl-type-item"><input type="checkbox" class="dl-type-check" value="contacts" checked>Contacts</label>
+              <label class="dl-type-item"><input type="checkbox" class="dl-type-check" value="browser" checked>Browser</label>
+              <label class="dl-type-item"><input type="checkbox" class="dl-type-check" value="download" checked>Downloads</label>
+              <label class="dl-type-item"><input type="checkbox" class="dl-type-check" value="recovered" checked>Recovered</label>
+              <label class="dl-type-item"><input type="checkbox" class="dl-type-check" value="app_data" checked>App Data</label>
+            </div>
+          </div>
+          <select id="dlRisk" style="padding:7px 10px;background:var(--surface);border:1px solid var(--border2);border-radius:var(--r);font-family:var(--mono);font-size:11px;color:var(--t0);outline:none;">
+            <option value="all">All Risk Levels</option>
+            <option value="HIGH">HIGH Risk Only</option>
+            <option value="MED">MED Risk Only</option>
+            <option value="LOW">LOW Risk Only</option>
+          </select>
+          <button class="btn btn-blue" onclick="downloadFiltered()" style="font-size:12px;">
+            <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            Download Filtered ZIP
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- EVIDENCE TABLE FILTERS -->
+  <div class="ev-filter" style="margin-bottom:10px; display:flex; justify-content:space-between; align-items:center;">
+    <div>
+      <button class="ef-btn active" onclick="filterType('all',this)">All Types</button>
+      <button class="ef-btn" onclick="filterType('image',this)">Images</button>
+      <button class="ef-btn" onclick="filterType('chat',this)">WhatsApp</button>
+      <button class="ef-btn" onclick="filterType('call_log',this)">Calls</button>
+      <button class="ef-btn" onclick="filterType('sms',this)">SMS</button>
+      <button class="ef-btn" onclick="filterType('browser',this)">Browser</button>
+      <button class="ef-btn" onclick="filterType('download',this)">Downloads</button>
+      <button class="ef-btn" onclick="filterType('recovered',this)">Recovered</button>
+    </div>
+    
+    <!-- GALLERY TOGGLE -->
+    <div style="display:flex; background:var(--bg2); padding:4px; border-radius:8px; border:1px solid var(--border);">
+      <button class="btn-out" id="viewToggleTable" onclick="setEvidenceView('table')" style="border:none; padding:4px 8px; border-radius:4px; background:var(--surface); box-shadow:0 1px 2px rgba(0,0,0,0.1); color:var(--blue);">
+        <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="21" x2="9" y2="9"/></svg>
+      </button>
+      <button class="btn-out" id="viewToggleGallery" onclick="setEvidenceView('gallery')" style="border:none; padding:4px 8px; border-radius:4px; background:transparent;">
+        <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+      </button>
+    </div>
+  </div>
+
+  <!-- EVIDENCE TABLE VIEWER -->
+  <div class="panel" id="evTablePanel">
+    <div class="ph"><span class="ph-title">Evidence table</span>
+      <button class="btn btn-out btn-sm" onclick="generateReport()">Generate Report</button>
+    </div>
+    <div class="tw"><table>
+      <thead><tr>
+        <th style="width:30px;"><input type="checkbox" id="selectAllEv" onclick="toggleAllEv(this.checked)"></th>
+        <th>#</th><th>Device 📱</th><th>Filename 📄</th><th>Type 🏷️</th><th>Size ⚖️</th><th>AI Result 🧠</th><th>Risk 🚨</th><th>GPS 📍</th><th>SHA-256 🔒</th><th>Actions ⚙️</th>
+      </tr></thead>
+      <tbody id="evBody"><tr><td colspan="11"><div class="empty">Select a case and run extraction first</div></td></tr></tbody>
+    </table></div>
+  </div>
+
+  <!-- EVIDENCE GALLERY VIEWER -->
+  <div class="panel" id="evGalleryPanel" style="display:none;">
+    <div class="ph"><span class="ph-title">Multimedia Gallery (Images & Videos)</span>
+      <button class="btn btn-out btn-sm" onclick="generateReport()">Generate Report</button>
+    </div>
+    <div style="display:flex; height:600px;">
+      
+      <!-- Masonry Grid -->
+      <div style="flex:1; overflow-y:auto; padding:16px; display:grid; grid-template-columns:repeat(auto-fill, minmax(130px, 1fr)); gap:12px; align-content:start;" id="galleryGrid">
+        <div class="empty" style="grid-column: 1 / -1; margin-top:40px;">No images found in current view</div>
+      </div>
+
+      <!-- Right Metadata Sidebar -->
+      <div style="width:320px; border-left:1px solid var(--border); background:var(--bg2); display:flex; flex-direction:column;" id="gallerySidebar">
+        <div style="padding:16px; border-bottom:1px solid var(--border); background:var(--surface);">
+          <span style="font-family:var(--sans);font-weight:600;font-size:13px;">Evidence Details</span>
+        </div>
+        <div style="padding:16px; flex:1; overflow-y:auto;" id="gallerySidebarContent">
+          <div class="empty" style="font-size:12px;">Click a thumbnail to view details</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- AI ANALYSIS TAB -->
+<div id="tab-analysis" style="display:none;">
+  <div class="sec">AI analysis — <span id="aiCaseLabel" style="color:var(--blue)">select a case</span></div>
+  
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px;">
+    <div class="panel" style="border-left:4px solid var(--blue);">
+      <div style="padding:16px;">
+        <div style="font-size:11px;color:var(--t2);font-weight:600;text-transform:uppercase;margin-bottom:4px;">Device 1 Summary</div>
+        <div style="display:flex;justify-content:space-between;align-items:baseline;">
+          <div style="font-size:24px;font-weight:700;color:var(--blue);" id="ai-d1-count">0</div>
+          <div style="font-size:12px;color:var(--red);font-weight:600;" id="ai-d1-high">0 flagged</div>
+        </div>
+        <div style="font-size:10px;color:var(--t1);margin-top:4px;" id="ai-d1-model">No device data</div>
+      </div>
+    </div>
+    <div class="panel" style="border-left:4px solid var(--gold);">
+      <div style="padding:16px;">
+        <div style="font-size:11px;color:var(--t2);font-weight:600;text-transform:uppercase;margin-bottom:4px;">Device 2 Summary</div>
+        <div style="display:flex;justify-content:space-between;align-items:baseline;">
+          <div style="font-size:24px;font-weight:700;color:var(--gold);" id="ai-d2-count">0</div>
+          <div style="font-size:12px;color:var(--red);font-weight:600;" id="ai-d2-high">0 flagged</div>
+        </div>
+        <div style="font-size:10px;color:var(--t1);margin-top:4px;" id="ai-d2-model">No device data</div>
+      </div>
+    </div>
+  </div>
+  <div class="two-col" style="margin-bottom:16px;">
+    <div class="panel"><div class="ph"><span class="ph-title">Threat distribution</span></div>
+      <div class="pb"><div class="chart-wrap"><canvas id="threatChart"></canvas></div></div></div>
+    <div class="panel"><div class="ph"><span class="ph-title">Evidence by type</span></div>
+      <div class="pb"><div class="chart-wrap"><canvas id="typeChart"></canvas></div></div></div>
+  </div>
+  <div class="two-col">
+    <div class="panel">
+      <div class="ph"><span class="ph-title">High risk files</span><span class="bdg bdg-red" id="highCount">0</span></div>
+      <div style="max-height:280px;overflow-y:auto;">
+        <table><thead><tr><th>Filename</th><th>Device</th><th>Type</th><th>AI Result</th></tr></thead>
+        <tbody id="highBody"><tr><td colspan="4"><div class="empty">No high risk files</div></td></tr></tbody>
+      </table></div>
+    </div>
+    <div class="panel">
+      <div class="ph">
+        <span class="ph-title">Run AI analysis</span>
+        <div style="display:flex; gap:10px; align-items:center;">
+           <span id="selCount" class="badge" style="background:var(--blue-bg); color:var(--blue); border:1px solid var(--blue-bd); font-size:10px;">0 SELECTED</span>
+           <button class="btn btn-out btn-sm" onclick="loadEvidence()" title="Refresh Evidence">🔄</button>
+        </div>
+      </div>
+      <div class="pb">
+        <p style="font-size:13px;color:var(--t1);margin-bottom:16px;line-height:1.6;">
+          Analyze all extracted evidence using CNN image classification and NLP keyword detection. Results update risk levels across all files.
+        </p>
+        <div style="display:flex;flex-direction:column;gap:8px;">
+          <button class="btn btn-blue" id="runAiBtn" onclick="runAnalysis()" style="justify-content:center;">
+            <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83"/></svg>
+            Analyze All Evidence
+          </button>
+          <button class="btn btn-blue" onclick="runAnalysisSelected()" style="justify-content:center;background:var(--blue-bg);color:var(--blue);border:1px solid var(--blue-bd);">
+            <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+            Analyze Selected Files
+          </button>
+          <button class="btn btn-red" onclick="resetAnalysis()" style="justify-content:center;opacity:0.8;">
+            <svg viewBox="0 0 24 24"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 102.13-9.36L1 10"/></svg>
+            Reset All Analysis
+          </button>
+          <button class="btn btn-out" onclick="loadEvidence();showTab('evidence',null)" style="justify-content:center;">
+            <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+            View All Evidence
+          </button>
+        </div>
+        <div id="aiResult" style="margin-top:14px;display:none;"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- TIMELINE TAB -->
+<div id="tab-timeline" style="display:none;">
+  <div class="sec">Timeline Builder — <span id="timeCaseLabel" style="color:var(--blue)">select a case</span></div>
+  <div class="panel">
+    <div class="ph"><span class="ph-title">Investigation Timeline</span></div>
+    <div class="pb" id="timelineWrap">
+      <div class="empty">Select a case to view timeline history</div>
+    </div>
+  </div>
+</div>
+
+<!-- GPS MAP TAB -->
+<div id="tab-map" style="display:none;">
+  <div class="sec">GPS Evidence Map — <span id="mapCaseLabel" style="color:var(--blue)">select a case</span></div>
+  <div class="panel" style="margin-bottom:16px;">
+    <div class="ph"><span class="ph-title">Geotagged Evidence Locations</span><span class="bdg bdg-green" id="gpsCount">0 locations</span></div>
+    <div class="pb">
+      <div id="mapContainer">Loading map...</div>
+    </div>
+  </div>
+  <div class="panel">
+    <div class="ph"><span class="ph-title">GPS Evidence List</span></div>
+    <div class="tw"><table>
+      <thead><tr><th>Filename</th><th>Latitude</th><th>Longitude</th><th>EXIF Date</th><th>Risk</th><th>Device</th></tr></thead>
+      <tbody id="gpsBody"><tr><td colspan="6"><div class="empty">Select a case to view GPS evidence</div></td></tr></tbody>
+    </table></div>
+  </div>
+</div>
+
+<!-- SETTINGS TAB -->
+<div id="tab-settings" style="display:none;">
+  <div class="sec">Account settings</div>
+  <div class="two-col">
+    <div class="panel">
+      <div class="ph"><span class="ph-title">Change Password</span></div>
+      <div class="pb">
+        <div class="msg" id="pwMsg"></div>
+        <div class="fg"><label>Current Password</label><input type="password" id="currentPw" placeholder="Enter current password"></div>
+        <div class="fg"><label>New Password</label><input type="password" id="newPw2" placeholder="Minimum 8 characters"></div>
+        <div class="fg"><label>Confirm New Password</label><input type="password" id="confirmPw" placeholder="Repeat new password"></div>
+        <button class="btn btn-blue" onclick="changePassword()" style="width:100%;justify-content:center;">Update Password</button>
+      </div>
+    </div>
+    <div class="panel">
+      <div class="ph"><span class="ph-title">Account Info</span></div>
+      <div class="pb">
+        <div style="display:flex;flex-direction:column;gap:12px;">
+          <div style="background:var(--bg);border:1px solid var(--border);border-radius:var(--r);padding:12px;">
+            <div style="font-family:var(--mono);font-size:10px;color:var(--t2);letter-spacing:1px;margin-bottom:4px;">NAME</div>
+            <div style="font-size:14px;font-weight:500;">{{ user.name if user else '—' }}</div>
+          </div>
+          <div style="background:var(--bg);border:1px solid var(--border);border-radius:var(--r);padding:12px;">
+            <div style="font-family:var(--mono);font-size:10px;color:var(--t2);letter-spacing:1px;margin-bottom:4px;">EMAIL</div>
+            <div style="font-family:var(--mono);font-size:13px;">{{ user.email if user else '—' }}</div>
+          </div>
+          <div style="background:var(--bg);border:1px solid var(--border);border-radius:var(--r);padding:12px;">
+            <div style="font-family:var(--mono);font-size:10px;color:var(--t2);letter-spacing:1px;margin-bottom:4px;">BADGE ID</div>
+            <div style="font-family:var(--mono);font-size:13px;color:var(--blue);">{{ user.badge_id if user and user.badge_id else '—' }}</div>
+          </div>
+          <div style="background:var(--bg);border:1px solid var(--border);border-radius:var(--r);padding:12px;">
+            <div style="font-family:var(--mono);font-size:10px;color:var(--t2);letter-spacing:1px;margin-bottom:4px;">ROLE</div>
+            <div style="font-family:var(--mono);font-size:13px;text-transform:uppercase;">{{ user.role if user else '—' }}</div>
+          </div>
+          <div style="background:var(--bg);border:1px solid var(--border);border-radius:var(--r);padding:12px;">
+            <div style="font-family:var(--mono);font-size:10px;color:var(--t2);letter-spacing:1px;margin-bottom:4px;">SESSION TIMEOUT</div>
+            <div style="font-family:var(--mono);font-size:13px;color:var(--amber);">30 minutes of inactivity</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</main>
+</div><!-- /layout -->
+
+<!-- NEW CASE MODAL -->
+<div class="overlay" id="newCaseOverlay">
+  <div class="modal">
+    <button class="modal-close-btn" onclick="closeModal()" title="Close">×</button>
+    <div class="m-title">Create new case</div>
+    <div class="m-sub">A unique FORAX case ID is auto-generated and timestamped.</div>
+    <div class="msg" id="caseMsg"></div>
+    <div class="fg"><label>Case title</label><input type="text" id="cTitle" placeholder="Operation Blue Falcon"></div>
+    <div class="fg"><label>Description (optional)</label><textarea id="cDesc" placeholder="Brief case description..."></textarea></div>
+    <div class="m-footer">
+      <button class="btn btn-out" onclick="closeModal()">Cancel</button>
+      <button class="btn btn-blue" onclick="createCase()">Create Case</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<!-- LIGHTBOX OVERLAY -->
+<div class="lightbox-overlay" id="lightboxOverlay" onclick="closeLightbox(event)">
+  <button class="lightbox-close" onclick="closeLightbox(event)">×</button>
+  <div id="lightboxContent" style="display:flex;align-items:center;justify-content:center;width:100%;height:100%;padding:40px;box-sizing:border-box;"></div>
+  <div class="lightbox-info" id="lightboxInfo"></div>
+</div>
+
+<!-- AI OVERRIDE MODAL -->
+<div class="overlay" id="overrideOverlay">
+  <div class="modal">
+    <button class="modal-close-btn" onclick="document.getElementById('overrideOverlay').classList.remove('show')" title="Close">×</button>
+    <div class="m-title">Override AI Classification</div>
+    <div class="m-sub">Manually change the risk level. Your justification is logged in the audit trail.</div>
+    <div class="msg" id="overrideMsg"></div>
+    <div style="background:var(--amber-bg);border:1px solid var(--amber-bd);border-radius:var(--r);padding:10px 14px;margin-bottom:14px;font-size:12px;color:var(--amber);">
+      AI classifications are advisory only. All overrides are permanently logged.
+    </div>
+    <input type="hidden" id="overrideEvId">
+    <div class="fg"><label>Current Risk</label><div id="overrideCurrent" style="font-family:var(--mono);font-size:13px;font-weight:600;">—</div></div>
+    <div class="fg"><label>New Risk Level</label>
+      <select id="overrideRisk" style="width:100%;padding:10px;border-radius:var(--r);border:1.5px solid var(--border);font-family:var(--mono);">
+        <option value="HIGH">HIGH — Immediate threat / clear evidence</option>
+        <option value="MED">MED — Suspicious, requires review</option>
+        <option value="LOW">LOW — No threat detected</option>
+      </select>
+    </div>
+    <div class="fg"><label>Justification Note (Required)</label>
+      <textarea id="overrideNote" rows="3" placeholder="Explain why you are overriding the AI classification..."></textarea>
+    </div>
+    <div class="m-footer">
+      <button class="btn btn-out" onclick="document.getElementById('overrideOverlay').classList.remove('show')">Cancel</button>
+      <button class="btn btn-blue" onclick="submitOverride()">Submit Override</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ── THEME ──────────────────────────────────────────────────────
+const currentTheme = localStorage.getItem('theme') || 'light';
+document.documentElement.setAttribute('data-theme', currentTheme);
+
+function toggleTheme() {
+  const theme = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+  document.documentElement.setAttribute('data-theme', theme);
+  localStorage.setItem('theme', theme);
+  toast(`🌓 Theme switched to ${theme.toUpperCase()} mode`);
+}
+
+// ── STATE ──────────────────────────────────────────────────────
+let activeCaseId = null, activeCaseTitle = '';
+let allEvidence = [], evidenceFilter = 'all', typeFilter = 'all';
+let charts = {};
+
+// ── INIT ───────────────────────────────────────────────────────
+setInterval(() => document.getElementById('clock').textContent = new Date().toTimeString().slice(0,8), 1000);
+
+// ── TABS ───────────────────────────────────────────────────────
+function showTab(name, btn) {
+  ['overview','cases','extraction','evidence','analysis','timeline','map','settings'].forEach(t => {
+    const el = document.getElementById('tab-'+t);
+    if(el) el.style.display = t === name ? 'block' : 'none';
+  });
+  document.querySelectorAll('.sb-item').forEach(b => b.classList.remove('active'));
+  if (btn) btn.classList.add('active');
+  if (name === 'extraction') showExtractionTab();
+  if (name === 'timeline')   { 
+      document.getElementById('timeCaseLabel').textContent = activeCaseTitle; 
+      buildTimeline(); 
+  }
+  if (name === 'map')        { loadMap(); }
+}
+
+// ── TOAST ──────────────────────────────────────────────────────
+function toast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 3000);
+}
+
+// ── CASE SELECTION ─────────────────────────────────────────────
+function selectCase(id, title) {
+  activeCaseId = id; activeCaseTitle = title;
+  document.getElementById('activeBadge').textContent = id;
+  document.getElementById('activeBadge').className = 'bdg bdg-green';
+  document.getElementById('acInfo').innerHTML = `
+    <div style="font-family:var(--mono);font-size:11px;color:var(--blue);margin-bottom:4px;">${id}</div>
+    <div style="font-size:14px;font-weight:600;">${title}</div>`;
+  document.getElementById('evCaseLabel').textContent = title;
+  document.getElementById('aiCaseLabel').textContent = title;
+  // highlight row
+  document.querySelectorAll('tbody tr').forEach(r => r.style.background='');
+  toast('Case selected: ' + id);
+  loadEvidence();
+}
+
+// ── EXTRACTION TAB ─────────────────────────────────────────────
+function showExtractionTab() {
+  if (!activeCaseId) {
+    document.getElementById('extNoCaseMsg').style.display = 'block';
+    document.getElementById('extCaseBanner').style.display = 'none';
+  } else {
+    document.getElementById('extNoCaseMsg').style.display = 'none';
+    document.getElementById('extCaseBanner').style.display = 'flex';
+    document.getElementById('extCaseId').textContent = activeCaseId;
+    document.getElementById('extCaseTitle').textContent = activeCaseTitle;
+    document.getElementById('exCiCase').textContent = activeCaseId;
+  }
+}
+
+function goExtract() {
+  showTab('extraction', null);
+}
+
+// ── EMBEDDED EXTRACTION ENGINE ─────────────────────────────────
+let exAllFiles=[], exActiveDevices={}, exSseConns={}, exExtractDone={device1:false,device2:false};
+let exLogCnt=1, exFeedCnt=0, exTableRows=0, exLastBytes=0, exRateTimer=null;
+
+const EX_TYPE_CFG={
+  image:    {cls:'fi-img', label:'Image',    icon:'📷'},
+  video:    {cls:'fi-vid', label:'Video',    icon:'🎬'},
+  chat:     {cls:'fi-chat',label:'Chat',     icon:'💬'},
+  call_log: {cls:'fi-call',label:'Calls',    icon:'📞'},
+  sms:      {cls:'fi-sms', label:'SMS',      icon:'📩'},
+  contacts: {cls:'fi-con', label:'Contacts', icon:'👤'},
+  browser:  {cls:'fi-brow',label:'Browser',  icon:'🌐'},
+  download: {cls:'fi-dl',  label:'Download', icon:'📥'},
+  app_data:    {cls:'fi-app', label:'Apps',       icon:'📱'},
+  recovered:   {cls:'fi-rec', label:'Recovered',  icon:'♻️'},
+  audio:       {cls:'fi-aud', label:'Audio',      icon:'🎵'},
+  calendar:    {cls:'fi-cal', label:'Calendar',   icon:'📅'},
+  document:    {cls:'fi-doc', label:'Document',   icon:'📄'},
+  device_info: {cls:'fi-dev', label:'Device',     icon:'📱'},
+  network:     {cls:'fi-net', label:'Network',    icon:'📶'},
+  notification:{cls:'fi-not', label:'Notification',icon:'🔔'},
+  usage_stats: {cls:'fi-usg', label:'Usage',      icon:'📊'},
+  config:      {cls:'fi-cfg', label:'Config',     icon:'⚙️'},
+  text:        {cls:'fi-txt', label:'Text',       icon:'📝'},
+  database:    {cls:'fi-db',  label:'Database',   icon:'🗄️'},
+  unknown:     {cls:'fi-unk', label:'Other',      icon:'📎'},
+};
+
+function exFmtSize(b){if(!b)return'0B';if(b<1024)return b+'B';if(b<1048576)return Math.round(b/1024)+'KB';return(b/1048576).toFixed(1)+'MB';}
+
+function exAddLog(msg,level='info'){
+  const list=document.getElementById('exLogList');
+  const el=document.createElement('div');
+  el.style.cssText='display:flex;gap:5px;padding:4px 6px;border-radius:5px;background:var(--bg);border:1px solid var(--border);font-family:var(--mono);font-size:10px;';
+  const colors={info:'var(--blue)',success:'var(--green)',warn:'var(--amber)',danger:'var(--red)'};
+  el.innerHTML=`<span style="color:var(--t2);min-width:46px;">${new Date().toTimeString().slice(0,8)}</span><span style="color:${colors[level]||'var(--t1)'};">${msg}</span>`;
+  list.insertBefore(el,list.firstChild);exLogCnt++;
+  document.getElementById('exLogCount').textContent=exLogCnt;
+}
+
+function exSetDevState(num,state,info){
+  const dp=document.getElementById('exDp'+num);const dps=document.getElementById('exDps'+num);
+  const borderColors={running:'var(--amber)',complete:'var(--green)',error:'var(--red)'};
+  dp.style.borderStyle=state==='idle'?'dashed':'solid';
+  dp.style.borderColor=borderColors[state]||'var(--border2)';
+  const sm={idle:['var(--bg2)','var(--t2)'],running:['var(--amber-bg)','var(--amber)'],complete:['var(--green-bg)','var(--green)'],error:['var(--red-bg)','var(--red)']};
+  const st={idle:'IDLE',running:'EXTRACTING',complete:'COMPLETE',error:'ERROR'};
+  const s=sm[state]||sm.idle;
+  dps.style.background=s[0];dps.style.color=s[1];dps.style.borderColor=s[1];dps.textContent=st[state]||state.toUpperCase();
+  if(info){document.getElementById('exDpName'+num).textContent=`${info.brand||''} ${info.model||'Unknown'}`;
+    document.getElementById('exDpModel'+num).textContent=`Android ${info.android||'?'} · ${info.serial||'?'} · ${info.app_count||'?'} apps`;}
+}
+
+function exSetProg(num,pct,step,detail){
+  document.getElementById('exPFill'+num).style.width=pct+'%';
+  document.getElementById('exPPct'+num).textContent=pct+'%';
+  document.getElementById('exPStep'+num).textContent=step||'';
+  document.getElementById('exPDetail'+num).textContent=detail||'';
+  const p1=parseFloat(document.getElementById('exPPct1').textContent)||0;
+  const p2=parseFloat(document.getElementById('exPPct2').textContent)||0;
+  const has2=Object.keys(exActiveDevices).length>1;
+  document.getElementById('exOverallPct').textContent=`Overall: ${has2?Math.round((p1+p2)/2):p1}%`;
+}
+
+function exUpdateMeter(num,slot){
+  const sf=exAllFiles.filter(f=>f.device_slot===slot);
+  const tb=sf.reduce((s,f)=>s+(f.size||0),0);
+  document.getElementById('exD'+num+'Files').textContent=sf.length;
+  document.getElementById('exD'+num+'Size').textContent=exFmtSize(tb);
+  document.getElementById('exD'+num+'High').textContent=sf.filter(f=>f.risk_level==='HIGH').length;
+  document.getElementById('exD'+num+'Hash').textContent=sf.length;
+}
+
+function exUpdateStats(){
+  const total=exAllFiles.length;
+  const totalB=exAllFiles.reduce((s,f)=>s+(f.size||0),0);
+  document.getElementById('ex-s-total').textContent=total;
+  document.getElementById('ex-s-images').textContent=exAllFiles.filter(f=>f.type==='image').length;
+  document.getElementById('ex-s-chats').textContent=exAllFiles.filter(f=>f.type==='chat').length;
+  document.getElementById('ex-s-high').textContent=exAllFiles.filter(f=>f.risk_level==='HIGH').length;
+  document.getElementById('ex-s-size').textContent=(totalB/1048576).toFixed(1)+' MB';
+  document.getElementById('exFeedCount').textContent=exFeedCnt+' files';
+  document.getElementById('exTableCount').textContent=total+' files';
+  document.getElementById('exCiTotal').textContent=total;
+  const diff=totalB-exLastBytes;
+  if(diff>0)document.getElementById('ex-s-rate').textContent=exFmtSize(diff)+'/s';
+  exLastBytes=totalB;
+}
+
+function exUpdateBreakdown(){
+  const types=[
+    {l:'Images',k:'image',c:'#2563eb'},{l:'WhatsApp',k:'chat',c:'#059669'},
+    {l:'Calls',k:'call_log',c:'#d97706'},{l:'SMS',k:'sms',c:'#9333ea'},
+    {l:'Browser',k:'browser',c:'#ea580c'},{l:'Downloads',k:'download',c:'#16a34a'},
+    {l:'Recovered',k:'recovered',c:'#dc2626'},
+  ];
+  const total=exAllFiles.length||1;
+  document.getElementById('exBreakdown').innerHTML=types.map(t=>{
+    const cnt=exAllFiles.filter(f=>f.type===t.k).length;
+    const pct=Math.round(cnt/total*100);
+    return`<div style="margin-bottom:6px;"><div style="display:flex;justify-content:space-between;margin-bottom:2px;font-family:var(--mono);font-size:10px;"><span style="color:var(--t1);">${t.l}</span><span style="color:var(--blue);font-weight:500;">${cnt}</span></div><div style="height:4px;background:var(--border);border-radius:2px;overflow:hidden;"><div style="height:100%;border-radius:2px;width:${pct}%;background:${t.c};transition:width .5s;"></div></div></div>`;
+  }).join('');
+}
+
+function exAddToFeed(slot,f){
+  const num=slot==='device2'?2:1;
+  const feed=document.getElementById('exLiveFeed'+num);
+  if(feed.querySelector('.empty'))feed.innerHTML='';
+  const cfg=EX_TYPE_CFG[f.type]||EX_TYPE_CFG.download;
+  const rpc=f.risk_level==='HIGH'?'background:var(--red-bg);border-color:var(--red-bd);':f.risk_level==='MED'?'background:var(--amber-bg);border-color:var(--amber-bd);':'';
+  const rpp=f.risk_level==='HIGH'?'rp-H':f.risk_level==='MED'?'rp-M':'rp-L';
+  const sz=exFmtSize(f.size);const hash=(f.sha256||'').slice(0,18)+'...';
+  const el=document.createElement('div');
+  el.style.cssText=`display:flex;align-items:center;gap:8px;padding:7px 10px;background:var(--bg);border:1px solid var(--border);border-radius:var(--r);animation:slideIn .2s ease;${rpc}`;
+  el.innerHTML=`<span style="font-size:16px;">${cfg.icon}</span><div style="flex:1;min-width:0;"><div style="font-size:11px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;" title="${f.filename}">${f.filename}</div><div style="font-family:var(--mono);font-size:9px;color:var(--t2);">${cfg.label} · ${sz} · ${slot}</div></div><span class="rp ${rpp}">${f.risk_level}</span>`;
+  feed.insertBefore(el,feed.firstChild);
+  if(feed.children.length>150)feed.removeChild(feed.lastChild);
+  exFeedCnt++;
+}
+
+function exAddToTable(slot,f){
+  const tbody=document.getElementById('exEvTable');
+  if(tbody.querySelector('.empty'))tbody.innerHTML='';
+  exTableRows++;
+  const rpp=f.risk_level==='HIGH'?'rp-H':f.risk_level==='MED'?'rp-M':'rp-L';
+  const hash=(f.sha256||'').slice(0,12)+'...';
+  const type_icon = f.type==='video'?'🎥':f.type==='document'?'📄':f.type==='image'?'🖼️':'📁';
+  const row=document.createElement('tr');
+  row.innerHTML=`<td class="td-mono" style="color:var(--t2)">${String(exTableRows).padStart(3,'0')}</td><td><span class="bdg bdg-blue" style="font-size:10px;padding:2px 7px;">${slot}</span></td><td class="td-bold" style="max-width:150px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="${f.filename}">${f.filename}</td><td style="font-family:var(--mono);font-size:10px;color:var(--blue)">${type_icon} ${(f.type||'UNK').toUpperCase()}</td><td class="td-mono">${exFmtSize(f.size)}</td><td style="font-size:10px;max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;"><span class="clickable-ai" onclick="openForensicInsight(${f.id})">${f.ai_result||'—'}</span></td><td><span class="rp ${rpp}">${f.risk_level}</span></td><td><span class="td-hash" title="${f.sha256||''}">${hash}</span></td><td class="td-mono" style="font-size:10px;color:var(--t2)">${new Date().toTimeString().slice(0,8)}</td>`;
+  tbody.insertBefore(row,tbody.firstChild);
+}
+
+async function exScanDevices(){
+  const btn=document.getElementById('exBtnScan');btn.disabled=true;btn.innerHTML='<span class="spin"></span>Scanning...';
+  exAddLog('Scanning for Android devices via ADB...','info');
+  try{
+    const r=await fetch('/api/devices/check');const d=await r.json();
+    if(!d.connected){exAddLog(d.error||'No device found','warn');toast('No device — enable USB Debugging');}
+    else{
+      d.devices.forEach((dev,i)=>{
+        const slot='device'+(i+1);exActiveDevices[slot]=dev.serial;
+        exSetDevState(i+1,'running',dev.info);
+        document.getElementById('exDps'+(i+1)).textContent='READY';
+        document.getElementById('exDps'+(i+1)).style.background='var(--green-bg)';
+        document.getElementById('exDps'+(i+1)).style.color='var(--green)';
+        exAddLog(`Device ${i+1}: ${dev.info.brand} ${dev.info.model} | Android ${dev.info.android}`,'success');
+      });
+      document.getElementById('exBtnExtract').disabled=false;
+      toast(d.count+' device(s) connected!');
+    }
+  }catch(e){exAddLog('ADB error — try Demo Mode','danger');toast('ADB error — use Demo Mode');}
+  finally{btn.disabled=false;btn.innerHTML='<svg viewBox="0 0 24 24" style="width:13px;height:13px;stroke:currentColor;fill:none;stroke-width:2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>Scan Devices';}
+}
+
+let _exPaused = {}; // per-slot pause state cache
+
+async function exStartExtraction(){
+  if(!activeCaseId){toast('Select a case first!');return;}
+  if(!Object.keys(exActiveDevices).length){toast('No devices connected!');return;}
+  document.getElementById('extLiveBadge').style.display='inline-flex';
+  document.getElementById('exBtnExtract').disabled=true;
+  document.getElementById('exBtnPause').disabled=false;
+  document.getElementById('exBtnStop').disabled=false;
+  document.getElementById('exCiStart').textContent=new Date().toLocaleString();
+  document.getElementById('exCiIntegrity').textContent='SHA-256 hashing active';
+  document.getElementById('exCustStatus').textContent='ACTIVE';document.getElementById('exCustStatus').className='bdg bdg-green';
+  exLastBytes=0;exRateTimer=setInterval(exUpdateStats,2000);
+  _exPaused={};
+  for(const[slot,serial]of Object.entries(exActiveDevices))exStartSlot(slot,serial);
+}
+
+async function exStartSlot(slot,serial){
+  const num=parseInt(slot.replace('device',''));
+  exSetDevState(num,'running',null);exSetProg(num,2,'Connecting...','Establishing ADB connection');
+  exAddLog(`[${slot}] Starting extraction from ${serial}`,'info');
+  try{
+    const r=await fetch('/api/extract/start-realtime',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({serial,slot,case_id:activeCaseId})});
+    const d=await r.json();
+    if(d.started)exConnectSSE(slot,num);
+    else{exAddLog(`[${slot}] Failed: ${d.error||'unknown'}`,'danger');exSetDevState(num,'error',null);}
+  }catch(e){exAddLog(`[${slot}] Error: ${e.message}`,'danger');exSetDevState(num,'error',null);}
+}
+
+function exConnectSSE(slot,num){
+  if(exSseConns[slot])exSseConns[slot].close();
+  const es=new EventSource(`/api/extract/stream/${slot}`);exSseConns[slot]=es;
+  es.onmessage=e=>{try{exHandleEvent(slot,num,JSON.parse(e.data));}catch{}};
+  es.onerror=()=>{if(!exExtractDone[slot])exAddLog(`[${slot}] Reconnecting...`,'warn');};
+}
+
+function exHandleEvent(slot,num,ev){
+  const{type,data}=ev;
+  if(type==='ping')return;
+  if(type==='device'){exSetDevState(num,'running',data);return;}
+  if(type==='progress'){exSetProg(num,data.pct,data.step,`${data.pct}% · ${exAllFiles.filter(f=>f.device_slot===slot).length} files`);return;}
+  if(type==='log'){exAddLog(`[${slot}] ${data.msg}`,data.level||'info');return;}
+  if(type==='file'){exAllFiles.push({...data,device_slot:slot});exAddToFeed(slot,data);exAddToTable(slot,data);exUpdateStats();exUpdateBreakdown();exUpdateMeter(num,slot);return;}
+  if(type==='summary'){exAddLog(`[${slot}] DONE: ${data.total} files | ${data.size_mb}MB`,'success');return;}
+  if(type==='status'){
+    if(data.status==='complete'){
+      exSetDevState(num,'complete',null);exSetProg(num,100,'Complete!','All files extracted and SHA-256 verified');
+      exExtractDone[slot]=true;document.getElementById('exBtnSave').disabled=false;
+      exAddLog(`[${slot}] Complete — chain sealed`,'success');
+      toast(`Device ${num}: ${exAllFiles.filter(f=>f.device_slot===slot).length} files done!`);
+      if(exSseConns[slot])exSseConns[slot].close();
+      if(Object.values(exExtractDone).every(v=>v))exOnAllDone();
+    }else if(data.status==='stopped'){
+      exSetDevState(num,'error',null);
+      document.getElementById('exDps'+num).textContent='STOPPED';
+      exSetProg(num, parseInt(document.getElementById('exPPct'+num).textContent)||0, 'Stopped by investigator','Extraction aborted — files already extracted are preserved');
+      exExtractDone[slot]=true;
+      if(exAllFiles.filter(f=>f.device_slot===slot).length>0) document.getElementById('exBtnSave').disabled=false;
+      exAddLog(`[${slot}] STOPPED — ${exAllFiles.filter(f=>f.device_slot===slot).length} files preserved`,'warn');
+      toast(`Device ${num}: Extraction stopped`);
+      if(exSseConns[slot])exSseConns[slot].close();
+      if(Object.values(exExtractDone).every(v=>v))exOnAllDone();
+    }else if(data.status==='error'){
+      exSetDevState(num,'error',null);exExtractDone[slot]=true;
+      if(exSseConns[slot])exSseConns[slot].close();
+    }
+  }
+}
+
+function exOnAllDone(){
+  clearInterval(exRateTimer);
+  document.getElementById('extLiveBadge').style.display='none';
+  document.getElementById('exBtnExtract').disabled=false;
+  document.getElementById('exBtnPause').disabled=true;
+  document.getElementById('exBtnStop').disabled=true;
+  exResetPauseBtn();
+  document.getElementById('exCiEnd').textContent=new Date().toLocaleString();
+  document.getElementById('exCiIntegrity').textContent='ALL VERIFIED ✓';
+  document.getElementById('exCustStatus').textContent='SEALED';document.getElementById('exCustStatus').className='bdg bdg-green';
+  document.getElementById('ex-s-rate').textContent='0 KB/s';
+}
+
+// ── PAUSE / STOP for embedded extraction ──────────────────────
+function exResetPauseBtn(){
+  document.getElementById('exPauseLabel').textContent='Pause';
+  document.getElementById('exPauseIcon').innerHTML='<rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/>';
+  const btn=document.getElementById('exBtnPause');
+  btn.style.background='var(--amber-bg)';btn.style.color='var(--amber)';btn.style.borderColor='var(--amber-bd)';
+  _exPaused={};
+}
+
+async function exTogglePause(){
+  const slots=Object.keys(exActiveDevices).length?Object.keys(exActiveDevices):['device1','device2'];
+  const anyRunning=slots.some(s=>!_exPaused[s]);
+  const action=anyRunning?'pause':'resume';
+  for(const slot of slots){
+    try{
+      const r=await fetch(`/api/extract/pause/${slot}`,{
+        method:'POST',headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({action})
+      });
+      const d=await r.json();
+      _exPaused[slot]=d.paused;
+    }catch(e){exAddLog(`[${slot}] Pause/resume error: ${e.message}`,'danger');}
+  }
+  const allPaused=slots.every(s=>_exPaused[s]);
+  if(allPaused){
+    document.getElementById('exPauseLabel').textContent='Resume';
+    document.getElementById('exPauseIcon').innerHTML='<polygon points="5 3 19 12 5 21 5 3"/>';
+    const btn=document.getElementById('exBtnPause');
+    btn.style.background='var(--green-bg)';btn.style.color='var(--green)';btn.style.borderColor='var(--green-bd)';
+    document.getElementById('exCustStatus').textContent='PAUSED';document.getElementById('exCustStatus').className='bdg bdg-amber';
+    exAddLog('Extraction PAUSED','warn');toast('Extraction paused');
+  }else{
+    exResetPauseBtn();
+    document.getElementById('exCustStatus').textContent='ACTIVE';document.getElementById('exCustStatus').className='bdg bdg-green';
+    exAddLog('Extraction RESUMED','success');toast('Extraction resumed');
+  }
+}
+
+async function exStopExtraction(){
+  const slots=Object.keys(exActiveDevices).length?Object.keys(exActiveDevices):['device1','device2'];
+  document.getElementById('exBtnStop').disabled=true;
+  document.getElementById('exBtnPause').disabled=true;
+  for(const slot of slots){
+    try{
+      await fetch(`/api/extract/stop/${slot}`,{method:'POST',headers:{'Content-Type':'application/json'}});
+      exAddLog(`[${slot}] Stop signal sent`,'warn');
+    }catch(e){exAddLog(`[${slot}] Stop error: ${e.message}`,'danger');}
+  }
+  toast('Stop signal sent — extraction will halt after current step');
+}
+
+function exDemoMode(){
+  if(!activeCaseId){toast('Select a case first!');return;}
+  exActiveDevices={device1:'DEMO-001',device2:'DEMO-002'};
+  document.getElementById('exBtnExtract').disabled=false;
+  document.getElementById('extLiveBadge').style.display='inline-flex';
+  document.getElementById('exCiStart').textContent=new Date().toLocaleString();
+  document.getElementById('exCiIntegrity').textContent='SHA-256 active';
+  document.getElementById('exCustStatus').textContent='ACTIVE';document.getElementById('exCustStatus').className='bdg bdg-green';
+  exLastBytes=0;exRateTimer=setInterval(exUpdateStats,1500);
+  exSetDevState(1,'running',{brand:'Samsung',model:'Galaxy S21',android:'13',serial:'DEMO-001',app_count:84});
+  exSetDevState(2,'running',{brand:'Xiaomi',model:'Redmi Note 12',android:'12',serial:'DEMO-002',app_count:67});
+  exAddLog('DEMO: Samsung Galaxy S21 + Xiaomi Redmi Note 12','info');
+  const demo1=[
+    {filename:'IMG_20240715_083212.jpg',type:'image',size:2400000,sha256:'a1b2c3d4e5f6789012345678901234abcdef1234567890ab',risk_level:'LOW',ai_result:'CNN: Clean'},
+    {filename:'screenshot_bank_transfer.png',type:'image',size:800000,sha256:'b2c3d4e5f678901234abcdef1234567890abcdef12345678',risk_level:'HIGH',ai_result:'CNN: HIGH — Financial data'},
+    {filename:'IMG_weapon_photo.jpg',type:'image',size:1200000,sha256:'c3d4e5f6789012345678abcdef1234567890abcdef123456',risk_level:'HIGH',ai_result:'CNN: HIGH — Weapon detected'},
+    {filename:'VID_20240801.mp4',type:'video',size:45000000,sha256:'d4e5f678901234567890abcdef1234567890abcdef1234',risk_level:'LOW',ai_result:'Video extracted'},
+    {filename:'msgstore.db',type:'chat',size:14200000,sha256:'e5f67890123456abcdef1234567890abcdef1234567890ab',risk_level:'MED',ai_result:'NLP: Suspicious keywords'},
+    {filename:'call_logs.txt',type:'call_log',size:24000,sha256:'f6789012345678abcdef1234567890abcdef123456789012',risk_level:'LOW',ai_result:'847 call records'},
+    {filename:'sms_messages.txt',type:'sms',size:48000,sha256:'a78901234567abcdef1234567890abcdef1234567890abcd',risk_level:'MED',ai_result:'NLP: 3 threats flagged'},
+    {filename:'contacts.txt',type:'contacts',size:12000,sha256:'b8901234567abcdef1234567890abcdef12345678901234',risk_level:'LOW',ai_result:'312 contacts'},
+    {filename:'browser_history.txt',type:'browser',size:35000,sha256:'c901234567abcdef1234567890abcdef1234567890abcdef',risk_level:'MED',ai_result:'5 suspicious URLs'},
+    {filename:'suspicious.apk',type:'download',size:5200000,sha256:'d01234567abcdef1234567890abcdef1234567890abcdef1',risk_level:'HIGH',ai_result:'HIGH: APK executable'},
+    {filename:'installed_apps.txt',type:'app_data',size:8000,sha256:'e1234567abcdef1234567890abcdef1234567890abcdef12',risk_level:'LOW',ai_result:'84 apps'},
+  ];
+  const demo2=[
+    {filename:'IMG_drug_evidence.jpg',type:'image',size:3100000,sha256:'1a2b3c4d5e6f789012345678abcdef1234567890abcdef12',risk_level:'HIGH',ai_result:'CNN: HIGH — Drug content'},
+    {filename:'Screenshot_weapon.png',type:'image',size:700000,sha256:'2b3c4d5e6f789012abcdef1234567890abcdef1234567890',risk_level:'HIGH',ai_result:'CNN: HIGH — Weapon'},
+    {filename:'wa_backup.db',type:'chat',size:22000000,sha256:'3c4d5e6f7890abcdef1234567890abcdef1234567890abcd',risk_level:'HIGH',ai_result:'NLP: HIGH — Extremist content'},
+    {filename:'calls_device2.txt',type:'call_log',size:18000,sha256:'4d5e6f789012abcdef1234567890abcdef1234567890abcd',risk_level:'MED',ai_result:'Unusual 2AM pattern'},
+    {filename:'threat_sms.txt',type:'sms',size:32000,sha256:'5e6f78901234abcdef1234567890abcdef1234567890abcd',risk_level:'HIGH',ai_result:'NLP: HIGH — Direct threats'},
+    {filename:'contacts_d2.txt',type:'contacts',size:9000,sha256:'6f789012345abcdef1234567890abcdef1234567890abcde',risk_level:'LOW',ai_result:'198 contacts'},
+    {filename:'malware.apk',type:'download',size:8500000,sha256:'778901234abcdef1234567890abcdef1234567890abcdef1',risk_level:'HIGH',ai_result:'HIGH: Malware signature'},
+  ];
+  const STEPS=[[5,'Connecting...'],[12,'Reading device info...'],[20,'Pulling DCIM images...'],[30,'Pulling WhatsApp...'],[40,'Extracting call logs...'],[50,'Extracting SMS...'],[60,'Extracting contacts...'],[68,'Extracting browser...'],[75,'Pulling downloads...'],[82,'Listing apps...'],[90,'Computing SHA-256...'],[100,'Complete!']];
+  function runDemo(slot,num,files,delay){
+    let d=delay;
+    STEPS.forEach(([pct,step],i)=>{
+      d+=450;
+      setTimeout(()=>{
+        exSetProg(num,pct,step,`${pct}% · ${exAllFiles.filter(f=>f.device_slot===slot).length} files`);
+        exAddLog(`[${slot}] ${step}`,'info');
+        if(i<files.length){const f=files[i];exAllFiles.push({...f,device_slot:slot});exAddToFeed(slot,f);exAddToTable(slot,f);exUpdateStats();exUpdateBreakdown();exUpdateMeter(num,slot);}
+        if(i===STEPS.length-1){
+          exSetDevState(num,'complete',null);exExtractDone[slot]=true;
+          document.getElementById('exBtnSave').disabled=false;
+          exAddLog(`[${slot}] Done — ${files.length} files · chain sealed`,'success');
+          toast(`Device ${num}: ${files.length} files extracted!`);
+          if(Object.values(exExtractDone).every(v=>v))exOnAllDone();
+        }
+      },d);
+    });
+    files.slice(STEPS.length).forEach((f,i)=>setTimeout(()=>{exAllFiles.push({...f,device_slot:slot});exAddToFeed(slot,f);exAddToTable(slot,f);exUpdateStats();exUpdateBreakdown();exUpdateMeter(num,slot);},d+(i+1)*220));
+  }
+  runDemo('device1',1,demo1,0);
+  runDemo('device2',2,demo2,200);
+  toast('Demo started — watch live extraction!');
+}
+
+async function exSaveEvidence(){
+  if(!activeCaseId||!exAllFiles.length){toast('Nothing to save');return;}
+  const btn=document.getElementById('exBtnSave');btn.disabled=true;btn.innerHTML='<span class="spin"></span>Saving...';
+  try{
+    for(const slot of['device1','device2']){
+      const sf=exAllFiles.filter(f=>f.device_slot===slot);
+      if(sf.length)await fetch('/api/extract/save',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({case_id:activeCaseId,slot,files:sf})});
+    }
+    exAddLog(`Evidence saved — ${exAllFiles.length} files → ${activeCaseId}`,'success');toast('Evidence saved!');
+    btn.innerHTML='✓ Saved';btn.style.background='var(--green)';btn.style.color='#fff';
+  }catch(e){toast('Save error');btn.disabled=false;btn.innerHTML='Save to Case';}
+}
+
+function exExportCSV(){
+  if(!exAllFiles.length){toast('No evidence yet');return;}
+  const rows=['#,Device,Filename,Type,Size(bytes),AI Result,Risk,SHA-256,Timestamp'];
+  exAllFiles.forEach((f,i)=>rows.push(`${i+1},${f.device_slot},"${f.filename}",${f.type},${f.size||0},"${f.ai_result||''}",${f.risk_level},${f.sha256||''},${new Date().toISOString()}`));
+  const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([rows.join('\n')],{type:'text/csv'}));
+  a.download=(activeCaseId||'forax')+'_evidence_'+new Date().toISOString().slice(0,10)+'.csv';a.click();
+  toast('CSV exported — '+exAllFiles.length+' records');
+}
+
+function exResetAll(){
+  clearInterval(exRateTimer);
+  exAllFiles=[];exFeedCnt=0;exTableRows=0;exLogCnt=1;exLastBytes=0;
+  exActiveDevices={};exExtractDone={device1:false,device2:false};
+  Object.values(exSseConns).forEach(c=>c&&c.close());exSseConns={};
+  [1,2].forEach(num=>{
+    exSetDevState(num,'idle',null);
+    document.getElementById('exDpName'+num).textContent=num===1?'Device 1 — Not Connected':'Device 2 — Not Connected';
+    document.getElementById('exDpModel'+num).textContent=num===1?'Connect via USB · Enable USB Debugging':'Optional — second phone';
+    document.getElementById('exDp'+num).style.borderStyle='dashed';document.getElementById('exDp'+num).style.borderColor='var(--border2)';
+    exSetProg(num,0,'Waiting...','—');
+    document.getElementById('exD'+num+'Files').textContent='0';
+    document.getElementById('exD'+num+'Size').textContent='0 MB';
+    document.getElementById('exD'+num+'High').textContent='0';
+    document.getElementById('exD'+num+'Hash').textContent='0';
+  });
+  document.getElementById('exLiveFeed1').innerHTML='<div class="empty" style="font-size:10px;padding:12px;">D1 — Waiting</div>';
+  document.getElementById('exLiveFeed2').innerHTML='<div class="empty" style="font-size:10px;padding:12px;">D2 — Waiting</div>';
+  document.getElementById('exEvTable').innerHTML='<tr><td colspan="9"><div class="empty">No evidence yet</div></td></tr>';
+  document.getElementById('exBreakdown').innerHTML='<div class="empty" style="padding:8px;">— awaiting —</div>';
+  document.getElementById('exLogList').innerHTML='<div style="display:flex;gap:5px;padding:4px 6px;border-radius:5px;background:var(--bg);border:1px solid var(--border);font-family:var(--mono);font-size:10px;"><span style="color:var(--t2);min-width:46px;">--:--</span><span style="color:var(--blue);">System ready</span></div>';
+  ['ex-s-total','ex-s-images','ex-s-chats','ex-s-high'].forEach(id=>document.getElementById(id).textContent='0');
+  document.getElementById('ex-s-size').textContent='0 MB';document.getElementById('ex-s-rate').textContent='0 KB/s';
+  document.getElementById('exFeedCount').textContent='0 files';document.getElementById('exTableCount').textContent='0';
+  document.getElementById('exLogCount').textContent='0';document.getElementById('exOverallPct').textContent='Overall: 0%';
+  document.getElementById('extLiveBadge').style.display='none';
+  document.getElementById('exBtnExtract').disabled=true;document.getElementById('exBtnSave').disabled=true;
+  document.getElementById('exBtnPause').disabled=true;document.getElementById('exBtnStop').disabled=true;
+  exResetPauseBtn();
+  document.getElementById('exCiStart').textContent='—';document.getElementById('exCiEnd').textContent='—';
+  document.getElementById('exCiTotal').textContent='0';document.getElementById('exCiIntegrity').textContent='Awaiting';
+  document.getElementById('exCustStatus').textContent='STANDBY';document.getElementById('exCustStatus').className='bdg bdg-amber';
+  toast('Reset complete');
+}
+
+// ── NEW CASE ───────────────────────────────────────────────────
+function openNewCase() {
+  document.getElementById('newCaseOverlay').classList.add('show');
+  setTimeout(() => document.getElementById('cTitle').focus(), 100);
+}
+function closeModal() {
+  document.getElementById('newCaseOverlay').classList.remove('show');
+  document.getElementById('cTitle').value = '';
+  document.getElementById('cDesc').value  = '';
+  const m = document.getElementById('caseMsg'); m.className='msg'; m.textContent='';
+}
+document.getElementById('newCaseOverlay').addEventListener('click', function(e){if(e.target===this)closeModal();});
+document.addEventListener('keydown', e => { if(e.key==='Escape') closeModal(); });
+
+async function createCase() {
+  const title = document.getElementById('cTitle').value.trim();
+  const desc  = document.getElementById('cDesc').value.trim();
+  if (!title) { const m=document.getElementById('caseMsg'); m.textContent='Case title required'; m.className='msg error show'; return; }
+  const btn = document.querySelector('.m-footer .btn-blue');
+  btn.disabled=true; btn.innerHTML='<span class="spin"></span>Creating...';
+  try {
+    const r = await fetch('/api/cases/create',{method:'POST',headers:{'Content-Type':'application/json'},
+                                               body:JSON.stringify({title,description:desc})});
+    const d = await r.json();
+    if (d.success) {
+      closeModal(); toast('Case created: '+d.case_id);
+      setTimeout(() => location.reload(), 800);
+    } else {
+      const m=document.getElementById('caseMsg'); m.textContent=d.error||'Failed'; m.className='msg error show';
+    }
+  } catch { const m=document.getElementById('caseMsg'); m.textContent='Server error'; m.className='msg error show'; }
+  finally { btn.disabled=false; btn.textContent='Create Case'; }
+}
+
+async function deleteCase(caseId) {
+  if (!caseId) { toast('No case selected'); return; }
+  if (!confirm(`⚠ PERMANENT DEletion: Are you sure you want to delete case ${caseId}? This will wipe all database records and physical evidence files. This cannot be undone.`)) return;
+  
+  try {
+    const r = await fetch('/api/cases/delete', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ case_id: caseId })
+    });
+    const d = await r.json();
+    if (d.success) {
+      toast('✅ Case deleted successfully');
+      setTimeout(() => location.reload(), 1000);
+    } else {
+      toast('❌ Error: ' + (d.error || 'Failed to delete'));
+    }
+  } catch (err) {
+    toast('❌ Server error deleting case');
+  }
+}
+
+// ── EVIDENCE ───────────────────────────────────────────────────
+async function loadEvidence() {
+  if (!activeCaseId) return;
+  try {
+    const r = await fetch('/api/evidence/'+activeCaseId);
+    allEvidence = await r.json();
+    renderEvidence();
+    renderCharts();
+    document.getElementById('ov-evidence').textContent = allEvidence.length;
+    document.getElementById('ov-flagged').textContent  = allEvidence.filter(e=>e.risk_level==='HIGH').length;
+  } catch {}
+}
+
+function filterEvidence(slot, btn) {
+  evidenceFilter = slot;
+  document.querySelectorAll('.tab-strip .tab-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  
+  const delBtn = document.getElementById('btnDeleteDeviceEv');
+  if (slot === 'device1' || slot === 'device2') {
+    delBtn.style.display = 'inline-flex';
+  } else {
+    delBtn.style.display = 'none';
+  }
+  
+  renderEvidence();
+}
+
+async function deleteDeviceEvidence() {
+  if (!activeCaseId) return;
+  if (evidenceFilter === 'all') return;
+  if (!confirm(`Are you sure you want to completely delete all evidence files for ${evidenceFilter} in this case? This cannot be undone.`)) return;
+  try {
+    const res = await fetch(`/api/evidence/delete_device/${activeCaseId}/${evidenceFilter}`, { method: 'DELETE' });
+    const data = await res.json();
+    if (data.success) {
+      toast(`Deleted ${data.deleted} files from ${evidenceFilter}`);
+      loadEvidence();
+      setTimeout(() => location.reload(), 1000); // refresh stats
+    } else {
+      toast('Failed to delete: ' + (data.error || 'Unknown error'));
+    }
+  } catch (err) {
+    toast('Error connecting to server.');
+  }
+}
+
+function showPreview(id, filename, file_type) {
+  const overlay = document.getElementById('lightboxOverlay');
+  const content = document.getElementById('lightboxContent');
+  const info = document.getElementById('lightboxInfo');
+
+  overlay.classList.add('show');
+  info.textContent = filename;
+  content.innerHTML = '<div style="color:var(--t2)">Loading preview...</div>';
+
+  const previewUrl = `/api/evidence/preview/${id}`;
+
+  if (file_type === 'image') {
+    content.innerHTML = `<img src="${previewUrl}" style="max-width:100%;max-height:100%;border-radius:8px;box-shadow:0 10px 30px rgba(0,0,0,0.5);">`;
+  } else if (file_type === 'video') {
+    content.innerHTML = `<video src="${previewUrl}" controls autoplay style="max-width:100%;max-height:100%;border-radius:8px;box-shadow:0 10px 30px rgba(0,0,0,0.5);"></video>`;
+  } else {
+    // Default fallback: text
+    fetch(previewUrl)
+      .then(async r => {
+        if (!r.ok) {
+          const txt = await r.text();
+          throw new Error(txt || "File not found");
+        }
+        return r.text();
+      })
+      .then(text => {
+        content.innerHTML = `<textarea readonly style="width:80%;height:80%;max-width:1000px;background:var(--surface);color:var(--t0);font-family:var(--mono);font-size:12px;padding:20px;border:1px solid var(--border);border-radius:8px;resize:none;outline:none;white-space:pre;">${text}</textarea>`;
+      }).catch(err => {
+        content.innerHTML = `<div style="color:var(--red);font-family:var(--mono);">${err.message}</div>`;
+      });
+  }
+}
+
+function closeLightbox(e) {
+  if (e.target.id === 'lightboxOverlay' || e.target.classList.contains('lightbox-close')) {
+    document.getElementById('lightboxOverlay').classList.remove('show');
+    document.getElementById('lightboxContent').innerHTML = '';
+  }
+}
+
+async function downloadFile(id, filename) {
+  try {
+    const url = `/api/evidence/download/file/${id}`;
+    // Force a download via JS to ensure pywebview/edgechromium handles it correctly
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = filename;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    toast('Download triggered: ' + filename);
+  } catch (err) {
+    toast('Download failed');
+  }
+}
+
+function copyPath(path) {
+  if (!path) return toast('Path unavailable');
+  navigator.clipboard.writeText(path).then(() => {
+    toast('Local path copied to clipboard');
+  }).catch(() => {
+    toast('Copy failed');
+  });
+}
+
+function filterType(type, btn) {
+  typeFilter = type;
+  document.querySelectorAll('.ef-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  renderEvidence();
+}
+
+function renderEvidence() {
+  let data = allEvidence;
+  if (evidenceFilter !== 'all') data = data.filter(e=>e.device_slot===evidenceFilter);
+  if (typeFilter !== 'all')     data = data.filter(e=>e.file_type===typeFilter);
+  document.getElementById('evCount').textContent = data.length+' files';
+  const tbody = document.getElementById('evBody');
+  if (!data.length) { tbody.innerHTML='<tr><td colspan="10"><div class="empty">No evidence for this filter</div></td></tr>'; return; }
+  const typeColors = {image:'#2563eb',video:'#7c3aed',chat:'#059669',call_log:'#d97706',sms:'#9333ea',contacts:'#0e7490',browser:'#ea580c',download:'#16a34a',app_data:'#475569',recovered:'#dc2626'};
+  tbody.innerHTML = data.map((e,i) => {
+    const col  = typeColors[e.file_type]||'#94a3b8';
+    const isPending = !e.ai_result || e.ai_result === 'Pending Analysis';
+    const rp        = isPending ? 'rp-P' : (e.risk_level==='HIGH'?'rp-H':e.risk_level==='MED'?'rp-M':'rp-L');
+    const riskText  = isPending ? 'AWAITING' : e.risk_level;
+    const hash = (e.sha256||'').slice(0,12)+'...';
+    const gps  = (e.gps_lat && e.gps_lng) ? `${parseFloat(e.gps_lat).toFixed(4)},${parseFloat(e.gps_lng).toFixed(4)}` : '—';
+    const previewBtn = e.id ? `<button onclick="showPreview(${e.id}, '${e.filename.replace(/'/g,"\\'")}', '${e.file_type}')" title="Preview file" style="display:inline-flex;align-items:center;justify-content:center;width:26px;height:26px;background:var(--surface);border:1px solid var(--border);border-radius:5px;color:var(--t2);cursor:pointer;flex-shrink:0;"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button>` : '—';
+    const dlBtn = e.id ? `<button onclick="downloadFile(${e.id}, '${e.filename.replace(/'/g,"\\'")}')" title="Download file" style="display:inline-flex;align-items:center;justify-content:center;width:26px;height:26px;background:var(--blue-bg);border:1px solid var(--blue-bd);border-radius:5px;color:var(--blue);cursor:pointer;flex-shrink:0;"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg></button>` : '';
+    const pathBtn = e.file_path ? `<button onclick="copyPath('${e.file_path.replace(/\\/g,"\\\\").replace(/'/g,"\\'")}')" title="Copy Local Path" style="display:inline-flex;align-items:center;justify-content:center;width:26px;height:26px;background:var(--surface);border:1px solid var(--border);border-radius:5px;color:var(--t2);cursor:pointer;flex-shrink:0;"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg></button>` : '';
+    const overrideBtn = e.id ? `<button onclick="openOverride(${e.id})" title="Override AI Risk" style="display:inline-flex;align-items:center;justify-content:center;width:26px;height:26px;background:var(--amber-bg);border:1px solid var(--amber-bd);border-radius:5px;color:var(--amber);cursor:pointer;flex-shrink:0;font-size:11px;">⚖</button>` : '';
+    const verifyBtn = e.id ? `<button onclick="verifyIntegrity(${e.id})" title="Verify SHA-256 Integrity" style="display:inline-flex;align-items:center;justify-content:center;width:26px;height:26px;background:var(--green-bg);border:1px solid var(--green-bd);border-radius:5px;color:var(--green);cursor:pointer;flex-shrink:0;font-size:11px;">🔒</button>` : '';
+    const deleteBtn = e.id ? `<button onclick="deleteEvFile(${e.id})" title="Delete Evidence" style="display:inline-flex;align-items:center;justify-content:center;width:26px;height:26px;background:var(--red-bg);border:1px solid var(--red-bd);border-radius:5px;color:var(--red);cursor:pointer;flex-shrink:0;font-size:12px;">🗑️</button>` : '';
+    const actionBtns = e.id ? `<div style="display:flex;gap:4px;flex-wrap:wrap;">${previewBtn}${dlBtn}${pathBtn}${overrideBtn}${verifyBtn}${deleteBtn}</div>` : '—';
+    return `<tr onclick="if(event.target.tagName !== 'INPUT' && event.target.tagName !== 'BUTTON' && event.target.tagName !== 'SVG' && event.target.tagName !== 'PATH' && event.target.tagName !== 'POLYLINE' && event.target.tagName !== 'LINE') { const cb = this.querySelector('.ev-check'); cb.checked = !cb.checked; }" style="cursor:pointer;">
+      <td><input type="checkbox" class="ev-check" value="${e.id}"></td>
+      <td class="td-mono" style="color:var(--t2)">${String(i+1).padStart(3,'0')}</td>
+      <td><span class="bdg bdg-blue" style="font-size:10px;padding:2px 7px;">${e.device_slot}</span></td>
+      <td class="td-bold" style="max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="${e.filename}">${e.filename}</td>
+      <td><span style="font-family:var(--mono);font-size:10px;color:${col};font-weight:500;">${(e.file_type||'UNK').toUpperCase()}</span></td>
+      <td class="td-mono">${e.file_size||'—'}</td>
+      <td class="clickable-ai" onclick="showAiReasoning(${e.id})" style="font-size:11px;max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="Click to view full AI reasoning">
+        ${(e.ai_result||'—').replace('Detected:', '<strong style="color:var(--red);font-weight:600;">Detected:</strong>')}
+      </td>
+      <td><span class="rp ${rp}">${riskText}</span></td>
+      <td class="td-mono" style="font-size:10px;color:${gps!=='—'?'var(--green)':'var(--t2)'};">${gps}</td>
+      <td><span class="td-hash" title="${e.sha256||''}">${hash}</span></td>
+      <td>${actionBtns}</td>
+    </tr>`;
+  }).join('');
+  
+  // Render Gallery View
+  const grid = document.getElementById('galleryGrid');
+  const mediaData = data.filter(e => e.file_type === 'image' || e.file_type === 'video');
+  if (mediaData.length === 0) {
+    grid.innerHTML = '<div class="empty" style="grid-column: 1 / -1; margin-top:40px;">No images or videos found in current view</div>';
+  } else {
+    grid.innerHTML = mediaData.map((e, i) => {
+      const rpColor = e.risk_level === 'HIGH' ? 'var(--red)' : e.risk_level === 'MED' ? 'var(--amber)' : 'var(--green)';
+      const isVid = e.file_type === 'video';
+      const previewUrl = `/api/evidence/preview/${e.id}`;
+      return `
+        <div class="gallery-item" onclick="showGalleryDetails(${e.id})" style="position:relative; width:100%; aspect-ratio:1; border-radius:8px; overflow:hidden; border:2px solid transparent; cursor:pointer; background:#e0e0e0; transition:all 0.2s;">
+          ${isVid ? `<div style="position:absolute; inset:0; display:flex; align-items:center; justify-content:center; background:rgba(0,0,0,0.3); z-index:2;"><svg width="24" height="24" fill="#fff" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div><video src="${previewUrl}#t=0.5" style="width:100%; height:100%; object-fit:cover; position:absolute; inset:0; z-index:1;"></video>` 
+                  : `<img src="${previewUrl}" loading="lazy" style="width:100%; height:100%; object-fit:cover; position:absolute; inset:0; z-index:1;">`}
+          <div style="position:absolute; top:4px; right:4px; z-index:3; width:10px; height:10px; border-radius:50%; background:${rpColor}; border:1px solid rgba(255,255,255,0.8); box-shadow:0 1px 3px rgba(0,0,0,0.5);"></div>
+        </div>
+      `;
+    }).join('');
+    
+    // Add hover styles
+    document.querySelectorAll('.gallery-item').forEach(el => {
+      el.addEventListener('mouseenter', () => el.style.borderColor = 'var(--blue)');
+      el.addEventListener('mouseleave', () => el.style.borderColor = 'transparent');
+    });
+  }
+
+  updateSelCount();
+}
+
+function setEvidenceView(viewType) {
+  const tablePanel = document.getElementById('evTablePanel');
+  const galleryPanel = document.getElementById('evGalleryPanel');
+  const btnTable = document.getElementById('viewToggleTable');
+  const btnGallery = document.getElementById('viewToggleGallery');
+  
+  if (viewType === 'table') {
+    tablePanel.style.display = 'block';
+    galleryPanel.style.display = 'none';
+    btnTable.style.background = 'var(--surface)';
+    btnTable.style.color = 'var(--blue)';
+    btnTable.style.boxShadow = '0 1px 2px rgba(0,0,0,0.1)';
+    btnGallery.style.background = 'transparent';
+    btnGallery.style.color = 'var(--t1)';
+    btnGallery.style.boxShadow = 'none';
+  } else {
+    tablePanel.style.display = 'none';
+    galleryPanel.style.display = 'block';
+    btnGallery.style.background = 'var(--surface)';
+    btnGallery.style.color = 'var(--blue)';
+    btnGallery.style.boxShadow = '0 1px 2px rgba(0,0,0,0.1)';
+    btnTable.style.background = 'transparent';
+    btnTable.style.color = 'var(--t1)';
+    btnTable.style.boxShadow = 'none';
+  }
+}
+
+function showGalleryDetails(id) {
+  const ev = allEvidence.find(e => e.id === id);
+  if (!ev) return;
+  
+  const sidebar = document.getElementById('gallerySidebarContent');
+  const previewUrl = `/api/evidence/preview/${ev.id}`;
+  const isVid = ev.file_type === 'video';
+  const rpColor = ev.risk_level === 'HIGH' ? 'var(--red)' : ev.risk_level === 'MED' ? 'var(--amber)' : 'var(--green)';
+  
+  const mapHtml = (ev.gps_lat && ev.gps_lng) ? `
+    <div style="margin-top:16px; margin-bottom:8px; font-family:var(--sans); font-size:12px; font-weight:600; color:var(--blue);">Extracted Location</div>
+    <div style="width:100%; height:150px; background:#e0e0e0; border-radius:8px; overflow:hidden; border:1px solid var(--border);">
+      <iframe width="100%" height="100%" frameborder="0" scrolling="no" marginheight="0" marginwidth="0" src="https://maps.google.com/maps?q=${ev.gps_lat},${ev.gps_lng}&hl=es;z=14&amp;output=embed"></iframe>
+    </div>
+  ` : '<div style="margin-top:16px; font-size:11px; color:var(--t2);">No GPS coordinates found in EXIF data.</div>';
+
+  sidebar.innerHTML = `
+    <div style="width:100%; background:#000; border-radius:8px; overflow:hidden; margin-bottom:16px; display:flex; align-items:center; justify-content:center; box-shadow:0 4px 12px rgba(0,0,0,0.1);">
+      ${isVid ? `<video src="${previewUrl}" controls autoplay style="max-width:100%; max-height:200px; display:block;"></video>` 
+              : `<img src="${previewUrl}" style="max-width:100%; max-height:200px; display:block; object-fit:contain;">`}
+    </div>
+    
+    <div style="margin-bottom:12px;">
+      <div style="font-size:14px; font-weight:600; word-break:break-all; line-height:1.2;">${ev.filename}</div>
+      <div style="font-family:var(--mono); font-size:11px; color:var(--t2); margin-top:4px;">${ev.file_size || '0 bytes'}</div>
+    </div>
+    
+    <div style="display:flex; gap:8px; margin-bottom:16px;">
+      <span class="badge" style="background:var(--bg); border:1px solid ${rpColor}; color:${rpColor}; font-weight:600;">${ev.risk_level} RISK</span>
+      <span class="badge bdg-blue" style="font-size:10px;">${ev.device_slot}</span>
+    </div>
+    
+    <div style="font-family:var(--sans); font-size:12px; font-weight:600; color:var(--blue); margin-bottom:4px;">AI Analysis Findings</div>
+    <div style="font-size:12px; line-height:1.5; color:var(--t1); background:var(--bg); padding:10px; border-radius:6px; border:1px solid var(--border);">
+      ${ev.ai_result || 'No analysis available.'}
+    </div>
+    
+    <div style="font-family:var(--sans); font-size:12px; font-weight:600; color:var(--blue); margin-top:16px; margin-bottom:4px;">Cryptographic Hash</div>
+    <div style="font-family:var(--mono); font-size:10px; word-break:break-all; color:var(--t2); background:var(--bg); padding:8px; border-radius:6px; border:1px solid var(--border);">
+      ${ev.sha256 || 'N/A'}
+    </div>
+    
+    ${mapHtml}
+  `;
+}
+
+function updateSelCount() {
+  const count = getSelectedIds().length;
+  const el = document.getElementById('selCount');
+  if (el) {
+    el.textContent = count + ' SELECTED';
+    el.className = count > 0 ? 'badge animate__animated animate__pulse animate__infinite' : 'badge';
+    el.style.background = count > 0 ? 'var(--blue)' : 'var(--bg2)';
+    el.style.color = count > 0 ? '#fff' : 'var(--t2)';
+  }
+}
+
+document.addEventListener('change', e => {
+  if (e.target.classList.contains('ev-check')) updateSelCount();
+});
+
+
+async function deleteEvFile(evId) {
+  if (!confirm('🗑️ Are you sure you want to delete this evidence? The removal will be permanently logged to the Chief.')) return;
+  try {
+    const res = await fetch('/api/evidence/delete', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ evidence_id: evId, case_id: activeCaseId })
+    });
+    const d = await res.json();
+    if (d.success) {
+      toast('✅ Deleted ' + d.filename);
+      loadEvidence();
+    } else {
+      toast('❌ Error: ' + d.error);
+    }
+  } catch (err) { toast('❌ Server error'); }
+}
+
+function toggleAllEv(checked) {
+  document.querySelectorAll('.ev-check').forEach(cb => cb.checked = checked);
+}
+
+async function buildTimeline(sortField = 'extracted_at') {
+  if (!activeCaseId) { toast('❌ Select a case first'); return; }
+  const wrap = document.getElementById('timelineWrap');
+  wrap.innerHTML = '<div class="text-center p-5"><div class="spinner-border text-primary" role="status"></div><div class="mt-2" style="font-family:var(--mono);">Reconstructing sequence...</div></div>';
+  
+  try {
+    const res = await fetch('/api/evidence/' + activeCaseId);
+    const data = await res.json();
+    if (!data || !data.length) {
+      wrap.innerHTML = '<div class="empty">No evidence found for this case timeline.</div>';
+      return;
+    }
+    
+    const sorted = [...data].sort((a, b) => {
+      const ta = a[sortField] || a.extracted_at;
+      const tb = b[sortField] || b.extracted_at;
+      return new Date(ta) - new Date(tb);
+    });
+
+    wrap.innerHTML = sorted.map((e, i) => {
+      const timeStr = new Date(e[sortField] || e.extracted_at).toLocaleString();
+      const icon = e.file_type === 'image' ? '📸' : (e.file_type === 'video' ? '🎥' : '📁');
+      const riskColor = e.risk_level === 'HIGH' ? 'var(--red)' : (e.risk_level === 'MED' ? 'var(--amber)' : 'var(--blue)');
+      
+      return `
+        <div class="timeline-item animate__animated animate__fadeInUp" style="animation-delay: ${i * 0.05}s">
+          <div class="timeline-dot" style="background: ${riskColor}; box-shadow: 0 0 10px ${riskColor};"></div>
+          <div class="timeline-time">${timeStr}</div>
+          <div class="timeline-card">
+            <div class="timeline-title">${icon} ${e.filename}</div>
+            <div class="timeline-desc">
+              <span class="badge" style="background:var(--bg2); color:var(--t1); border:1px solid var(--border);">${(e.file_type||'UNK').toUpperCase()}</span>
+              <span class="badge" style="background:var(--bg2); color:${riskColor}; border:1px solid ${riskColor};">${e.risk_level} RISK</span>
+            </div>
+            <div class="timeline-meta">
+              <span style="font-size:11px; color:var(--t2); font-family:var(--mono);">SHA-256: ${e.sha256 ? e.sha256.slice(0, 16) + '...' : '—'}</span>
+            </div>
+          </div>
+        </div>
+      `;
+    }).join('');
+  } catch (err) {
+    wrap.innerHTML = '<div class="empty text-danger">Error loading timeline data.</div>';
+  }
+}
+
+function getSelectedIds() {
+  return Array.from(document.querySelectorAll('.ev-check:checked')).map(cb => parseInt(cb.value));
+}
+
+async function runAnalysisSelected() {
+  const ids = getSelectedIds();
+  if (!ids.length) { toast('Please select files first'); return; }
+  await runAnalysis(ids);
+}
+
+async function resetAnalysis() {
+  if (!activeCaseId) { toast('Select a case first!'); return; }
+  const ids = getSelectedIds();
+  const confirmMsg = ids.length ? `Reset analysis for ${ids.length} selected files?` : 'Reset ALL analysis results for this case?';
+  if (!confirm(confirmMsg)) return;
+
+  try {
+    const r = await fetch('/api/analyze/reset', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({case_id: activeCaseId, evidence_ids: ids.length ? ids : null})
+    });
+    if (r.ok) {
+      toast('Analysis results cleared');
+      await loadEvidence();
+    }
+  } catch { toast('Reset failed'); }
+}
+
+// ── CHARTS ─────────────────────────────────────────────────────
+function renderCharts() {
+  const high = allEvidence.filter(e=>e.risk_level==='HIGH').length;
+  const med  = allEvidence.filter(e=>e.risk_level==='MED').length;
+  const low  = allEvidence.filter(e=>e.risk_level==='LOW').length;
+  if (charts.threat) charts.threat.destroy();
+  charts.threat = new Chart(document.getElementById('threatChart'),{type:'doughnut',
+    data:{labels:['HIGH','MEDIUM','LOW'],datasets:[{data:[high,med,low],
+      backgroundColor:['#dc2626','#d97706','#059669'],borderWidth:0,borderRadius:4}]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:'#475569',font:{family:'DM Mono',size:11}}}}}});
+
+  const types = {};
+  allEvidence.forEach(e=>{types[e.file_type||'unknown']=(types[e.file_type||'unknown']||0)+1;});
+  if (charts.type) charts.type.destroy();
+  charts.type = new Chart(document.getElementById('typeChart'),{type:'bar',
+    data:{labels:Object.keys(types),datasets:[{data:Object.values(types),
+      backgroundColor:'#2563eb',borderRadius:4}]},
+    options:{responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{display:false}},
+      scales:{x:{ticks:{color:'#94a3b8',font:{family:'DM Mono',size:9}}},
+               y:{ticks:{color:'#94a3b8',font:{family:'DM Mono',size:9}},beginAtZero:true}}}});
+
+  // high risk table
+  const highRisk = allEvidence.filter(e=>e.risk_level==='HIGH');
+  document.getElementById('highCount').textContent = highRisk.length;
+  document.getElementById('highBody').innerHTML = highRisk.length
+    ? highRisk.map(e=>`<tr onclick="showAiReasoning(${e.id})" style="cursor:pointer;" title="Click to view reasoning">
+        <td class="td-bold" style="font-size:12px;max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${e.filename}</td>
+        <td class="td-mono" style="font-size:11px;">${e.device_slot}</td>
+        <td class="td-mono" style="font-size:11px;">${e.file_type||'—'}</td>
+        <td style="font-size:11px;color:var(--red);">${e.ai_result||'—'}</td>
+      </tr>`).join('')
+    : '<tr><td colspan="4"><div class="empty">No high risk files</div></td></tr>';
+}
+
+// ── AI ANALYSIS ─────────────────────────────────────────────────
+async function runAnalysis(ids = null) {
+  if (!activeCaseId) { toast('Select a case first!'); return; }
+  const btn = document.getElementById('runAiBtn');
+  btn.disabled=true; btn.innerHTML='<span class="spin"></span>' + (ids ? 'Analyzing selected...' : 'Analyzing everything...');
+  try {
+    const r = await fetch('/api/analyze', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({case_id: activeCaseId, slot: 'all', evidence_ids: ids})
+    });
+    const d = await r.json();
+    
+    await loadEvidence();
+    toast('AI analysis complete!');
+  } catch { toast('Analysis error'); }
+  finally { btn.disabled=false; btn.innerHTML='<svg viewBox="0 0 24 24" style="width:13px;height:13px;stroke:currentColor;fill:none;stroke-width:2"><circle cx="12" cy="12" r="3"/><path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83"/></svg>Analyze All Evidence'; }
+}
+
+// ── DOWNLOAD FUNCTIONS ─────────────────────────────────────────
+function downloadZip(slot, type, risk) {
+  if (!activeCaseId) { toast('Select a case first!'); return; }
+  const params = new URLSearchParams({slot, type, risk});
+  const url = `/api/evidence/download/zip/${activeCaseId}?${params}`;
+  const a = document.createElement('a');
+  a.href = url; a.click();
+  toast('Preparing ZIP download...');
+}
+
+function downloadCSV() {
+  if (!activeCaseId) { toast('Select a case first!'); return; }
+  window.location.href = `/api/evidence/download/csv/${activeCaseId}`;
+  toast('Downloading CSV...');
+}
+
+function downloadFiltered() {
+  if (!activeCaseId) { toast('Select a case first!'); return; }
+  const slot = document.getElementById('dlSlot').value;
+  const risk = document.getElementById('dlRisk').value;
+  const selectedTypes = Array.from(document.querySelectorAll('.dl-type-check:checked')).map(c => c.value);
+  if (!selectedTypes.length) {
+    toast('Select at least one evidence type');
+    return;
+  }
+  const params = new URLSearchParams({
+    slot,
+    risk,
+    types: selectedTypes.join(',')
+  });
+  const a = document.createElement('a');
+  a.href = `/api/evidence/download/zip/${activeCaseId}?${params.toString()}`;
+  a.click();
+  toast('Preparing filtered ZIP...');
+}
+
+function setAllTypeChecks(checked) {
+  document.querySelectorAll('.dl-type-check').forEach(c => { c.checked = checked; });
+}
+
+function exportCSV() { downloadCSV(); }
+
+// ── GPS MAP ────────────────────────────────────────────────────
+let leafletMap = null, mapMarkers = [];
+async function loadMap() {
+  if (!activeCaseId) { document.getElementById('mapCaseLabel').textContent = 'select a case'; return; }
+  document.getElementById('mapCaseLabel').textContent = activeCaseTitle;
+  try {
+    const r = await fetch('/api/evidence/gps/' + activeCaseId);
+    const gps = await r.json();
+    document.getElementById('gpsCount').textContent = gps.length + ' locations';
+    // Init map
+    if (!leafletMap) {
+      leafletMap = L.map('mapContainer').setView([31.5204, 74.3587], 5);
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; OpenStreetMap', maxZoom: 18
+      }).addTo(leafletMap);
+    }
+    // Clear old markers
+    mapMarkers.forEach(m => leafletMap.removeLayer(m)); mapMarkers = [];
+    // Add markers
+    const bounds = [];
+    gps.forEach(e => {
+      const lat = parseFloat(e.gps_lat), lng = parseFloat(e.gps_lng);
+      if (isNaN(lat) || isNaN(lng)) return;
+      const risk = e.risk_level === 'HIGH' ? '🔴' : e.risk_level === 'MED' ? '🟡' : '🟢';
+      const marker = L.marker([lat, lng]).addTo(leafletMap)
+        .bindPopup(`<b>${risk} ${e.filename}</b><br>Type: ${e.file_type}<br>Risk: ${e.risk_level}<br>GPS: ${lat.toFixed(6)}, ${lng.toFixed(6)}<br>Date: ${e.exif_date||'—'}<br><small>SHA: ${(e.sha256||'').slice(0,16)}...</small>`);
+      mapMarkers.push(marker);
+      bounds.push([lat, lng]);
+    });
+    if (bounds.length > 0) leafletMap.fitBounds(bounds, {padding: [40,40]});
+    setTimeout(() => leafletMap.invalidateSize(), 200);
+    // GPS table
+    const tbody = document.getElementById('gpsBody');
+    tbody.innerHTML = gps.length ? gps.map(e => {
+      const rp = e.risk_level==='HIGH'?'rp-H':e.risk_level==='MED'?'rp-M':'rp-L';
+      return `<tr><td class="td-bold">${e.filename}</td><td class="td-mono">${parseFloat(e.gps_lat).toFixed(6)}</td><td class="td-mono">${parseFloat(e.gps_lng).toFixed(6)}</td><td class="td-mono" style="font-size:11px">${e.exif_date||'—'}</td><td><span class="rp ${rp}">${e.risk_level}</span></td><td><span class="bdg bdg-blue" style="font-size:10px;padding:2px 7px;">${e.device_slot}</span></td></tr>`;
+    }).join('') : '<tr><td colspan="6"><div class="empty">No GPS data found for this case</div></td></tr>';
+  } catch(e) { console.error('Map error:', e); }
+}
+
+// ── PASSWORD CHANGE ────────────────────────────────────────────
+async function changePassword() {
+  const curr = document.getElementById('currentPw').value;
+  const newp = document.getElementById('newPw2').value;
+  const conf = document.getElementById('confirmPw').value;
+  const msg = document.getElementById('pwMsg');
+  if (!curr || !newp) { msg.textContent='All fields required'; msg.className='msg error show'; return; }
+  if (newp.length < 8) { msg.textContent='Password must be 8+ characters'; msg.className='msg error show'; return; }
+  if (newp !== conf)   { msg.textContent='Passwords do not match'; msg.className='msg error show'; return; }
+  try {
+    const r = await fetch('/api/change-password', {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({current_password:curr, new_password:newp})
+    });
+    const d = await r.json();
+    if (d.success) {
+      msg.textContent='Password updated successfully!'; msg.className='msg success show';
+      document.getElementById('currentPw').value = '';
+      document.getElementById('newPw2').value = '';
+      document.getElementById('confirmPw').value = '';
+      toast('Password changed!');
+    } else {
+      msg.textContent = d.error || 'Failed'; msg.className='msg error show';
+    }
+  } catch { msg.textContent='Server error'; msg.className='msg error show'; }
+}
+
+// ── SEARCH ─────────────────────────────────────────────────────
+let searchTimer = null;
+document.getElementById('searchInput').addEventListener('input', function() {
+  clearTimeout(searchTimer);
+  const q = this.value.trim();
+  if (q.length < 2) { document.getElementById('searchResults').classList.remove('show'); return; }
+  searchTimer = setTimeout(async () => {
+    try {
+      const r = await fetch('/api/search?q=' + encodeURIComponent(q));
+      const d = await r.json();
+      const box = document.getElementById('searchResults');
+      let html = '';
+      if (d.cases.length) {
+        html += '<div class="sr-sec">Cases (' + d.cases.length + ')</div>';
+        d.cases.forEach(c => {
+          html += `<div class="sr-item" onclick="selectCase('${c.case_id}','${c.title}');document.getElementById('searchResults').classList.remove('show');document.getElementById('searchInput').value='';">`;
+          html += `<div class="sr-name">${c.title}</div><div class="sr-meta">${c.case_id} · ${c.total_files} files · ${c.threat_level||'LOW'}</div></div>`;
+        });
+      }
+      if (d.evidence.length) {
+        html += '<div class="sr-sec">Evidence (' + d.evidence.length + ')</div>';
+        d.evidence.forEach(e => {
+          const rp = e.risk_level==='HIGH'?'color:var(--red)':e.risk_level==='MED'?'color:var(--amber)':'color:var(--green)';
+          html += `<div class="sr-item" onclick="selectCase('${e.case_id}','');showTab('evidence',null);document.getElementById('searchResults').classList.remove('show');document.getElementById('searchInput').value='';">`;
+          html += `<div class="sr-name">${e.filename}</div><div class="sr-meta">${e.case_id} · ${e.file_type} · <span style="${rp};font-weight:600">${e.risk_level}</span></div></div>`;
+        });
+      }
+      if (!html) html = '<div class="sr-item"><div class="sr-meta">No results found</div></div>';
+      box.innerHTML = html;
+      box.classList.add('show');
+    } catch {}
+  }, 300);
+});
+document.addEventListener('click', e => {
+  if (!e.target.closest('.search-box')) document.getElementById('searchResults').classList.remove('show');
+});
+
+// ── ADVANCED REPORT ──────────────────────────────────────────────
+function generateReport() {
+  if (!activeCaseId) { toast('Select a case first!'); return; }
+  document.getElementById('reportCaseId').textContent = activeCaseId;
+  document.getElementById('advancedReportModal').classList.add('show');
+}
+
+function closeAdvancedReportModal() {
+  document.getElementById('advancedReportModal').classList.remove('show');
+}
+
+function switchReportTab(tabId, btn) {
+  document.querySelectorAll('.rm-tab-btn').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.rm-tab').forEach(t => t.style.display = 'none');
+  btn.classList.add('active');
+  document.getElementById(tabId).style.display = 'block';
+}
+
+async function submitAdvancedReport() {
+  const btn = document.getElementById('reportSubmitBtn');
+  btn.disabled = true; btn.innerHTML = '<span class="spin"></span>Generating...';
+
+  const typeChecks = Array.from(document.querySelectorAll('.r-type-check'));
+  const selectedTypes = typeChecks.filter(cb => cb.checked).map(cb => cb.value);
+  const useTypeFilter = selectedTypes.length > 0 && selectedTypes.length < typeChecks.length;
+  
+  const payload = {
+    case_id: activeCaseId,
+    format: document.getElementById('rFormat').value,
+    examiner: document.getElementById('rExaminer').value,
+    examiner_badge: document.getElementById('rExaminerBadge').value,
+    qualifications: document.getElementById('rQualifications').value,
+    department: document.getElementById('rDept').value,
+    location: document.getElementById('rLocation').value,
+    crime_type: document.getElementById('rCrime').value,
+    reviewer: document.getElementById('rReviewer').value,
+    jurisdiction: document.getElementById('rJurisdiction').value,
+    warrant_ref: document.getElementById('rWarrant').value,
+    agency: document.getElementById('rAgency').value,
+    fir_ref: document.getElementById('rFIR').value,
+    classification: document.getElementById('rClassification').value,
+    notes: document.getElementById('rNotes').value,
+    redact_attachments: document.getElementById('rRedact').checked,
+    types: useTypeFilter ? selectedTypes : []
+  };
+
+  try {
+    const r = await fetch('/api/report/generate-advanced', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+    const d = await r.json();
+    if (d.success) {
+      toast('Report generated successfully!');
+      closeAdvancedReportModal();
+      
+      // Auto download
+      const downloadPath = encodeURIComponent(d.path);
+      if (payload.format === 'pdf') {
+        window.location.href = `/api/report/download-pdf/${activeCaseId}?path=${downloadPath}`;
+      } else if (payload.format === 'html') {
+        window.location.href = `/api/report/download-html/${activeCaseId}?path=${downloadPath}`;
+      } else {
+        toast('Generated: ' + d.filename);
+      }
+    } else {
+      toast('Failed: ' + (d.error || 'Unknown error'));
+    }
+  } catch (e) {
+    toast('Server error generating report');
+  } finally {
+    btn.disabled = false; btn.textContent = 'Generate Report';
+  }
+}
+
+
+
+async function handleLocalUpload(files) {
+  if (!activeCaseId) { toast('Select a case first!'); return; }
+  if (!files || !files.length) return;
+  toast(`Uploading ${files.length} file(s)... analyzing...`);
+  
+  let successes = 0;
+  for(let i=0; i<files.length; i++) {
+    const formData = new FormData();
+    formData.append('case_id', activeCaseId);
+    formData.append('slot', 'LocalSystem');
+    formData.append('file', files[i]);
+    
+    try {
+      const r = await fetch('/api/evidence/upload_local', {
+        method: 'POST',
+        body: formData
+      });
+      const d = await r.json();
+      if(d.success) successes++;
+    } catch(e) {
+      console.error(e);
+    }
+  }
+  document.getElementById('localEvInput').value = ''; // Reset input
+  toast(`Complete: ${successes}/${files.length} local files processed via AI!`);
+  loadEvidence(activeCaseId); // Refresh table
+}
+
+// ── SESSION TIMEOUT ────────────────────────────────────────────
+let sessionSeconds = 1800;
+function updateSessionTimer() {
+  sessionSeconds--;
+  if (sessionSeconds <= 0) {
+    window.location.href = '/logout';
+    return;
+  }
+  const m = Math.floor(sessionSeconds / 60), s = sessionSeconds % 60;
+  const el = document.getElementById('sessionTimer');
+  if (sessionSeconds <= 300) {
+    el.textContent = `${m}:${String(s).padStart(2,'0')}`;
+    el.style.color = 'var(--red)';
+  } else {
+    el.textContent = `${m}m`;
+    el.style.color = '';
+  }
+}
+setInterval(updateSessionTimer, 1000);
+// Reset timer on activity
+['click','keydown','mousemove','scroll'].forEach(evt => {
+  document.addEventListener(evt, () => { sessionSeconds = 1800; }, {passive:true});
+});
+// Check server session every 5 min
+setInterval(async () => {
+  try {
+    const r = await fetch('/api/session/status');
+    const d = await r.json();
+    if (!d.active) window.location.href = '/logout';
+  } catch {}
+}, 300000);
+
+function showAiReasoning(id) {
+  const ev = allEvidence.find(e => e.id === id);
+  if (!ev) return;
+  const overlay = document.getElementById('aiReasoningOverlay');
+  const title = document.getElementById('aiTitle');
+  const risk = document.getElementById('aiRiskText');
+  const details = document.getElementById('aiDetails');
+  
+  title.textContent = ev.filename;
+  risk.innerHTML = `<span class="rp ${ev.risk_level==='HIGH'?'rp-H':ev.risk_level==='MED'?'rp-M':'rp-L'}">${ev.risk_level}</span>`;
+  
+  details.innerHTML = `
+    <div style="font-weight:600; color:var(--t0); margin-bottom:8px;">Detection Summary:</div>
+    <div style="margin-bottom:20px; padding:12px; background:var(--bg); border:1px solid var(--border); border-radius:8px;">${ev.ai_result || 'No summary available.'}</div>
+    
+    <div style="font-weight:600; color:var(--blue); margin-bottom:8px; display:flex; align-items:center; gap:6px;">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"></path></svg>
+      FORAX Forensic Narrative:
+    </div>
+    <div class="reasoning-box" style="border-left: 4px solid var(--blue); background: rgba(37,99,235,0.03);">
+      ${ev.copilot_reasoning || 'The AI is currently processing the detailed reasoning for this artifact. Please run analysis to generate a narrative.'}
+    </div>
+  `;
+  overlay.classList.add('show');
+}
+function closeAiReasoning() {
+  document.getElementById('aiReasoningOverlay').classList.remove('show');
+}
+</script>
+
+<!-- ADVANCED REPORT MODAL -->
+<div class="overlay" id="advancedReportModal">
+  <div class="modal" style="max-width:750px; padding: 30px;">
+    <button class="modal-close-btn" onclick="closeAdvancedReportModal()" title="Close">×</button>
+    <div style="display:flex;align-items:center;margin-bottom:6px;gap:12px;">
+      <div class="m-title">Generate Court-Admissible Report</div>
+      <span class="bdg bdg-blue" id="reportCaseId">CASE</span>
+    </div>
+    <div class="m-sub">Configure and export a forensic examination report compliant with FRE 901/902, ISO/IEC 27037, and NIST SP 800-86.</div>
+    
+    <div class="tab-strip" style="margin-bottom:20px;">
+      <button class="tab-btn rm-tab-btn active" onclick="switchReportTab('rm-tab-general', this)">1. Examiner & Case</button>
+      <button class="tab-btn rm-tab-btn" onclick="switchReportTab('rm-tab-legal', this)">2. Legal & Authority</button>
+      <button class="tab-btn rm-tab-btn" onclick="switchReportTab('rm-tab-dataset', this)">3. Evidence Filters</button>
+    </div>
+
+    <!-- TAB 1: EXAMINER & CASE INFO -->
+    <div id="rm-tab-general" class="rm-tab">
+      <div class="two-col-f">
+        <div class="fg">
+          <label>Report Format</label>
+          <select id="rFormat">
+            <option value="pdf">PDF Report (Court-Grade)</option>
+            <option value="html">HTML Interactive (Stand-alone)</option>
+          </select>
+        </div>
+        <div class="fg">
+          <label>Lead Examiner / Analyst</label>
+          <input type="text" id="rExaminer" value="{{ user.name if user else 'Investigator' }}">
+        </div>
+        <div class="fg">
+          <label>Examiner Badge / ID</label>
+          <input type="text" id="rExaminerBadge" value="{{ user.badge_id if user and user.badge_id else '' }}" placeholder="e.g. INV-001">
+        </div>
+        <div class="fg">
+          <label>Examiner Qualifications</label>
+          <input type="text" id="rQualifications" placeholder="e.g. CFCE, EnCE, GCFE, ACE">
+        </div>
+        <div class="fg">
+          <label>Department / Organization</label>
+          <input type="text" id="rDept" value="Digital Forensics Unit">
+        </div>
+        <div class="fg">
+          <label>Laboratory Location</label>
+          <input type="text" id="rLocation" value="Headquarters">
+        </div>
+        <div class="fg">
+          <label>Crime Type / Offense</label>
+          <input type="text" id="rCrime" placeholder="e.g. Cyber Crime, Narcotics Trafficking">
+        </div>
+        <div class="fg">
+          <label>Reviewing Officer / Supervisor</label>
+          <input type="text" id="rReviewer" placeholder="e.g. Chief Investigator Name">
+        </div>
+      </div>
+      <div class="fg" style="margin-top:10px;">
+        <label>Examiner Notes / Findings Summary</label>
+        <textarea id="rNotes" placeholder="Professional observations, methodology notes, or supplementary findings..."></textarea>
+      </div>
+    </div>
+
+    <!-- TAB 2: LEGAL & AUTHORITY -->
+    <div id="rm-tab-legal" class="rm-tab" style="display:none;">
+      <div class="sec" style="margin-bottom:12px;">Legal Authority & Jurisdiction</div>
+      <div style="background:var(--bg); border:1px solid var(--border); border-radius:var(--r); padding:16px; margin-bottom:16px;">
+        <div class="two-col-f">
+          <div class="fg">
+            <label>Jurisdiction / Court</label>
+            <input type="text" id="rJurisdiction" placeholder="e.g. District Court, Lahore High Court">
+          </div>
+          <div class="fg">
+            <label>Warrant / Authorization Ref.</label>
+            <input type="text" id="rWarrant" placeholder="e.g. SW-2026-00142">
+          </div>
+          <div class="fg">
+            <label>Requesting Agency</label>
+            <input type="text" id="rAgency" placeholder="e.g. Cyber Crime Wing, FIA">
+          </div>
+          <div class="fg">
+            <label>FIR / Case Reference No.</label>
+            <input type="text" id="rFIR" placeholder="e.g. FIR No. 123/2026">
+          </div>
+        </div>
+      </div>
+      <div class="sec" style="margin-bottom:12px;">Classification & Confidentiality</div>
+      <div style="background:var(--bg); border:1px solid var(--border); border-radius:var(--r); padding:16px;">
+        <div class="fg">
+          <label>Report Classification</label>
+          <select id="rClassification">
+            <option value="LAW ENFORCEMENT SENSITIVE">Law Enforcement Sensitive</option>
+            <option value="CONFIDENTIAL">Confidential</option>
+            <option value="RESTRICTED">Restricted</option>
+            <option value="UNCLASSIFIED">Unclassified</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 3: DATASET & FILTERS -->
+    <div id="rm-tab-dataset" class="rm-tab" style="display:none;">
+      <div class="sec" style="margin-bottom:8px;">Evidence Selection</div>
+      <div style="background:var(--bg); border:1px solid var(--border); border-radius:var(--r); padding:16px; margin-bottom:16px;">
+        <div style="font-family:var(--mono);font-size:11px;color:var(--t2);letter-spacing:1px;text-transform:uppercase;margin-bottom:10px;">Data Types</div>
+        <div style="font-size:11px;color:var(--t2);margin-bottom:10px;">Tip: keep all types selected to include every artifact in the case.</div>
+        <div class="dl-types">
+          <label class="dl-type-item"><input type="checkbox" class="r-type-check" value="image" checked>Images</label>
+          <label class="dl-type-item"><input type="checkbox" class="r-type-check" value="video" checked>Videos</label>
+          <label class="dl-type-item"><input type="checkbox" class="r-type-check" value="audio" checked>Audio</label>
+          <label class="dl-type-item"><input type="checkbox" class="r-type-check" value="chat" checked>Chats / Social</label>
+          <label class="dl-type-item"><input type="checkbox" class="r-type-check" value="sms" checked>SMS Messages</label>
+          <label class="dl-type-item"><input type="checkbox" class="r-type-check" value="call_log" checked>Call Logs</label>
+          <label class="dl-type-item"><input type="checkbox" class="r-type-check" value="contacts" checked>Contacts</label>
+          <label class="dl-type-item"><input type="checkbox" class="r-type-check" value="browser" checked>Search & Web</label>
+          <label class="dl-type-item"><input type="checkbox" class="r-type-check" value="document" checked>Documents</label>
+          <label class="dl-type-item"><input type="checkbox" class="r-type-check" value="app_data" checked>App Data</label>
+        </div>
+      </div>
+
+      <div class="sec" style="margin-bottom:8px;">Formatting Preferences</div>
+      <div style="background:var(--bg); border:1px solid var(--border); border-radius:var(--r); padding:16px; display:flex; flex-direction:column; gap:10px;">
+        <label style="display:flex; align-items:center; gap:8px; font-family:var(--sans); font-size:13px; font-weight:500; color:var(--t0); cursor:pointer;">
+          <input type="checkbox" id="rRedact" style="width:16px; height:16px; accent-color:var(--red);">
+          Redact all attachments and media files (Content Redacted Mode)
+        </label>
+        <label style="display:flex; align-items:center; gap:8px; font-family:var(--sans); font-size:13px; font-weight:500; color:var(--t2); cursor:not-allowed;">
+          <input type="checkbox" id="rHash" checked disabled style="width:16px; height:16px; accent-color:var(--blue);">
+          SHA-256 integrity verification (Enforced — required for court admissibility)
+        </label>
+      </div>
+    </div>
+
+    <div class="m-footer">
+      <button class="btn btn-out" onclick="closeAdvancedReportModal()">Cancel</button>
+      <button id="reportSubmitBtn" class="btn btn-blue" onclick="submitAdvancedReport()">
+        <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg> Generate Report
+      </button>
+    </div>
+  </div>
+</div>
+
+<script>
+document.getElementById('advancedReportModal').addEventListener('click', function(e){if(e.target===this)closeAdvancedReportModal();});
+</script>
+
+<!-- AI REASONING MODAL -->
+<div class="overlay" id="aiReasoningOverlay">
+  <div class="modal" style="max-width:600px;">
+    <button class="modal-close-btn" onclick="closeAiReasoning()" title="Close">×</button>
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;padding-right:40px;">
+      <div class="m-title" id="aiTitle">AI Forensic Analysis</div>
+      <div id="aiRiskText"></div>
+    </div>
+    <div class="m-sub">Detailed reasoning and detected items from the AI analysis engine.</div>
+    <div class="reasoning-box" id="aiDetails"></div>
+    <div class="m-footer">
+      <button class="btn btn-out" onclick="closeAiReasoning()">Close Analysis</button>
+      <button class="btn btn-out" onclick="closeAiReasoning();openOverride(document.getElementById('overrideEvId').value)" id="aiOverrideBtn" style="display:none;">⚖️ Override Risk</button>
+      <button class="btn btn-out" onclick="verifyIntegrity(document.getElementById('overrideEvId').value)" id="aiVerifyBtn" style="display:none;">🔒 Verify Hash</button>
+    </div>
+  </div>
+</div>
+
+<script>
+document.getElementById('aiReasoningOverlay').addEventListener('click', function(e){if(e.target===this)closeAiReasoning();});
+
+// ── AI OVERRIDE ────────────────────────────────────────────────
+function openOverride(evId) {
+  const ev = allEvidence.find(e => String(e.id) === String(evId));
+  if (!ev) { toast('Evidence not found'); return; }
+  document.getElementById('overrideEvId').value = evId;
+  const riskColors = {HIGH: 'color:var(--red)', MED: 'color:var(--amber)', LOW: 'color:var(--green)'};
+  document.getElementById('overrideCurrent').innerHTML = 
+    `<span style="${riskColors[ev.risk_level] || ''};font-weight:700;">${ev.risk_level}</span> — ${ev.filename}`;
+  document.getElementById('overrideRisk').value = ev.risk_level;
+  document.getElementById('overrideNote').value = '';
+  document.getElementById('overrideMsg').className = 'msg';
+  document.getElementById('overrideOverlay').classList.add('show');
+}
+
+async function submitOverride() {
+  const evId = document.getElementById('overrideEvId').value;
+  const newRisk = document.getElementById('overrideRisk').value;
+  const note = document.getElementById('overrideNote').value.trim();
+  if (!note || note.length < 3) {
+    document.getElementById('overrideMsg').className = 'msg error show';
+    document.getElementById('overrideMsg').textContent = 'Justification note is required (min 3 characters)';
+    return;
+  }
+  try {
+    const r = await fetch('/api/evidence/override', {
+      method: 'POST', headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({evidence_id: evId, risk_level: newRisk, note: note})
+    });
+    const d = await r.json();
+    if (d.success) {
+      document.getElementById('overrideOverlay').classList.remove('show');
+      toast(`✅ Risk overridden: ${d.old_risk} → ${d.new_risk}`);
+      loadEvidence(); // Refresh evidence table
+    } else {
+      document.getElementById('overrideMsg').className = 'msg error show';
+      document.getElementById('overrideMsg').textContent = d.error || 'Override failed';
+    }
+  } catch (e) {
+    document.getElementById('overrideMsg').className = 'msg error show';
+    document.getElementById('overrideMsg').textContent = 'Server error';
+  }
+}
+
+// ── INTEGRITY VERIFICATION ────────────────────────────────────
+async function verifyIntegrity(evId) {
+  if (!evId) { toast('No evidence selected'); return; }
+  toast('🔒 Verifying SHA-256 integrity...');
+  try {
+    const r = await fetch('/api/evidence/verify/' + evId);
+    const d = await r.json();
+    if (d.success) {
+      if (d.match) {
+        toast('✅ INTEGRITY INTACT — Hash matches');
+        alert(`✅ INTEGRITY VERIFIED\n\nFile: ${d.filename}\nStatus: ${d.status}\n\nStored:  ${d.stored_hash}\nCurrent: ${d.current_hash}\n\nThe file has NOT been modified since extraction.`);
+      } else {
+        toast('⚠️ INTEGRITY FAILED — Hash mismatch!');
+        alert(`⚠️ INTEGRITY FAILURE\n\nFile: ${d.filename}\nStatus: ${d.status}\n\nStored:  ${d.stored_hash}\nCurrent: ${d.current_hash}\n\nWARNING: The file may have been TAMPERED with!`);
+      }
+    } else {
+      toast('Error: ' + (d.error || 'Verification failed'));
+    }
+  } catch (e) {
+    toast('Server error during verification');
+  }
+}
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<!-- FORENSIC AI DRAWER UI -->
+<div id="forensicDrawer" class="forensic-drawer">
+  <div class="forensic-header">
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;">
+      <div>
+        <h3 class="m-title" style="margin:0;font-size:18px;">FORAX Forensic AI</h3>
+        <p class="m-sub" style="margin:0;font-size:12px;">Detailed AI Reasoning & Forensic Insights</p>
+      </div>
+      <button onclick="closeForensicInsight()" class="modal-close-btn">&times;</button>
+    </div>
+  </div>
+  <div class="forensic-body">
+    <div id="forensicArtifactInfo" style="margin-bottom:20px;padding-bottom:15px;border-bottom:1px dashed var(--border);">
+       <div id="cpFname" style="font-weight:600;color:var(--t0);margin-bottom:4px;">artifact_name.jpg</div>
+       <div id="cpRisk" class="rp">UNKNOWN RISK</div>
+    </div>
+    <div id="forensicMsg" class="forensic-ai-msg">
+      Initializing forensic analyst...
+    </div>
+  </div>
+  <div class="forensic-footer">
+    <button class="btn btn-out w-100" onclick="closeForensicInsight()">Close Insights</button>
+  </div>
+</div>
+
+<script>
+async function openForensicInsight(evId){
+  const dr = document.getElementById('forensicDrawer');
+  const msg = document.getElementById('forensicMsg');
+  const fname = document.getElementById('cpFname');
+  const risk = document.getElementById('cpRisk');
+  
+  dr.classList.add('show');
+  msg.innerHTML = '<span class="spin" style="border-top-color:var(--blue)"></span> Analyzing artifact depth...';
+  
+  try {
+    const r = await fetch(`/api/forensic/reasoning/${evId}`);
+    const d = await r.json();
+    if(d.success){
+      fname.innerText = d.filename;
+      risk.innerText = d.risk_level;
+      risk.className = 'rp ' + (d.risk_level==='HIGH'?'rp-H':d.risk_level==='MED'?'rp-M':'rp-L');
+      msg.innerHTML = d.reasoning;
+    } else {
+      msg.innerHTML = "Error: " + d.error;
+    }
+  } catch(e) {
+    msg.innerHTML = "Failed to connect to AI reasoning service.";
+  }
+}
+function closeForensicInsight(){
+  document.getElementById('forensicDrawer').classList.remove('show');
+}
+</script>
+</body>
+</html>

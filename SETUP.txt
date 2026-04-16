@@ -1,0 +1,46 @@
+===================================================
+FORAX — Setup Instructions
+===================================================
+
+1. INSTALL DEPENDENCIES
+   venv\Scripts\python.exe -m pip install -r requirements.txt
+
+2. CONFIGURE GMAIL (for OTP email)
+    Create a .env file in the project root (same folder as app.py) and set:
+       FORAX_GMAIL_ADDRESS="your_gmail@gmail.com"
+       FORAX_GMAIL_APP_PASS="xxxx xxxx xxxx xxxx"
+   
+   Get App Password:
+   myaccount.google.com → Security → 2-Step Verification → App Passwords
+
+3. RUN
+   venv\Scripts\python.exe app.py
+   Open: http://127.0.0.1:5000
+
+4. LOGIN CREDENTIALS
+   Chief:     chief@forax.gov     / Chief@FORAX2025
+   Authority: authority@forax.gov / Authority@123
+
+5. ADB SETUP (for real device extraction)
+   - Download Android SDK Platform Tools from developer.android.com
+   - Add adb to system PATH
+   - On your phone: Settings → About Phone → tap Build Number 7x
+     → Developer Options → USB Debugging ON
+   - Connect via USB and click "Scan Devices"
+
+6. FILE STRUCTURE
+   ForensicsAI/
+   ├── app.py
+   ├── requirements.txt
+   ├── modules/
+   │   ├── __init__.py
+   │   ├── database.py
+   │   ├── adb_extractor.py
+   │   └── security.py
+   └── templates/
+       ├── login.html
+       ├── dashboard.html
+       ├── extraction.html
+       ├── chief.html
+       └── cms.html
+===================================================

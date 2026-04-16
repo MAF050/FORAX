@@ -1,0 +1,137 @@
+================================================================================
+FORAX: FORENSIC ANALYSIS & EXTRACTION PLATFORM
+Professional Project Documentation — Chapters 1, 2, and 3 (Detailed Edition)
+================================================================================
+
+--------------------------------------------------------------------------------
+CHAPTER 1: INTRODUCTION
+--------------------------------------------------------------------------------
+
+1.1 PROJECT OVERVIEW
+FORAX (Forensic Analysis & eXtraction) is a specialized digital forensic suite 
+custom-engineered for the modern mobile investigation landscape. Built as a 
+highly responsive "Desktop-Web Hybrid" using Python 3.12 and the Flask framework, 
+the platform is designed to provide high-speed tactical triage of Android 
+devices. 
+
+The core philosophy of FORAX is the "Bureau-Grade Aesthetic"—a design language 
+that prioritizes clarity, authority, and court-admissibility. By automating the 
+acquisition of logical evidence and subjecting it to a dual-layered AI pipeline 
+(Computer Vision and Natural Language Processing), FORAX identifies high-risk 
+threats (such as firearms, narcotics, and organized crime communications) 
+within minutes of the device being connected.
+
+1.2 MOTIVATION
+In the contemporary forensic laboratory, investigators face a "Data Tsunami." 
+A single 512GB mobile device can contain millions of artifacts, 85% of which 
+are forensic noise. Traditional manual analysis is no longer viable for rapid 
+lead generation. FORAX was motivated by the critical need to bridge the gap 
+between "Raw Data Extraction" and "Actionable Intelligence." 
+
+The project aims to empower frontline investigators with the same level of AI-
+driven discovery found in multi-thousand-dollar commercial suites like 
+Cellebrite or Magnet Axiom, but through an optimized, affordable, and 
+highly-customizable open-engine approach.
+
+1.3 PROBLEM STATEMENT
+Digital forensic investigations currently suffer from four primary friction 
+points that FORAX addresses:
+1. THE TRIAGE GAP: Most tools either perform extraction or analysis, but 
+   rarely both in a seamless, real-time pipeline.
+2. COGNITIVE OVERLOAD: Investigators must manually open every image and read 
+   every chat to find evidence, leading to missed leads and mental fatigue.
+3. FRAGILE CHAIN OF CUSTODY: Manual evidence handling often leads to integrity 
+   challenges in court if hashing and timestamps are not recorded instantly.
+4. UI COMPLEXITY: Many powerful forensic tools utilize antiquated interfaces 
+   that slow down training and execution in high-stakes environments.
+
+1.4 PROJECT OBJECTIVES
+To solve these challenges, the project pursued the following milestones:
+- MULTI-THREADED ADB ENGINE: Development of a secure extraction service using 
+  the Android Debug Bridge (ADB) protocol capable of simultaneous 2-slot 
+  triage.
+- INTELLIGENT AI MODES: Integration of GITHUB-MODELS GPT-4o-mini Vision for 
+  expert-level visual threat detection and a weighted local NLP engine for 
+  offline chat scoring.
+- SECURE TIMELINE RECONSTRUCTION: An automated system to build a visual 
+  chronological timeline of extracted artifacts, allowing for suspect behavior 
+  mapping.
+- BUREAU-GRADE REPORTING: A finalized reporting engine using xhtml2pdf to 
+  generate court-ready PDF documents featuring logo-branding and SHA-256 
+  sealing.
+
+--------------------------------------------------------------------------------
+CHAPTER 2: LITERATURE REVIEW
+--------------------------------------------------------------------------------
+
+2.1 DIGITAL FORENSICS IN 2026: THE SHIFT TO TRIAGE
+Traditional forensics focused on "Physical Dumps" (bit-by-bit cloning). However, 
+modern encryption (File-Based Encryption) has rendered this nearly impossible 
+without OEM keys. The industry has shifted toward "Logical Extraction," and the 
+field of "Forensic Triage"—identifying critical evidence before the labs 
+fully process the device—has become the gold standard.
+
+2.2 COMPARATIVE ANALYSIS OF FORENSIC SUITES
+A technical comparison was conducted to position FORAX within the marketplace:
+
+A. CELLEBRITE / MAGNET AXIOM:
+   - Strengths: Industry leaders, massive exploit library.
+   - Weaknesses: Prohibitively expensive, proprietary "Black Box" logic.
+B. AUTOPSY / SLEUTH KIT:
+   - Strengths: Proven open-source core, modular.
+   - Weaknesses: Dated UI, lacks native modern AI intelligence modules.
+C. FORAX (THE PROPOSED SYSTEM):
+   - Advantages: High-end UI (Bootstrap 5.3), native AI integration 
+     (GPT-4o), and specifically designed for rapid ADB-based triage.
+
+2.3 AI AS A "FORCE MULTIPLIER"
+The literature confirms that AI implementation reduces "Time-to-Lead" by up to 
+90%. By using Computer Vision to analyze images, the investigator is only 
+presented with the "High Risk" 1% of the media gallery. Similarly, NLP 
+processing of SMS and chat databases allows for automated keyword matching in 
+organized crime and trafficking cases.
+
+--------------------------------------------------------------------------------
+CHAPTER 3: METHODOLOGY AND SYSTEM DESIGN
+--------------------------------------------------------------------------------
+
+3.1 SYSTEM ARCHITECTURE
+FORAX is built on a high-availability Triple-Layer Architecture:
+1. THE PRESENTATION LAYER (FRONTEND): Uses Bootstrap 5.3, Animate.css, and 
+   Vanilla JS. This layer manages the "Bureau" aesthetic and real-time 
+   Server-Sent Events (SSE) updates.
+2. THE APPLICATION LAYER (BACKEND): A Flask-based Python 3.12 server that 
+   orchestrates ADB commands, sub-processes, and AI API calls.
+3. THE DATA LAYER (DATABASE): A optimized SQLite database (forax.db) that 
+   handles case metadata, evidence relationships, and SHA-256 integrity 
+   hashes.
+
+3.2 EVIDENCE EXTRACTION PIPELINE
+The ADB Extractor executes a multi-step "Secure Pull" methodology:
+- STEP 1 (IDENTIFICATION): The system queries the device for Model, Brand, 
+  Android Version, and Serial Number.
+- STEP 2 (EXTRACTION): Logical folders (DCIM, Messages, Contacts, Call Logs) 
+  are pulled via prioritized ADB commands.
+- STEP 3 (SHA-256 SEAL): Each file is hashed the moment it lands in the 
+  FORAX 'uploads' store.
+- STEP 4 (STREAMING): Using SSE, the dashboard is updated in real-time, 
+  allowing the investigator to see data as it is captured.
+
+3.3 AI INTELLIGENCE DESIGN
+A dual-mode intelligence strategy was implemented:
+- VISION (GPT-4o-MINI): Images are encoded (Base64) and analyzed by a custom 
+  forensic prompt. It scans for Weapons, Narcotics, and NSFW content.
+- NLP (WEIGHTED SCORING): Text files are scanned against a local 
+  'forensic_intel.json' dataset. Each match (e.g., "Glock", "Package", 
+  "Deadly") adds to a cumulative "Risk Score." If the score exceeds 25, 
+  the file is auto-flagged as HIGH RISK.
+
+3.4 SECURITY PROTOCOLS
+To maintain "Court Admissibility," the project includes:
+- IP-BASED RATE LIMITING: Prevents brute-force access to the Chief Panel.
+- AUDIT LOGGING: Records every "Override" performed by an AI analyst.
+- CHAIN OF CUSTODY: A persistent log of who viewed/extracted what and when.
+
+================================================================================
+END OF CHAPTERS 1-3
+================================================================================

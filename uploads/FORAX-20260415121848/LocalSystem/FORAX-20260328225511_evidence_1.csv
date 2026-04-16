@@ -1,0 +1,9 @@
+#,Device,Filename,Type,Size,AI Result,Risk,SHA-256,Extracted
+1,null,"IMG_20240801_112045.jpg",image,3.0KB,"Normal photo",LOW,bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb,2026-03-28 17:55:46
+2,null,"msgstore.db",chat,13.9KB,"Suspicious keywords found",MED,eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee,2026-03-28 17:55:46
+3,null,"IMG_20240715_083212.jpg",image,2.3KB,"No suspicious content",LOW,aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa,2026-03-28 17:55:45
+4,null,"screenshot_banking.png",image,0.8KB,"Sensitive financial data detected",HIGH,cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc,2026-03-28 17:55:45
+5,null,"call_logs.txt",call_log,23.4KB,"Normal call history",LOW,ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff,2026-03-28 17:55:45
+6,null,"screenshot_threats.png",image,0.6KB,"Threatening content detected",HIGH,dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd,2026-03-28 17:55:45
+7,null,"sms_messages.txt",sms,46.9KB,"Flagged message content",MED,0000000000000000000000000000000000000000000000000000000000000000,2026-03-28 17:55:45
+8,null,"contacts.txt",sms,11.7KB,"Normal contacts",LOW,1111111111111111111111111111111111111111111111111111111111111111,2026-03-28 17:55:45

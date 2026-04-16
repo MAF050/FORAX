@@ -1,0 +1,8 @@
+{
+  "drugs": 0,
+  "normal": 1,
+  "nsfw": 2,
+  "scam": 3,
+  "violence": 4,
+  "weapons": 5
+}

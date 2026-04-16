@@ -1,0 +1,767 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>FORAX — Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@300;400;500&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+:root{--bg:#f1f5f9;--bg2:#f8fafc;--surface:#fff;--border:#e2e8f0;--border2:#cbd5e1;
+  --t0:#0f172a;--t1:#475569;--t2:#94a3b8;
+  --blue:#2563eb;--blue2:#1d4ed8;--blue-bg:#eff6ff;--blue-bd:#bfdbfe;
+  --green:#059669;--green-bg:#ecfdf5;--green-bd:#a7f3d0;
+  --red:#dc2626;--red-bg:#fef2f2;--red-bd:#fecaca;
+  --amber:#d97706;--amber-bg:#fffbeb;--amber-bd:#fde68a;
+  --purple:#7c3aed;--pur-bg:#f5f3ff;--pur-bd:#ddd6fe;
+  --mono:'DM Mono',monospace;--sans:'DM Sans',sans-serif;--r:8px;--rl:12px;
+  --sh:0 1px 3px rgba(0,0,0,.07);--sh2:0 4px 12px rgba(0,0,0,.08);}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+body{background:var(--bg);color:var(--t0);font-family:var(--sans);font-size:14px;min-height:100vh;display:flex;flex-direction:column;}
+/* TOPBAR */
+.topbar{height:56px;background:var(--surface);border-bottom:1px solid var(--border);
+  display:flex;align-items:center;justify-content:space-between;padding:0 20px;
+  position:sticky;top:0;z-index:50;box-shadow:var(--sh);flex-shrink:0;}
+.logo-row{display:flex;align-items:center;gap:10px;}
+.logo-box{width:34px;height:34px;background:var(--blue);border-radius:9px;
+  display:flex;align-items:center;justify-content:center;box-shadow:0 2px 8px rgba(37,99,235,.3);}
+.logo-box svg{width:17px;height:17px;stroke:#fff;fill:none;stroke-width:2;}
+.logo-name{font-family:var(--mono);font-size:15px;font-weight:500;}
+.logo-sub{font-family:var(--mono);font-size:10px;color:var(--t2);letter-spacing:1px;}
+.tr{display:flex;align-items:center;gap:8px;}
+.clk{font-family:var(--mono);font-size:12px;color:var(--t2);}
+.bdg{display:inline-flex;align-items:center;gap:4px;padding:4px 10px;border-radius:20px;font-family:var(--mono);font-size:11px;}
+.bdg-blue{background:var(--blue-bg);color:var(--blue);border:1px solid var(--blue-bd);}
+.bdg-green{background:var(--green-bg);color:var(--green);border:1px solid var(--green-bd);}
+.bdg-red{background:var(--red-bg);color:var(--red);border:1px solid var(--red-bd);}
+.bdg-amber{background:var(--amber-bg);color:var(--amber);border:1px solid var(--amber-bd);}
+.btn-nav{padding:7px 13px;border-radius:var(--r);border:1px solid var(--border2);
+  background:var(--surface);color:var(--t1);font-family:var(--mono);font-size:11px;
+  cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;gap:5px;transition:all .15s;}
+.btn-nav:hover{background:var(--bg);color:var(--t0);}
+.btn-nav svg{width:12px;height:12px;stroke:currentColor;fill:none;stroke-width:2;}
+/* LAYOUT */
+.layout{display:flex;flex:1;overflow:hidden;}
+.sidebar{width:216px;background:var(--surface);border-right:1px solid var(--border);
+  flex-shrink:0;display:flex;flex-direction:column;overflow-y:auto;}
+.sb-nav{padding:10px 8px;flex:1;}
+.sb-sec{font-family:var(--mono);font-size:10px;color:var(--t2);letter-spacing:1.5px;
+  padding:10px 8px 4px;text-transform:uppercase;}
+.sb-item{display:flex;align-items:center;gap:9px;padding:9px 10px;border-radius:var(--r);
+  cursor:pointer;color:var(--t1);font-size:13px;border:none;background:none;
+  width:100%;text-align:left;transition:all .15s;}
+.sb-item:hover{background:var(--bg);color:var(--t0);}
+.sb-item.active{background:var(--blue-bg);color:var(--blue);}
+.sb-item svg{width:15px;height:15px;stroke:currentColor;fill:none;stroke-width:1.5;flex-shrink:0;}
+.sb-footer{padding:10px;border-top:1px solid var(--border);}
+.sb-user{padding:10px 12px;background:var(--bg);border-radius:var(--r);border:1px solid var(--border);}
+.sb-uname{font-size:13px;font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.sb-ubadge{font-family:var(--mono);font-size:10px;color:var(--blue);margin-top:2px;}
+/* MAIN */
+.main{flex:1;overflow-y:auto;padding:20px 22px;}
+/* STATS */
+.sg{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-bottom:18px;}
+.sc{background:var(--surface);border:1px solid var(--border);border-radius:var(--rl);
+  padding:14px 16px;box-shadow:var(--sh);position:relative;overflow:hidden;}
+.sc-bar{position:absolute;top:0;left:0;right:0;height:3px;}
+.sc-label{font-family:var(--mono);font-size:10px;color:var(--t2);letter-spacing:1px;text-transform:uppercase;margin-bottom:5px;}
+.sc-value{font-family:var(--mono);font-size:22px;font-weight:500;line-height:1;margin-bottom:3px;}
+.sc-sub{font-size:11px;color:var(--t2);}
+/* PANEL */
+.panel{background:var(--surface);border:1px solid var(--border);border-radius:var(--rl);overflow:hidden;box-shadow:var(--sh);margin-bottom:16px;}
+.ph{padding:12px 18px;border-bottom:1px solid var(--border);background:var(--bg2);display:flex;align-items:center;justify-content:space-between;}
+.ph-title{font-family:var(--mono);font-size:12px;font-weight:500;color:var(--t0);}
+.pb{padding:18px;}
+/* SECTION */
+.sec{font-family:var(--mono);font-size:11px;color:var(--t2);letter-spacing:2px;text-transform:uppercase;margin-bottom:12px;display:flex;align-items:center;gap:8px;}
+.sec::before{content:'';width:14px;height:1px;background:var(--blue);}
+/* TABLE */
+table{width:100%;border-collapse:collapse;}
+th{font-family:var(--mono);font-size:10px;color:var(--t2);letter-spacing:1px;text-align:left;
+  padding:10px 14px;border-bottom:1px solid var(--border);font-weight:500;text-transform:uppercase;
+  background:var(--bg2);position:sticky;top:0;z-index:2;}
+td{padding:9px 14px;border-bottom:1px solid var(--border);font-size:12px;color:var(--t1);}
+tr:last-child td{border-bottom:none;}
+tr:hover td{background:var(--bg);}
+.td-bold{color:var(--t0);font-weight:500;}
+.td-mono{font-family:var(--mono);}
+.td-hash{font-family:var(--mono);font-size:10px;color:var(--t2);max-width:110px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;display:inline-block;}
+/* BUTTONS */
+.btn{display:inline-flex;align-items:center;gap:7px;padding:9px 16px;border-radius:var(--r);
+  font-family:var(--sans);font-size:13px;font-weight:500;cursor:pointer;border:none;transition:all .15s;}
+.btn svg{width:13px;height:13px;stroke:currentColor;fill:none;stroke-width:2;}
+.btn-blue{background:var(--blue);color:#fff;box-shadow:0 2px 8px rgba(37,99,235,.25);}
+.btn-blue:hover{background:var(--blue2);transform:translateY(-1px);}
+.btn-out{background:var(--surface);color:var(--t1);border:1px solid var(--border2);box-shadow:var(--sh);}
+.btn-out:hover{background:var(--bg);color:var(--t0);}
+.btn-red-s{background:var(--red-bg);color:var(--red);border:1px solid var(--red-bd);}
+.btn-green-s{background:var(--green-bg);color:var(--green);border:1px solid var(--green-bd);}
+.btn-sm{padding:5px 10px;font-size:11px;}
+.btn:disabled{opacity:.4;cursor:not-allowed;transform:none;}
+.spin{display:inline-block;width:13px;height:13px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg)}}
+/* FORM */
+.fg{margin-bottom:13px;}
+.fg label{display:block;font-family:var(--mono);font-size:10px;color:var(--t2);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:5px;}
+.fg input,.fg textarea,.fg select{width:100%;padding:10px 12px;background:var(--bg);border:1px solid var(--border2);border-radius:var(--r);color:var(--t0);font-family:var(--sans);font-size:13px;outline:none;transition:all .2s;}
+.fg input:focus,.fg textarea:focus,.fg select:focus{border-color:var(--blue);background:#fff;box-shadow:0 0 0 3px rgba(37,99,235,.08);}
+.fg input::placeholder,.fg textarea::placeholder{color:var(--t2);}
+.fg textarea{resize:vertical;min-height:64px;line-height:1.6;}
+.two-col-f{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+/* OVERLAY / MODAL */
+.overlay{position:fixed;inset:0;background:rgba(15,23,42,.45);z-index:200;
+  display:flex;align-items:center;justify-content:center;backdrop-filter:blur(3px);
+  opacity:0;pointer-events:none;transition:opacity .2s;}
+.overlay.show{opacity:1;pointer-events:all;}
+.modal{background:var(--surface);border:1px solid var(--border);border-radius:16px;
+  padding:28px;width:100%;max-width:460px;box-shadow:0 24px 64px rgba(0,0,0,.12);animation:mIn .25s ease;}
+@keyframes mIn{from{opacity:0;transform:scale(.96) translateY(8px)}to{opacity:1;transform:scale(1)}}
+.m-title{font-size:17px;font-weight:600;margin-bottom:4px;}
+.m-sub{font-size:13px;color:var(--t1);margin-bottom:18px;}
+.m-footer{display:flex;gap:8px;justify-content:flex-end;margin-top:16px;}
+/* MSG */
+.msg{padding:10px 13px;border-radius:var(--r);font-size:13px;margin-bottom:12px;display:none;}
+.msg.show{display:block;}
+.msg.error{background:var(--red-bg);border:1px solid var(--red-bd);color:var(--red);}
+.msg.success{background:var(--green-bg);border:1px solid var(--green-bd);color:var(--green);}
+/* RISK PILL */
+.rp{font-family:var(--mono);font-size:10px;font-weight:500;padding:2px 8px;border-radius:4px;}
+.rp-H{background:var(--red-bg);color:var(--red);border:1px solid var(--red-bd);}
+.rp-M{background:var(--amber-bg);color:var(--amber);border:1px solid var(--amber-bd);}
+.rp-L{background:var(--green-bg);color:var(--green);border:1px solid var(--green-bd);}
+/* TOAST */
+#toast{position:fixed;bottom:20px;right:20px;background:var(--t0);color:#fff;
+  border-radius:var(--rl);padding:12px 18px;font-family:var(--mono);font-size:12px;
+  z-index:999;transform:translateY(50px);opacity:0;transition:all .3s;box-shadow:0 8px 24px rgba(0,0,0,.15);}
+#toast.show{transform:translateY(0);opacity:1;}
+/* EMPTY */
+.empty{text-align:center;padding:32px;font-family:var(--mono);font-size:12px;color:var(--t2);}
+/* CHART */
+.chart-wrap{position:relative;height:200px;}
+/* TWOCOL */
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+.two-col-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;}
+/* TABLE WRAP */
+.tw{overflow-x:auto;max-height:460px;overflow-y:auto;}
+.tw::-webkit-scrollbar{width:4px;height:4px;}
+.tw::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px;}
+/* CASE CARD */
+.case-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--rl);
+  padding:16px;cursor:pointer;transition:all .2s;box-shadow:var(--sh);}
+.case-card:hover{box-shadow:var(--sh2);border-color:var(--border2);}
+.case-card.selected{border-color:var(--blue);box-shadow:0 0 0 3px rgba(37,99,235,.1);}
+.cc-id{font-family:var(--mono);font-size:11px;color:var(--blue);margin-bottom:4px;}
+.cc-title{font-size:14px;font-weight:600;margin-bottom:6px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.cc-meta{font-family:var(--mono);font-size:11px;color:var(--t2);}
+.cc-foot{display:flex;align-items:center;justify-content:space-between;margin-top:10px;padding-top:10px;border-top:1px solid var(--border);}
+/* actions bar */
+.active-case-banner{background:var(--blue-bg);border:1px solid var(--blue-bd);
+  border-radius:var(--rl);padding:12px 18px;margin-bottom:16px;
+  display:flex;align-items:center;justify-content:space-between;}
+.acb-left{display:flex;align-items:center;gap:8px;}
+.acb-left svg{width:15px;height:15px;stroke:var(--blue);fill:none;stroke-width:1.5;}
+.acb-title{font-family:var(--mono);font-size:12px;color:var(--blue);font-weight:500;}
+.acb-sub{font-family:var(--mono);font-size:11px;color:var(--t2);}
+/* breakdown */
+.bd-item{margin-bottom:9px;}
+.bd-hd{display:flex;justify-content:space-between;margin-bottom:3px;font-family:var(--mono);font-size:11px;}
+.bd-label{color:var(--t1);}
+.bd-val{color:var(--blue);font-weight:500;}
+.bd-track{height:5px;background:var(--border);border-radius:3px;overflow:hidden;}
+.bd-fill{height:100%;border-radius:3px;transition:width .7s ease;}
+/* tab strip */
+.tab-strip{display:flex;gap:0;background:var(--bg);border:1px solid var(--border);
+  border-radius:var(--rl);padding:3px;margin-bottom:16px;}
+.tab-btn{flex:1;padding:8px;border:none;background:none;font-family:var(--mono);font-size:11px;
+  color:var(--t1);border-radius:7px;cursor:pointer;transition:all .2s;letter-spacing:.5px;}
+.tab-btn.active{background:var(--blue);color:#fff;box-shadow:0 2px 8px rgba(37,99,235,.25);}
+/* evidence filter */
+.ev-filter{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px;}
+.ef-btn{padding:5px 12px;border-radius:20px;border:1px solid var(--border2);background:var(--surface);
+  color:var(--t1);font-family:var(--mono);font-size:11px;cursor:pointer;transition:all .15s;}
+.ef-btn:hover,.ef-btn.active{background:var(--blue-bg);color:var(--blue);border-color:var(--blue-bd);}
+@media(max-width:900px){.sg{grid-template-columns:repeat(3,1fr);}.sidebar{display:none;}.two-col{grid-template-columns:1fr;}}
+</style>
+</head>
+<body>
+<!-- TOPBAR -->
+<header class="topbar">
+  <div class="logo-row">
+    <div class="logo-box"><svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg></div>
+    <div><div class="logo-name">FORAX</div><div class="logo-sub">INVESTIGATOR DASHBOARD</div></div>
+  </div>
+  <div class="tr">
+    <span class="clk" id="clock">--:--:--</span>
+    <span class="bdg bdg-blue" id="activeBadge">NO CASE</span>
+    <a href="/logout" class="btn-nav"><svg viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>Logout</a>
+  </div>
+</header>
+
+<div class="layout">
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <nav class="sb-nav">
+    <div class="sb-sec">Investigation</div>
+    <button class="sb-item active" onclick="showTab('overview',this)">
+      <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>Overview
+    </button>
+    <button class="sb-item" onclick="showTab('cases',this)">
+      <svg viewBox="0 0 24 24"><path d="M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 3h9a2 2 0 012 2z"/></svg>My Cases
+    </button>
+    <button class="sb-item" onclick="showTab('extraction',this)">
+      <svg viewBox="0 0 24 24"><rect x="5" y="2" width="14" height="20" rx="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg>Extraction
+    </button>
+    <button class="sb-item" onclick="showTab('evidence',this)">
+      <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>Evidence
+    </button>
+    <button class="sb-item" onclick="showTab('analysis',this)">
+      <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>AI Analysis
+    </button>
+  </nav>
+  <div class="sb-footer">
+    <div class="sb-user">
+      <div class="sb-uname">{{ user.name if user else 'Investigator' }}</div>
+      <div class="sb-ubadge">{{ user.badge_id if user and user.badge_id else '—' }}</div>
+    </div>
+  </div>
+</aside>
+
+<!-- MAIN -->
+<main class="main">
+
+<!-- OVERVIEW TAB -->
+<div id="tab-overview">
+  <div class="sg">
+    <div class="sc"><div class="sc-bar" style="background:var(--blue)"></div><div class="sc-label">Total Cases</div><div class="sc-value" style="color:var(--blue)">{{ cases|length }}</div><div class="sc-sub">investigations</div></div>
+    <div class="sc"><div class="sc-bar" style="background:var(--green)"></div><div class="sc-label">Evidence</div><div class="sc-value" style="color:var(--green)" id="ov-evidence">{{ cases|sum(attribute='total_files') }}</div><div class="sc-sub">files extracted</div></div>
+    <div class="sc"><div class="sc-bar" style="background:var(--red)"></div><div class="sc-label">Flagged</div><div class="sc-value" style="color:var(--red)" id="ov-flagged">{{ cases|sum(attribute='flagged_files') }}</div><div class="sc-sub">high risk files</div></div>
+    <div class="sc"><div class="sc-bar" style="background:var(--amber)"></div><div class="sc-label">Active</div><div class="sc-value" style="color:var(--amber)">{{ cases|selectattr('status','eq','active')|list|length }}</div><div class="sc-sub">open cases</div></div>
+    <div class="sc"><div class="sc-bar" style="background:var(--purple)"></div><div class="sc-label">Total Size</div><div class="sc-value" style="color:var(--purple)">{{ "%.1f"|format(cases|sum(attribute='total_size_mb')) }} MB</div><div class="sc-sub">data extracted</div></div>
+  </div>
+
+  <div class="two-col">
+    <div>
+      <div class="sec">Recent cases</div>
+      <div class="panel">
+        <div class="ph"><span class="ph-title">My investigations</span>
+          <button class="btn btn-blue btn-sm" onclick="openNewCase()">
+            <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>New Case
+          </button>
+        </div>
+        <div class="tw"><table>
+          <thead><tr><th>Case ID</th><th>Title</th><th>Files</th><th>Threat</th><th>Date</th></tr></thead>
+          <tbody>
+            {% for c in cases[:8] %}
+            <tr onclick="selectCase('{{ c.case_id }}','{{ c.title }}')" style="cursor:pointer;">
+              <td class="td-mono" style="color:var(--blue);font-size:11px">{{ c.case_id }}</td>
+              <td class="td-bold">{{ c.title }}</td>
+              <td class="td-mono">{{ c.total_files }}</td>
+              <td><span class="rp rp-{{ c.threat_level[0] if c.threat_level else 'L' }}">{{ c.threat_level or 'LOW' }}</span></td>
+              <td class="td-mono" style="font-size:11px;color:var(--t2)">{{ c.created_at[:10] }}</td>
+            </tr>
+            {% else %}
+            <tr><td colspan="5"><div class="empty">No cases yet — create your first case</div></td></tr>
+            {% endfor %}
+          </tbody>
+        </table></div>
+      </div>
+    </div>
+    <div>
+      <div class="sec">Active case actions</div>
+      <div id="activeCaseCard" class="panel">
+        <div class="ph"><span class="ph-title">Selected case</span></div>
+        <div class="pb">
+          <div id="acInfo" style="font-family:var(--mono);font-size:12px;color:var(--t2);margin-bottom:16px;">Click a case from the table to select it, then perform actions below.</div>
+          <div style="display:flex;flex-direction:column;gap:8px;">
+            <button class="btn btn-blue" onclick="goExtract()" style="justify-content:center;">
+              <svg viewBox="0 0 24 24"><polyline points="8 17 12 21 16 17"/><line x1="12" y1="12" x2="12" y2="21"/><path d="M20.88 18.09A5 5 0 0018 9h-1.26A8 8 0 103 16.29"/></svg>Start Extraction
+            </button>
+            <button class="btn btn-out" onclick="showTab('evidence',null);loadEvidence()" style="justify-content:center;">
+              <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>View Evidence
+            </button>
+            <button class="btn btn-out" onclick="showTab('analysis',null);runAnalysis()" style="justify-content:center;">
+              <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>Run AI Analysis
+            </button>
+            <button class="btn btn-out" onclick="generateReport()" style="justify-content:center;">
+              <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>Generate Report
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- CASES TAB -->
+<div id="tab-cases" style="display:none;">
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
+    <div class="sec" style="margin:0;">All my cases</div>
+    <button class="btn btn-blue" onclick="openNewCase()">
+      <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>New Case
+    </button>
+  </div>
+  <div class="panel">
+    <div class="tw"><table>
+      <thead><tr><th>Case ID</th><th>Title</th><th>Device 1</th><th>Device 2</th><th>Files</th><th>Flagged</th><th>Size</th><th>Threat</th><th>Status</th><th>Created</th></tr></thead>
+      <tbody>
+        {% for c in cases %}
+        <tr onclick="selectCase('{{ c.case_id }}','{{ c.title }}')" style="cursor:pointer;">
+          <td class="td-mono" style="color:var(--blue);font-size:11px">{{ c.case_id }}</td>
+          <td class="td-bold">{{ c.title }}</td>
+          <td class="td-mono" style="font-size:11px">{{ c.device1_model or '—' }}</td>
+          <td class="td-mono" style="font-size:11px">{{ c.device2_model or '—' }}</td>
+          <td class="td-mono">{{ c.total_files }}</td>
+          <td class="td-mono" style="color:var(--red)">{{ c.flagged_files }}</td>
+          <td class="td-mono">{{ c.total_size_mb }} MB</td>
+          <td><span class="rp rp-{{ c.threat_level[0] if c.threat_level else 'L' }}">{{ c.threat_level or 'LOW' }}</span></td>
+          <td><span class="bdg bdg-green" style="font-size:10px;">{{ c.status }}</span></td>
+          <td class="td-mono" style="font-size:11px;color:var(--t2)">{{ c.created_at[:10] }}</td>
+        </tr>
+        {% else %}
+        <tr><td colspan="10"><div class="empty">No cases yet</div></td></tr>
+        {% endfor %}
+      </tbody>
+    </table></div>
+  </div>
+</div>
+
+<!-- EXTRACTION TAB -->
+<div id="tab-extraction" style="display:none;">
+  <div id="extNoCaseMsg" style="display:none;">
+    <div style="background:var(--amber-bg);border:1px solid var(--amber-bd);border-radius:var(--rl);padding:14px 18px;margin-bottom:16px;font-family:var(--mono);font-size:12px;color:var(--amber);">
+      ⚠ Select a case first — click a row in My Cases or Overview
+    </div>
+  </div>
+  <div id="extContent">
+    <div class="active-case-banner" id="extCaseBanner" style="display:none;">
+      <div class="acb-left">
+        <svg viewBox="0 0 24 24"><path d="M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 3h9a2 2 0 012 2z"/></svg>
+        <div><div class="acb-title" id="extCaseId">—</div><div class="acb-sub" id="extCaseTitle">—</div></div>
+      </div>
+      <button class="btn btn-blue" onclick="goExtract()">
+        <svg viewBox="0 0 24 24"><polyline points="8 17 12 21 16 17"/><line x1="12" y1="12" x2="12" y2="21"/><path d="M20.88 18.09A5 5 0 0018 9h-1.26A8 8 0 103 16.29"/></svg>Open Full Extraction Page
+      </button>
+    </div>
+    <div class="panel">
+      <div class="ph"><span class="ph-title">Device extraction</span></div>
+      <div class="pb" style="text-align:center;padding:32px;">
+        <div style="width:56px;height:56px;background:var(--blue-bg);border-radius:14px;display:flex;align-items:center;justify-content:center;margin:0 auto 14px;">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--blue)" stroke-width="1.5"><rect x="5" y="2" width="14" height="20" rx="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg>
+        </div>
+        <p style="font-size:14px;font-weight:500;margin-bottom:6px;">Real-Time Evidence Extraction</p>
+        <p style="font-size:13px;color:var(--t1);margin-bottom:18px;max-width:360px;margin-left:auto;margin-right:auto;">Connect your Android phone via USB with USB Debugging enabled, then open the full extraction page for live evidence streaming.</p>
+        <button class="btn btn-blue" onclick="goExtract()">
+          <svg viewBox="0 0 24 24"><polyline points="8 17 12 21 16 17"/><line x1="12" y1="12" x2="12" y2="21"/><path d="M20.88 18.09A5 5 0 0018 9h-1.26A8 8 0 103 16.29"/></svg>Open Extraction Page
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- EVIDENCE TAB -->
+<div id="tab-evidence" style="display:none;">
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;flex-wrap:wrap;gap:10px;">
+    <div class="sec" style="margin:0;">Evidence — <span id="evCaseLabel" style="color:var(--blue)">select a case</span></div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;">
+      <div class="tab-strip" style="margin:0;">
+        <button class="tab-btn active" onclick="filterEvidence('all',this)">All</button>
+        <button class="tab-btn" onclick="filterEvidence('device1',this)">Device 1</button>
+        <button class="tab-btn" onclick="filterEvidence('device2',this)">Device 2</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- DOWNLOAD PANEL -->
+  <div class="panel" style="margin-bottom:14px;">
+    <div class="ph">
+      <span class="ph-title">Download Evidence</span>
+      <span class="bdg bdg-blue" id="evCount">0 files</span>
+    </div>
+    <div class="pb">
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:14px;">
+        <!-- ZIP ALL -->
+        <div style="background:var(--bg);border:1px solid var(--border);border-radius:var(--r);padding:14px;">
+          <div style="font-family:var(--mono);font-size:11px;color:var(--t2);letter-spacing:1px;text-transform:uppercase;margin-bottom:6px;">Full Package</div>
+          <div style="font-size:12px;color:var(--t1);margin-bottom:10px;line-height:1.5;">All evidence files + manifest + chain of custody</div>
+          <button class="btn btn-blue" style="width:100%;justify-content:center;font-size:12px;" onclick="downloadZip('all','all','all')">
+            <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            Download All as ZIP
+          </button>
+        </div>
+        <!-- CSV -->
+        <div style="background:var(--bg);border:1px solid var(--border);border-radius:var(--r);padding:14px;">
+          <div style="font-family:var(--mono);font-size:11px;color:var(--t2);letter-spacing:1px;text-transform:uppercase;margin-bottom:6px;">Spreadsheet</div>
+          <div style="font-size:12px;color:var(--t1);margin-bottom:10px;line-height:1.5;">Evidence table as CSV — open in Excel or any analysis tool</div>
+          <button class="btn btn-out" style="width:100%;justify-content:center;font-size:12px;" onclick="downloadCSV()">
+            <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+            Download CSV
+          </button>
+        </div>
+        <!-- HIGH RISK -->
+        <div style="background:var(--red-bg);border:1px solid var(--red-bd);border-radius:var(--r);padding:14px;">
+          <div style="font-family:var(--mono);font-size:11px;color:var(--red);letter-spacing:1px;text-transform:uppercase;margin-bottom:6px;">High Risk Only</div>
+          <div style="font-size:12px;color:var(--red);margin-bottom:10px;line-height:1.5;opacity:.8;">Only flagged HIGH risk files — for priority review</div>
+          <button class="btn btn-red" style="width:100%;justify-content:center;font-size:12px;background:var(--red);color:#fff;" onclick="downloadZip('all','all','HIGH')">
+            <svg viewBox="0 0 24 24"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+            Download HIGH Risk ZIP
+          </button>
+        </div>
+      </div>
+
+      <!-- FILTER DOWNLOADS -->
+      <div style="background:var(--bg);border:1px solid var(--border);border-radius:var(--r);padding:14px;">
+        <div style="font-family:var(--mono);font-size:11px;color:var(--t2);letter-spacing:1px;text-transform:uppercase;margin-bottom:10px;">Filter & Download</div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;">
+          <select id="dlSlot" style="padding:7px 10px;background:var(--surface);border:1px solid var(--border2);border-radius:var(--r);font-family:var(--mono);font-size:11px;color:var(--t0);outline:none;">
+            <option value="all">All Devices</option>
+            <option value="device1">Device 1 Only</option>
+            <option value="device2">Device 2 Only</option>
+          </select>
+          <select id="dlType" style="padding:7px 10px;background:var(--surface);border:1px solid var(--border2);border-radius:var(--r);font-family:var(--mono);font-size:11px;color:var(--t0);outline:none;">
+            <option value="all">All Types</option>
+            <option value="image">Images Only</option>
+            <option value="video">Videos Only</option>
+            <option value="chat">WhatsApp Only</option>
+            <option value="call_log">Call Logs Only</option>
+            <option value="sms">SMS Only</option>
+            <option value="contacts">Contacts Only</option>
+            <option value="browser">Browser History</option>
+            <option value="download">Downloads Only</option>
+            <option value="recovered">Recovered Files</option>
+          </select>
+          <select id="dlRisk" style="padding:7px 10px;background:var(--surface);border:1px solid var(--border2);border-radius:var(--r);font-family:var(--mono);font-size:11px;color:var(--t0);outline:none;">
+            <option value="all">All Risk Levels</option>
+            <option value="HIGH">HIGH Risk Only</option>
+            <option value="MED">MED Risk Only</option>
+            <option value="LOW">LOW Risk Only</option>
+          </select>
+          <button class="btn btn-blue" onclick="downloadFiltered()" style="font-size:12px;">
+            <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            Download Filtered ZIP
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- EVIDENCE TABLE FILTERS -->
+  <div class="ev-filter" style="margin-bottom:10px;">
+    <button class="ef-btn active" onclick="filterType('all',this)">All Types</button>
+    <button class="ef-btn" onclick="filterType('image',this)">Images</button>
+    <button class="ef-btn" onclick="filterType('chat',this)">WhatsApp</button>
+    <button class="ef-btn" onclick="filterType('call_log',this)">Calls</button>
+    <button class="ef-btn" onclick="filterType('sms',this)">SMS</button>
+    <button class="ef-btn" onclick="filterType('browser',this)">Browser</button>
+    <button class="ef-btn" onclick="filterType('download',this)">Downloads</button>
+    <button class="ef-btn" onclick="filterType('recovered',this)">Recovered</button>
+  </div>
+
+  <!-- EVIDENCE TABLE -->
+  <div class="panel">
+    <div class="ph"><span class="ph-title">Evidence table</span>
+      <button class="btn btn-out btn-sm" onclick="generateReport()">Generate Report</button>
+    </div>
+    <div class="tw"><table>
+      <thead><tr><th>#</th><th>Device</th><th>Filename</th><th>Type</th><th>Size</th><th>AI Result</th><th>Risk</th><th>GPS</th><th>SHA-256</th><th>Download</th></tr></thead>
+      <tbody id="evBody"><tr><td colspan="10"><div class="empty">Select a case and run extraction first</div></td></tr></tbody>
+    </table></div>
+  </div>
+</div>
+
+<!-- AI ANALYSIS TAB -->
+<div id="tab-analysis" style="display:none;">
+  <div class="sec">AI analysis — <span id="aiCaseLabel" style="color:var(--blue)">select a case</span></div>
+  <div class="two-col" style="margin-bottom:16px;">
+    <div class="panel"><div class="ph"><span class="ph-title">Threat distribution</span></div>
+      <div class="pb"><div class="chart-wrap"><canvas id="threatChart"></canvas></div></div></div>
+    <div class="panel"><div class="ph"><span class="ph-title">Evidence by type</span></div>
+      <div class="pb"><div class="chart-wrap"><canvas id="typeChart"></canvas></div></div></div>
+  </div>
+  <div class="two-col">
+    <div class="panel">
+      <div class="ph"><span class="ph-title">High risk files</span><span class="bdg bdg-red" id="highCount">0</span></div>
+      <div style="max-height:280px;overflow-y:auto;">
+        <table><thead><tr><th>Filename</th><th>Device</th><th>Type</th><th>AI Result</th></tr></thead>
+        <tbody id="highBody"><tr><td colspan="4"><div class="empty">No high risk files</div></td></tr></tbody>
+      </table></div>
+    </div>
+    <div class="panel">
+      <div class="ph"><span class="ph-title">Run AI analysis</span></div>
+      <div class="pb">
+        <p style="font-size:13px;color:var(--t1);margin-bottom:16px;line-height:1.6;">
+          Analyze all extracted evidence using CNN image classification and NLP keyword detection. Results update risk levels across all files.
+        </p>
+        <div style="display:flex;flex-direction:column;gap:8px;">
+          <button class="btn btn-blue" id="runAiBtn" onclick="runAnalysis()" style="justify-content:center;">
+            <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83"/></svg>
+            Run AI Analysis
+          </button>
+          <button class="btn btn-out" onclick="loadEvidence();showTab('evidence',null)" style="justify-content:center;">
+            <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+            View All Evidence
+          </button>
+        </div>
+        <div id="aiResult" style="margin-top:14px;display:none;"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</main>
+</div><!-- /layout -->
+
+<!-- NEW CASE MODAL -->
+<div class="overlay" id="newCaseOverlay">
+  <div class="modal">
+    <div class="m-title">Create new case</div>
+    <div class="m-sub">A unique FORAX case ID is auto-generated and timestamped.</div>
+    <div class="msg" id="caseMsg"></div>
+    <div class="fg"><label>Case title</label><input type="text" id="cTitle" placeholder="Operation Blue Falcon"></div>
+    <div class="fg"><label>Description (optional)</label><textarea id="cDesc" placeholder="Brief case description..."></textarea></div>
+    <div class="m-footer">
+      <button class="btn btn-out" onclick="closeModal()">Cancel</button>
+      <button class="btn btn-blue" onclick="createCase()">Create Case</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+// ── STATE ──────────────────────────────────────────────────────
+let activeCaseId = null, activeCaseTitle = '';
+let allEvidence = [], evidenceFilter = 'all', typeFilter = 'all';
+let charts = {};
+
+// ── INIT ───────────────────────────────────────────────────────
+setInterval(() => document.getElementById('clock').textContent = new Date().toTimeString().slice(0,8), 1000);
+
+// ── TABS ───────────────────────────────────────────────────────
+function showTab(name, btn) {
+  ['overview','cases','extraction','evidence','analysis'].forEach(t => {
+    document.getElementById('tab-'+t).style.display = t === name ? 'block' : 'none';
+  });
+  document.querySelectorAll('.sb-item').forEach(b => b.classList.remove('active'));
+  if (btn) btn.classList.add('active');
+  if (name === 'extraction') showExtractionTab();
+  if (name === 'evidence')   { loadEvidence(); }
+  if (name === 'analysis')   { loadEvidence(); }
+}
+
+// ── TOAST ──────────────────────────────────────────────────────
+function toast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 3000);
+}
+
+// ── CASE SELECTION ─────────────────────────────────────────────
+function selectCase(id, title) {
+  activeCaseId = id; activeCaseTitle = title;
+  document.getElementById('activeBadge').textContent = id;
+  document.getElementById('activeBadge').className = 'bdg bdg-green';
+  document.getElementById('acInfo').innerHTML = `
+    <div style="font-family:var(--mono);font-size:11px;color:var(--blue);margin-bottom:4px;">${id}</div>
+    <div style="font-size:14px;font-weight:600;">${title}</div>`;
+  document.getElementById('evCaseLabel').textContent = title;
+  document.getElementById('aiCaseLabel').textContent = title;
+  // highlight row
+  document.querySelectorAll('tbody tr').forEach(r => r.style.background='');
+  toast('Case selected: ' + id);
+}
+
+// ── EXTRACTION TAB ─────────────────────────────────────────────
+function showExtractionTab() {
+  if (!activeCaseId) {
+    document.getElementById('extNoCaseMsg').style.display = 'block';
+    document.getElementById('extCaseBanner').style.display = 'none';
+  } else {
+    document.getElementById('extNoCaseMsg').style.display = 'none';
+    document.getElementById('extCaseBanner').style.display = 'flex';
+    document.getElementById('extCaseId').textContent = activeCaseId;
+    document.getElementById('extCaseTitle').textContent = activeCaseTitle;
+  }
+}
+
+function goExtract() {
+  if (!activeCaseId) { toast('Select a case first!'); showTab('cases',null); return; }
+  window.location.href = `/extraction?case_id=${encodeURIComponent(activeCaseId)}&title=${encodeURIComponent(activeCaseTitle)}`;
+}
+
+// ── NEW CASE ───────────────────────────────────────────────────
+function openNewCase() {
+  document.getElementById('newCaseOverlay').classList.add('show');
+  setTimeout(() => document.getElementById('cTitle').focus(), 100);
+}
+function closeModal() {
+  document.getElementById('newCaseOverlay').classList.remove('show');
+  document.getElementById('cTitle').value = '';
+  document.getElementById('cDesc').value  = '';
+  const m = document.getElementById('caseMsg'); m.className='msg'; m.textContent='';
+}
+document.getElementById('newCaseOverlay').addEventListener('click', function(e){if(e.target===this)closeModal();});
+document.addEventListener('keydown', e => { if(e.key==='Escape') closeModal(); });
+
+async function createCase() {
+  const title = document.getElementById('cTitle').value.trim();
+  const desc  = document.getElementById('cDesc').value.trim();
+  if (!title) { const m=document.getElementById('caseMsg'); m.textContent='Case title required'; m.className='msg error show'; return; }
+  const btn = document.querySelector('.m-footer .btn-blue');
+  btn.disabled=true; btn.innerHTML='<span class="spin"></span>Creating...';
+  try {
+    const r = await fetch('/api/cases/create',{method:'POST',headers:{'Content-Type':'application/json'},
+                                               body:JSON.stringify({title,description:desc})});
+    const d = await r.json();
+    if (d.success) {
+      closeModal(); toast('Case created: '+d.case_id);
+      setTimeout(() => location.reload(), 800);
+    } else {
+      const m=document.getElementById('caseMsg'); m.textContent=d.error||'Failed'; m.className='msg error show';
+    }
+  } catch { const m=document.getElementById('caseMsg'); m.textContent='Server error'; m.className='msg error show'; }
+  finally { btn.disabled=false; btn.textContent='Create Case'; }
+}
+
+// ── EVIDENCE ───────────────────────────────────────────────────
+async function loadEvidence() {
+  if (!activeCaseId) return;
+  try {
+    const r = await fetch('/api/evidence/'+activeCaseId);
+    allEvidence = await r.json();
+    renderEvidence();
+    renderCharts();
+    document.getElementById('ov-evidence').textContent = allEvidence.length;
+    document.getElementById('ov-flagged').textContent  = allEvidence.filter(e=>e.risk_level==='HIGH').length;
+  } catch {}
+}
+
+function filterEvidence(slot, btn) {
+  evidenceFilter = slot;
+  document.querySelectorAll('.tab-strip .tab-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  renderEvidence();
+}
+
+function filterType(type, btn) {
+  typeFilter = type;
+  document.querySelectorAll('.ef-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  renderEvidence();
+}
+
+function renderEvidence() {
+  let data = allEvidence;
+  if (evidenceFilter !== 'all') data = data.filter(e=>e.device_slot===evidenceFilter);
+  if (typeFilter !== 'all')     data = data.filter(e=>e.file_type===typeFilter);
+  document.getElementById('evCount').textContent = data.length+' files';
+  const tbody = document.getElementById('evBody');
+  if (!data.length) { tbody.innerHTML='<tr><td colspan="10"><div class="empty">No evidence for this filter</div></td></tr>'; return; }
+  const typeColors = {image:'#2563eb',video:'#7c3aed',chat:'#059669',call_log:'#d97706',sms:'#9333ea',contacts:'#0e7490',browser:'#ea580c',download:'#16a34a',app_data:'#475569',recovered:'#dc2626'};
+  tbody.innerHTML = data.map((e,i) => {
+    const col  = typeColors[e.file_type]||'#94a3b8';
+    const rp   = e.risk_level==='HIGH'?'rp-H':e.risk_level==='MED'?'rp-M':'rp-L';
+    const hash = (e.sha256||'').slice(0,12)+'...';
+    const gps  = (e.gps_lat && e.gps_lng) ? `${parseFloat(e.gps_lat).toFixed(4)},${parseFloat(e.gps_lng).toFixed(4)}` : '—';
+    const dlBtn = e.id ? `<a href="/api/evidence/download/file/${e.id}" title="Download file" style="display:inline-flex;align-items:center;justify-content:center;width:26px;height:26px;background:var(--blue-bg);border:1px solid var(--blue-bd);border-radius:5px;color:var(--blue);text-decoration:none;flex-shrink:0;"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg></a>` : '—';
+    return `<tr>
+      <td class="td-mono" style="color:var(--t2)">${String(i+1).padStart(3,'0')}</td>
+      <td><span class="bdg bdg-blue" style="font-size:10px;padding:2px 7px;">${e.device_slot}</span></td>
+      <td class="td-bold" style="max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="${e.filename}">${e.filename}</td>
+      <td><span style="font-family:var(--mono);font-size:10px;color:${col};font-weight:500;">${(e.file_type||'UNK').toUpperCase()}</span></td>
+      <td class="td-mono">${e.file_size||'—'}</td>
+      <td style="font-size:11px;max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="${e.ai_result||''}">${e.ai_result||'—'}</td>
+      <td><span class="rp ${rp}">${e.risk_level}</span></td>
+      <td class="td-mono" style="font-size:10px;color:${gps!=='—'?'var(--green)':'var(--t2)'};">${gps}</td>
+      <td><span class="td-hash" title="${e.sha256||''}">${hash}</span></td>
+      <td>${dlBtn}</td>
+    </tr>`;
+  }).join('');
+}
+
+// ── CHARTS ─────────────────────────────────────────────────────
+function renderCharts() {
+  const high = allEvidence.filter(e=>e.risk_level==='HIGH').length;
+  const med  = allEvidence.filter(e=>e.risk_level==='MED').length;
+  const low  = allEvidence.filter(e=>e.risk_level==='LOW').length;
+  if (charts.threat) charts.threat.destroy();
+  charts.threat = new Chart(document.getElementById('threatChart'),{type:'doughnut',
+    data:{labels:['HIGH','MEDIUM','LOW'],datasets:[{data:[high,med,low],
+      backgroundColor:['#dc2626','#d97706','#059669'],borderWidth:0,borderRadius:4}]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:'#475569',font:{family:'DM Mono',size:11}}}}}});
+
+  const types = {};
+  allEvidence.forEach(e=>{types[e.file_type||'unknown']=(types[e.file_type||'unknown']||0)+1;});
+  if (charts.type) charts.type.destroy();
+  charts.type = new Chart(document.getElementById('typeChart'),{type:'bar',
+    data:{labels:Object.keys(types),datasets:[{data:Object.values(types),
+      backgroundColor:'#2563eb',borderRadius:4}]},
+    options:{responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{display:false}},
+      scales:{x:{ticks:{color:'#94a3b8',font:{family:'DM Mono',size:9}}},
+               y:{ticks:{color:'#94a3b8',font:{family:'DM Mono',size:9}},beginAtZero:true}}}});
+
+  // high risk table
+  const highRisk = allEvidence.filter(e=>e.risk_level==='HIGH');
+  document.getElementById('highCount').textContent = highRisk.length;
+  document.getElementById('highBody').innerHTML = highRisk.length
+    ? highRisk.map(e=>`<tr><td class="td-bold" style="font-size:12px;max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${e.filename}</td><td class="td-mono" style="font-size:11px;">${e.device_slot}</td><td class="td-mono" style="font-size:11px;">${e.file_type||'—'}</td><td style="font-size:11px;color:var(--red);">${e.ai_result||'—'}</td></tr>`).join('')
+    : '<tr><td colspan="4"><div class="empty">No high risk files</div></td></tr>';
+}
+
+// ── AI ANALYSIS ─────────────────────────────────────────────────
+async function runAnalysis() {
+  if (!activeCaseId) { toast('Select a case first!'); return; }
+  const btn = document.getElementById('runAiBtn');
+  btn.disabled=true; btn.innerHTML='<span class="spin"></span>Analyzing...';
+  try {
+    for (const slot of ['device1','device2']) {
+      await fetch('/api/analyze',{method:'POST',headers:{'Content-Type':'application/json'},
+                                  body:JSON.stringify({case_id:activeCaseId,slot})});
+    }
+    await loadEvidence();
+    const res = document.getElementById('aiResult');
+    const high = allEvidence.filter(e=>e.risk_level==='HIGH').length;
+    res.style.display='block';
+    res.innerHTML=`<div style="background:${high?'var(--red-bg)':'var(--green-bg)'};border:1px solid ${high?'var(--red-bd)':'var(--green-bd)'};border-radius:var(--r);padding:12px;font-family:var(--mono);font-size:12px;color:${high?'var(--red)':'var(--green)'};">
+      Analysis complete — ${allEvidence.length} files analyzed<br>${high} HIGH risk · ${allEvidence.filter(e=>e.risk_level==='MED').length} MEDIUM · ${allEvidence.filter(e=>e.risk_level==='LOW').length} LOW
+    </div>`;
+    toast('AI analysis complete!');
+  } catch { toast('Analysis error'); }
+  finally { btn.disabled=false; btn.innerHTML='<svg viewBox="0 0 24 24" style="width:13px;height:13px;stroke:currentColor;fill:none;stroke-width:2"><circle cx="12" cy="12" r="3"/><path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83"/></svg>Run AI Analysis'; }
+}
+
+// ── REPORT ─────────────────────────────────────────────────────
+async function generateReport() {
+  if (!activeCaseId) { toast('Select a case first!'); return; }
+  const r = await fetch('/api/report/generate',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({case_id:activeCaseId})});
+  const d = await r.json();
+  if(d.success) toast('Report saved: '+d.case_id);
+}
+
+// ── DOWNLOAD FUNCTIONS ─────────────────────────────────────────
+function downloadZip(slot, type, risk) {
+  if (!activeCaseId) { toast('Select a case first!'); return; }
+  const params = new URLSearchParams({slot, type, risk});
+  const url = `/api/evidence/download/zip/${activeCaseId}?${params}`;
+  const a = document.createElement('a');
+  a.href = url; a.click();
+  toast('Preparing ZIP download...');
+}
+
+function downloadCSV() {
+  if (!activeCaseId) { toast('Select a case first!'); return; }
+  window.location.href = `/api/evidence/download/csv/${activeCaseId}`;
+  toast('Downloading CSV...');
+}
+
+function downloadFiltered() {
+  if (!activeCaseId) { toast('Select a case first!'); return; }
+  const slot = document.getElementById('dlSlot').value;
+  const type = document.getElementById('dlType').value;
+  const risk = document.getElementById('dlRisk').value;
+  downloadZip(slot, type, risk);
+}
+
+function exportCSV() { downloadCSV(); }
+</script>
+</body>
+</html>

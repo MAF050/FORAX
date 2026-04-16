@@ -1,0 +1,22 @@
+flask>=2.3.0
+bcrypt>=4.0.0
+reportlab>=4.0.0
+pywebview>=5.0
+requests>=2.31.0
+Pillow>=10.0.0
+pycryptodome>=3.19.0
+opencv-python>=4.8.0
+PyPDF2>=3.0.0
+python-docx>=1.1.0
+python-dotenv>=1.0.0
+xhtml2pdf>=0.2.14
+
+# ── ML / Model Training ────────────────────────────────────────
+tensorflow>=2.13.0
+numpy>=1.24.0
+scikit-learn>=1.3.0
+matplotlib>=3.7.0
+seaborn>=0.12.0
+kaggle>=1.5.16
+pandas>=2.0.0
+joblib>=1.3.0

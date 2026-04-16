@@ -1,0 +1,8 @@
+{
+  "backbone": "efficientnetb0",
+  "img_size": 224,
+  "preprocessing": "efficientnet",
+  "classes": ["drugs", "normal", "nsfw", "scam", "violence", "weapons"],
+  "fine_tune_epochs": 10,
+  "fine_tune_at": 50
+}

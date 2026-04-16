@@ -1,0 +1,5 @@
+Test with text containing money laundering slang ("layering funds through shell companies").
+Test with text containing drug trade slang ("need a connect for some ice").
+Verify that the dashboard displays the new "Detected: ..." summary correctly.
+scam fraud weapon ice heroine
+hmfiouegfywue
